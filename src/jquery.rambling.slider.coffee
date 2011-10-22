@@ -165,9 +165,9 @@
       Get img width & height
       ###
       childWidth = child.width()
-      childWidth = child.attr 'width' if childWidth is 0
+      childWidth = child.attr('width') if childWidth is 0
       childHeight = child.height()
-      childHeight = child.attr 'height' if childHeight is 0
+      childHeight = child.attr('height') if childHeight is 0
 
       ###
       Resize the slider
@@ -183,7 +183,7 @@
     Set startSlide
     ###
     if settings.startSlide > 0
-      settings.startSlide = vars.totalSlides - 1 if settings.startSlide >= vars.totalSlides
+      settings.startSlide = (vars.totalSlides - 1) if settings.startSlide >= vars.totalSlides
       vars.currentSlide = settings.startSlide
 
     ###
@@ -287,7 +287,7 @@
       ###
       Set initial active link
       ###
-      $('.nivo-controlNav a:eq(' + vars.currentSlide + ')', slider).addClass('active')
+      $(".nivo-controlNav a:eq(#{vars.currentSlide})", slider).addClass('active')
 
       $('.nivo-controlNav a', slider).live 'click', ->
         return false if vars.running
