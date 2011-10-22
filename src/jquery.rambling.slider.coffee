@@ -1,9 +1,25 @@
+###
+ * jQuery Rambling Slider
+ * http://github.com/egonzalez0787/rambling.slider
+ *
+ * Copyright 2011, Rambling Labs
+ * Released under the MIT license.
+ * http://www.opensource.org/licenses/mit-license.php
+ *
+ * October 2011
+ *
+ * Based on jQuery Nivo Slider by Gilbert Pellegrom
+###
 (($) ->
   NivoSlider = (element, options) ->
-    #Defaults are below
+    ###
+    Defaults are below
+    ###
     settings = $.extend {}, $.fn.nivoSlider.defaults, options
 
-    #Useful variables. Play carefully.
+    ###
+    Useful variables. Play carefully.
+    ###
     vars =
       currentSlide: 0
       currentImage: ''
@@ -13,7 +29,9 @@
       paused: false
       stop: false
 
-    ## Additional stuff for adapt images
+    ###
+    Additional stuff for adapt images
+    ###
     functions = {}
     defaultFunctions =
       setSliderBackground: (slider, vars) ->
@@ -118,15 +136,21 @@
 
     $.extend functions, defaultFunctions
     $.extend functions, adaptImagesFunctions  if settings.adaptImages
-    ##End adapt images
+    ###
+    End adapt images
+    ###
 
-    #Get this slider
+    ###
+    Get this slider
+    ###
     slider = $ element
     slider.data 'nivo:vars', vars
     slider.css position: 'relative'
     slider.addClass 'nivoSlider'
 
-    #Find our slider children
+    ###
+    Find our slider children
+    ###
     kids = slider.children()
     kids.each ->
       child = $ this
@@ -137,13 +161,17 @@
           link = child
         child = child.find 'img:first'
 
-      #Get img width & height
+      ###
+      Get img width & height
+      ###
       childWidth = child.width()
       childWidth = child.attr 'width' if childWidth is 0
       childHeight = child.height()
       childHeight = child.attr 'height' if childHeight is 0
 
-      #Resize the slider
+      ###
+      Resize the slider
+      ###
       slider.width childWidth if childWidth > slider.width() and settings.useLargerImage
       slider.height(childHeight) if childHeight > slider.height() and (settings.useLargerImage or not settings.adaptImages)
       link.css(display: 'none') if link isnt ''
@@ -151,27 +179,39 @@
       child.css display: 'none'
       vars.totalSlides++
 
-    #Set startSlide
+    ###
+    Set startSlide
+    ###
     if settings.startSlide > 0
       settings.startSlide = vars.totalSlides - 1 if settings.startSlide >= vars.totalSlides
       vars.currentSlide = settings.startSlide
 
-    #Get initial image
+    ###
+    Get initial image
+    ###
     if $(kids[vars.currentSlide]).is('img')
       vars.currentImage = $ kids[vars.currentSlide]
     else
       vars.currentImage = $(kids[vars.currentSlide]).find 'img:first'
 
-    #Show initial link
+    ###
+    Show initial link
+    ###
     $(kids[vars.currentSlide]).css('display', 'block') if $(kids[vars.currentSlide]).is('a')
 
-    #Set first background
+    ###
+    Set first background
+    ###
     functions.setSliderBackground slider, vars
 
-    #Create caption
+    ###
+    Create caption
+    ###
     slider.append $('<div class="nivo-caption"><p></p></div>').css(display:'none', opacity: settings.captionOpacity)
 
-    #Process caption function
+    ###
+    Process caption function
+    ###
     processCaption = (settings) ->
       nivoCaption = $ '.nivo-caption', slider
       title = vars.currentImage.attr('title')
@@ -188,10 +228,14 @@
         nivoCaption.fadeIn settings.animSpeed
       else nivoCaption.fadeOut settings.animSpeed
 
-    #Process initial  caption
+    ###
+    Process initial  caption
+    ###
     processCaption settings
 
-    #In the words of Super Mario "let's a go!"
+    ###
+    In the words of Super Mario "let's a go!"
+    ###
     timer = 0
     if not settings.manualAdvance and kids.length > 1
       timer = setInterval (-> nivoRun(slider, kids, settings, false)), settings.pauseTime
@@ -200,11 +244,15 @@
       clearInterval timer
       timer = ''
 
-    #Add Direction nav
+    ###
+    Add Direction nav
+    ###
     if settings.directionNav
       slider.append('<div class="nivo-directionNav"><a class="nivo-prevNav">' + settings.prevText + '</a><a class="nivo-nextNav">' + settings.nextText + '</a></div>')
 
-      #Hide Direction nav
+      ###
+      Hide Direction nav
+      ###
       if settings.directionNavHide
         $('.nivo-directionNav', slider).hide()
         slider.hover (-> $('.nivo-directionNav', slider).show()), (-> $('.nivo-directionNav', slider).hide())
@@ -218,7 +266,9 @@
       $('a.nivo-prevNav', slider).live 'click', -> liveWith('prev')
       $('a.nivo-nextNav', slider).live 'click', -> liveWith('next')
 
-    #Add Control nav
+    ###
+    Add Control nav
+    ###
     if settings.controlNav
       nivoControl = $('<div class="nivo-controlNav"></div>')
       slider.append nivoControl
@@ -234,7 +284,9 @@
 
           else nivoControl.append('<a class="nivo-control" rel="' + i + '">' + (i + 1) + '</a>')
 
-      #Set initial active link
+      ###
+      Set initial active link
+      ###
       $('.nivo-controlNav a:eq(' + vars.currentSlide + ')', slider).addClass('active')
 
       $('.nivo-controlNav a', slider).live 'click', ->
@@ -245,22 +297,30 @@
         vars.currentSlide = $(this).attr('rel') - 1
         nivoRun(slider, kids, settings, 'control')
 
-    #Keyboard Navigation
+    ###
+    Keyboard Navigation
+    ###
     if settings.keyboardNav
       $(window).keypress (event) ->
-        #Left
+        ###
+        Left
+        ###
         if event.keyCode is '37'
           return false if vars.running
           clearTimer()
           vars.currentSlide -= 2
           nivoRun(slider, kids, settings, 'prev')
-        #Right
+        ###
+        Right
+        ###
         if event.keyCode == '39'
           return false if vars.running
           clearTimer()
           nivoRun(slider, kids, settings, 'next')
 
-    #For pauseOnHover setting
+    ###
+    For pauseOnHover setting
+    ###
     if settings.pauseOnHover
       slider.hover ->
         vars.paused = true
@@ -271,32 +331,46 @@
         if timer is '' and not settings.manualAdvance
           timer = setInterval (-> nivoRun(slider, kids, settings, false)), settings.pauseTime
 
-    #Event when Animation finishes
+    ###
+    Event when Animation finishes
+    ###
     slider.bind 'nivo:animFinished', ->
       vars.running = false
-      #Hide child links
+      ###
+      Hide child links
+      ###
       $(kids).each ->
         if $(this).is('a')
           $(this).css(display: 'none')
-      #Show current link
+      ###
+      Show current link
+      ###
       if $(kids[vars.currentSlide]).is('a')
           $(kids[vars.currentSlide]).css(display: 'block')
-      #Restart the timer
+      ###
+      Restart the timer
+      ###
       if timer is '' and not vars.paused and not settings.manualAdvance
         timer = setInterval (-> nivoRun(slider, kids, settings, false)), settings.pauseTime
 
       functions.setSliderBackground(slider, vars)
-      #Trigger the afterChange callback
+      ###
+      Trigger the afterChange callback
+      ###
       settings.afterChange.call(this)
 
-    #Add slices for slice animations
+    ###
+    Add slices for slice animations
+    ###
     createSlices = (slider, settings, vars) ->
       for i in [0..(settings.slices - 1)]
         do (i) ->
           sliceWidth = Math.round(slider.width() / settings.slices)
           slider.append(functions.getNivoSlice(sliceWidth, i, settings.slices, vars))
 
-    #Add boxes for box animations
+    ###
+    Add boxes for box animations
+    ###
     createBoxes = (slider, settings, vars) ->
       boxWidth = Math.round(slider.width() / settings.boxCols)
       boxHeight = Math.round(slider.height() / settings.boxRows)
@@ -307,45 +381,67 @@
             do (cols) ->
               slider.append(functions.getNivoBox(boxWidth, boxHeight, rows, cols, settings, vars))
 
-    #Private run method
+    ###
+    Private run method
+    ###
     nivoRun = (slider, kids, settings, nudge) ->
-      #Get our vars
+      ###
+      Get our vars
+      ###
       vars = slider.data('nivo:vars')
 
-      #Trigger the lastSlide callback
+      ###
+      Trigger the lastSlide callback
+      ###
       settings.lastSlide.call(this) if vars and vars.currentSlide is vars.totalSlides - 1
 
-      #Stop
+      ###
+      Stop
+      ###
       return false if (not vars or vars.stop) and not nudge
 
-      #Trigger the beforeChange callback
+      ###
+      Trigger the beforeChange callback
+      ###
       settings.beforeChange.call(this)
 
       vars.currentSlide++
-      #Trigger the slideshowEnd callback
+      ###
+      Trigger the slideshowEnd callback
+      ###
       if vars.currentSlide is vars.totalSlides
         vars.currentSlide = 0
         settings.slideshowEnd.call(this)
 
       vars.currentSlide = (vars.totalSlides - 1) if vars.currentSlide < 0
-      #Set vars.currentImage
+      ###
+      Set vars.currentImage
+      ###
       if $(kids[vars.currentSlide]).is('img')
         vars.currentImage = $(kids[vars.currentSlide])
       else
         vars.currentImage = $(kids[vars.currentSlide]).find('img:first')
 
-      #Set active links
+      ###
+      Set active links
+      ###
       if settings.controlNav
         $('.nivo-controlNav a', slider).removeClass('active')
         $('.nivo-controlNav a:eq(' + vars.currentSlide + ')', slider).addClass('active')
 
-      #Process caption
+      ###
+      Process caption
+      ###
       processCaption(settings)
 
-      #Remove any slices from last transition
+      ###
+      Remove any slices from last transition
+      ###
       $('.nivo-slice', slider).remove()
 
-      #Remove any boxes from last transition
+      ###
+      Remove any boxes from last transition
+      ###
       $('.nivo-box', slider).remove()
 
       if settings.effect is 'random'
@@ -354,13 +450,17 @@
         vars.randAnim = anims[Math.floor(Math.random() * (anims.length + 1))]
         vars.randAnim = 'fade' if not vars.randAnim
 
-      #Run random effect from specified set (eg: effect:'fold,fade')
+      ###
+      Run random effect from specified set (eg: effect:'fold,fade')
+      ###
       if settings.effect.indexOf(',') isnt -1
         anims = settings.effect.split(',')
         vars.randAnim = anims[Math.floor(Math.random() * (anims.length))]
         vars.randAnim = 'fade' if vars.randAnim
 
-      #Run effects
+      ###
+      Run effects
+      ###
       vars.running = true
       if settings.effect is 'sliceDown' or settings.effect is 'sliceDownRight' or vars.randAnim is 'sliceDownRight' or settings.effect is 'sliceDownLeft' or vars.randAnim is 'sliceDownLeft'
         createSlices(slider, settings, vars)
@@ -517,7 +617,9 @@
         i = 0
         timeBuff = 0
 
-        #Split boxes into 2D array
+        ###
+        Split boxes into 2D array
+        ###
         rowIndex = 0
         colIndex = 0
         box2Darr = new Array()
@@ -534,7 +636,9 @@
             colIndex = 0
             box2Darr[rowIndex] = new Array()
 
-        #Run animation
+        ###
+        Run animation
+        ###
         for cols in [0..(settings.boxCols * 2 - 1)]
           do (cols) ->
             prevCol = cols
@@ -559,7 +663,9 @@
 
             timeBuff += 100
 
-    #Shuffle an array
+    ###
+    Shuffle an array
+    ###
     shuffle = (arr) ->
       for i in [arr.length..1]
         do (i) ->
@@ -569,11 +675,15 @@
           arr[j] = j
       arr
 
-    #For debugging
+    ###
+    For debugging
+    ###
     trace = (msg) ->
       console.log(msg) if this.console and console and console.log
 
-    #Start / Stop
+    ###
+    Start / Stop
+    ###
     this.stop = ->
       $element = $ element
       if not $element.data('nivo:vars').stop
@@ -586,7 +696,9 @@
         $element.data('nivo:vars').stop = false
         trace 'Start Slider'
 
-    #Trigger the afterLoad callback
+    ###
+    Trigger the afterLoad callback
+    ###
     settings.afterLoad.call(this)
 
     this
@@ -594,14 +706,22 @@
   $.fn.nivoSlider = (options) ->
     this.each (key, value) ->
       element = $(this)
-      #Return early if this element already has a plugin instance
+      ###
+      Return early if this element already has a plugin instance
+      ###
       return element.data('nivoslider') if element.data('nivoslider')
-      #Pass options to plugin constructor
+      ###
+      Pass options to plugin constructor
+      ###
       nivoslider = new NivoSlider(this, options)
-      #Store plugin object in this element's data
+      ###
+      Store plugin object in this element's data
+      ###
       element.data('nivoslider', nivoslider)
 
-  #Default settings
+  ###
+  Default settings
+  ###
   $.fn.nivoSlider.defaults =
     effect: 'random'
     slices: 15
