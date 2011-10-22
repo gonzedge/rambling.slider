@@ -1,7 +1,7 @@
 # jQuery Rambling Slider
 
 The jQuery Rambling Slider is a CoffeeScript improved modified version of the [jQuery Nivo Slider](http://github.com/gilbitron/Nivo-Slider) by Gilbert Pellegrom, which is "The Most Awesome jQuery Image Slider".
-It includes some new options to give the slider the hability to adapt different image sizes.
+It includes some new options to give the slider the ability to adapt different image sizes.
 
 ## How to use the jQuery Rambling Slider
 
