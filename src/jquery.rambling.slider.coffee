@@ -11,11 +11,11 @@
  * Based on jQuery Nivo Slider by Gilbert Pellegrom
 ###
 (($) ->
-  NivoSlider = (element, options) ->
+  RamblingSlider = (element, options) ->
     ###
     Defaults are below
     ###
-    settings = $.extend {}, $.fn.nivoSlider.defaults, options
+    settings = $.extend {}, $.fn.ramblingSlider.defaults, options
 
     ###
     Useful variables. Play carefully.
@@ -37,7 +37,7 @@
       setSliderBackground: (slider, vars) ->
         slider.css background: "url(#{vars.currentImage.attr('src')}) no-repeat"
 
-      getNivoSlice: (sliceWidth, position, total, vars) ->
+      getRamblingSlice: (sliceWidth, position, total, vars) ->
         background = "url(#{vars.currentImage.attr('src')}) no-repeat -#{((sliceWidth + (position * sliceWidth)) - sliceWidth)}px 0%"
         width = sliceWidth
         if position is (total - 1)
@@ -52,9 +52,9 @@
           background: background
           overflow: 'hidden'
 
-        $('<div class="nivo-slice"></div>').css sliceCss
+        $('<div class="rambling-slice"></div>').css sliceCss
 
-      getNivoBox: (boxWidth, boxHeight, row, column, settings, vars) ->
+      getRamblingBox: (boxWidth, boxHeight, row, column, settings, vars) ->
         background = "url(#{vars.currentImage.attr('src')}) no-repeat -#{((boxWidth + (column * boxWidth)) - boxWidth)}px -#{((boxHeight + (row * boxHeight)) - boxHeight)}px"
         width = boxWidth
         if column is (settings.boxCols - 1)
@@ -70,7 +70,7 @@
           background: background
           overflow: 'hidden'
 
-        $('<div class="nivo-box"></div>').css boxCss
+        $('<div class="rambling-box"></div>').css boxCss
 
     adaptImagesFunctions =
       setSliderBackground: ->
@@ -87,10 +87,10 @@
 
         currentImage.attr src: image.attr('src'), alt: image.attr('alt')
 
-      getNivoSlice: (sliceWidth, position, total, vars) ->
-        nivoSlice = defaultFunctions.getNivoSlice sliceWidth, position, total, vars
-        nivoSlice.css background: 'none'
-        nivoSlice.append "<span><img src=\"#{vars.currentImage.attr('src')}\" alt=\"\"/></span>"
+      getRamblingSlice: (sliceWidth, position, total, vars) ->
+        ramblingSlice = defaultFunctions.getRamblingSlice sliceWidth, position, total, vars
+        ramblingSlice.css background: 'none'
+        ramblingSlice.append "<span><img src=\"#{vars.currentImage.attr('src')}\" alt=\"\"/></span>"
 
         bottom = 0
         top = 'auto'
@@ -98,19 +98,19 @@
           bottom = 'auto'
           top = 0
 
-        nivoSliceImageStyle =
+        ramblingSliceImageStyle =
           display: 'block'
           width: slider.width()
           left: '-' + ((sliceWidth + (position * sliceWidth)) - sliceWidth) + 'px'
           bottom: bottom
           top: top
 
-        nivoSlice.find('img').css nivoSliceImageStyle
+        ramblingSlice.find('img').css ramblingSliceImageStyle
 
-        nivoSlice
+        ramblingSlice
 
-      getNivoBox: (boxWidth, boxHeight, row, column, settings, vars) ->
-        nivoBox = defaultFunctions.getNivoBox boxWidth, boxHeight, row, column, settings, vars
+      getRamblingBox: (boxWidth, boxHeight, row, column, settings, vars) ->
+        ramblingBox = defaultFunctions.getRamblingBox boxWidth, boxHeight, row, column, settings, vars
 
         bottom = false
         top = "#{((boxHeight + (row * boxHeight)) - boxHeight)}px"
@@ -118,21 +118,21 @@
           bottom = "#{(boxHeight * (settings.boxRows - (row + 1)))}px"
           top = false
 
-        nivoBoxImageStyle =
+        ramblingBoxImageStyle =
           display: 'block'
           width: slider.width()
           left: "-#{((boxWidth + (column * boxWidth)) - boxWidth)}px"
           top: 'auto'
           bottom: 'auto'
 
-        nivoBoxImageStyle.top = "-#{top}" if top
-        nivoBoxImageStyle.bottom = "-#{bottom}" if bottom
+        ramblingBoxImageStyle.top = "-#{top}" if top
+        ramblingBoxImageStyle.bottom = "-#{bottom}" if bottom
 
-        nivoBox.css background: 'none', top: top or 'auto', bottom: bottom or 'auto'
-        nivoBox.append('<span><img src="' + vars.currentImage.attr('src') + '" alt=""/></span>')
-        nivoBox.find('img').css nivoBoxImageStyle
+        ramblingBox.css background: 'none', top: top or 'auto', bottom: bottom or 'auto'
+        ramblingBox.append('<span><img src="' + vars.currentImage.attr('src') + '" alt=""/></span>')
+        ramblingBox.find('img').css ramblingBoxImageStyle
 
-        nivoBox
+        ramblingBox
 
     $.extend functions, defaultFunctions
     $.extend functions, adaptImagesFunctions  if settings.adaptImages
@@ -144,9 +144,9 @@
     Get this slider
     ###
     slider = $ element
-    slider.data 'nivo:vars', vars
+    slider.data 'rambling:vars', vars
     slider.css position: 'relative'
-    slider.addClass 'nivoSlider'
+    slider.addClass 'ramblingSlider'
 
     ###
     Find our slider children
@@ -157,7 +157,7 @@
       link = ''
       if not child.is('img')
         if child.is('a')
-          child.addClass 'nivo-imageLink'
+          child.addClass 'rambling-imageLink'
           link = child
         child = child.find 'img:first'
 
@@ -207,26 +207,26 @@
     ###
     Create caption
     ###
-    slider.append $('<div class="nivo-caption"><p></p></div>').css(display:'none', opacity: settings.captionOpacity)
+    slider.append $('<div class="rambling-caption"><p></p></div>').css(display:'none', opacity: settings.captionOpacity)
 
     ###
     Process caption function
     ###
     processCaption = (settings) ->
-      nivoCaption = $ '.nivo-caption', slider
+      ramblingCaption = $ '.rambling-caption', slider
       title = vars.currentImage.attr('title')
       if title? and title isnt ''
         title = $(title).html() if title.substr(0, 1) is '#'
 
-        if nivoCaption.css('display') is 'block'
-          nivoCaption.find('p').fadeOut(settings.animSpeed, ->
+        if ramblingCaption.css('display') is 'block'
+          ramblingCaption.find('p').fadeOut(settings.animSpeed, ->
             $(this).html title
             $(this).fadeIn settings.animSpeed
           )
-        else nivoCaption.find('p').html title
+        else ramblingCaption.find('p').html title
 
-        nivoCaption.fadeIn settings.animSpeed
-      else nivoCaption.fadeOut settings.animSpeed
+        ramblingCaption.fadeIn settings.animSpeed
+      else ramblingCaption.fadeOut settings.animSpeed
 
     ###
     Process initial  caption
@@ -238,7 +238,7 @@
     ###
     timer = 0
     if not settings.manualAdvance and kids.length > 1
-      timer = setInterval (-> nivoRun(slider, kids, settings, false)), settings.pauseTime
+      timer = setInterval (-> ramblingRun(slider, kids, settings, false)), settings.pauseTime
 
     clearTimer = ->
       clearInterval timer
@@ -248,54 +248,54 @@
     Add Direction nav
     ###
     if settings.directionNav
-      slider.append('<div class="nivo-directionNav"><a class="nivo-prevNav">' + settings.prevText + '</a><a class="nivo-nextNav">' + settings.nextText + '</a></div>')
+      slider.append('<div class="rambling-directionNav"><a class="rambling-prevNav">' + settings.prevText + '</a><a class="rambling-nextNav">' + settings.nextText + '</a></div>')
 
       ###
       Hide Direction nav
       ###
       if settings.directionNavHide
-        $('.nivo-directionNav', slider).hide()
-        slider.hover (-> $('.nivo-directionNav', slider).show()), (-> $('.nivo-directionNav', slider).hide())
+        $('.rambling-directionNav', slider).hide()
+        slider.hover (-> $('.rambling-directionNav', slider).show()), (-> $('.rambling-directionNav', slider).hide())
 
       liveWith = (slider, kids, settings, direction) ->
         return false if vars.running
         clearTimer()
         vars.currentSlide -= 2
-        nivoRun(slider, kids, settings, direction)
+        ramblingRun(slider, kids, settings, direction)
 
-      $('a.nivo-prevNav', slider).live 'click', -> liveWith('prev')
-      $('a.nivo-nextNav', slider).live 'click', -> liveWith('next')
+      $('a.rambling-prevNav', slider).live 'click', -> liveWith('prev')
+      $('a.rambling-nextNav', slider).live 'click', -> liveWith('next')
 
     ###
     Add Control nav
     ###
     if settings.controlNav
-      nivoControl = $('<div class="nivo-controlNav"></div>')
-      slider.append nivoControl
+      ramblingControl = $('<div class="rambling-controlNav"></div>')
+      slider.append ramblingControl
       for i in [0..(kids.length - 1)]
         do (i) ->
           if settings.controlNavThumbs
             child = kids.eq i
             child = child.find('img:first') if not child.is('img')
             if settings.controlNavThumbsFromRel
-              nivoControl.append('<a class="nivo-control" rel="' + i + '"><img src="' + child.attr('rel') + '" alt="" /></a>')
+              ramblingControl.append('<a class="rambling-control" rel="' + i + '"><img src="' + child.attr('rel') + '" alt="" /></a>')
             else
-              nivoControl.append('<a class="nivo-control" rel="' + i + '"><img src="' + child.attr('src').replace(settings.controlNavThumbsSearch, settings.controlNavThumbsReplace) + '" alt="" /></a>')
+              ramblingControl.append('<a class="rambling-control" rel="' + i + '"><img src="' + child.attr('src').replace(settings.controlNavThumbsSearch, settings.controlNavThumbsReplace) + '" alt="" /></a>')
 
-          else nivoControl.append('<a class="nivo-control" rel="' + i + '">' + (i + 1) + '</a>')
+          else ramblingControl.append('<a class="rambling-control" rel="' + i + '">' + (i + 1) + '</a>')
 
       ###
       Set initial active link
       ###
-      $(".nivo-controlNav a:eq(#{vars.currentSlide})", slider).addClass('active')
+      $(".rambling-controlNav a:eq(#{vars.currentSlide})", slider).addClass('active')
 
-      $('.nivo-controlNav a', slider).live 'click', ->
+      $('.rambling-controlNav a', slider).live 'click', ->
         return false if vars.running
         return false if $(this).hasClass('active')
         clearTimer()
         functions.setSliderBackground(slider, vars)
         vars.currentSlide = $(this).attr('rel') - 1
-        nivoRun(slider, kids, settings, 'control')
+        ramblingRun(slider, kids, settings, 'control')
 
     ###
     Keyboard Navigation
@@ -309,14 +309,14 @@
           return false if vars.running
           clearTimer()
           vars.currentSlide -= 2
-          nivoRun(slider, kids, settings, 'prev')
+          ramblingRun(slider, kids, settings, 'prev')
         ###
         Right
         ###
         if event.keyCode == '39'
           return false if vars.running
           clearTimer()
-          nivoRun(slider, kids, settings, 'next')
+          ramblingRun(slider, kids, settings, 'next')
 
     ###
     For pauseOnHover setting
@@ -329,12 +329,12 @@
         vars.paused = false
         #Restart the timer
         if timer is '' and not settings.manualAdvance
-          timer = setInterval (-> nivoRun(slider, kids, settings, false)), settings.pauseTime
+          timer = setInterval (-> ramblingRun(slider, kids, settings, false)), settings.pauseTime
 
     ###
     Event when Animation finishes
     ###
-    slider.bind 'nivo:animFinished', ->
+    slider.bind 'rambling:animFinished', ->
       vars.running = false
       ###
       Hide child links
@@ -351,7 +351,7 @@
       Restart the timer
       ###
       if timer is '' and not vars.paused and not settings.manualAdvance
-        timer = setInterval (-> nivoRun(slider, kids, settings, false)), settings.pauseTime
+        timer = setInterval (-> ramblingRun(slider, kids, settings, false)), settings.pauseTime
 
       functions.setSliderBackground(slider, vars)
       ###
@@ -366,7 +366,7 @@
       for i in [0..(settings.slices - 1)]
         do (i) ->
           sliceWidth = Math.round(slider.width() / settings.slices)
-          slider.append(functions.getNivoSlice(sliceWidth, i, settings.slices, vars))
+          slider.append(functions.getRamblingSlice(sliceWidth, i, settings.slices, vars))
 
     ###
     Add boxes for box animations
@@ -379,16 +379,16 @@
         do (rows) ->
           for cols in [0..(settings.boxCols - 1)]
             do (cols) ->
-              slider.append(functions.getNivoBox(boxWidth, boxHeight, rows, cols, settings, vars))
+              slider.append(functions.getRamblingBox(boxWidth, boxHeight, rows, cols, settings, vars))
 
     ###
     Private run method
     ###
-    nivoRun = (slider, kids, settings, nudge) ->
+    ramblingRun = (slider, kids, settings, nudge) ->
       ###
       Get our vars
       ###
-      vars = slider.data('nivo:vars')
+      vars = slider.data('rambling:vars')
 
       ###
       Trigger the lastSlide callback
@@ -426,8 +426,8 @@
       Set active links
       ###
       if settings.controlNav
-        $('.nivo-controlNav a', slider).removeClass('active')
-        $('.nivo-controlNav a:eq(' + vars.currentSlide + ')', slider).addClass('active')
+        $('.rambling-controlNav a', slider).removeClass('active')
+        $('.rambling-controlNav a:eq(' + vars.currentSlide + ')', slider).addClass('active')
 
       ###
       Process caption
@@ -437,12 +437,12 @@
       ###
       Remove any slices from last transition
       ###
-      $('.nivo-slice', slider).remove()
+      $('.rambling-slice', slider).remove()
 
       ###
       Remove any boxes from last transition
       ###
-      $('.nivo-box', slider).remove()
+      $('.rambling-box', slider).remove()
 
       if settings.effect is 'random'
         anims = ['sliceDownRight', 'sliceDownLeft', 'sliceUpRight', 'sliceUpLeft', 'sliceUpDown', 'sliceUpDownLeft', 'fold', 'fade',
@@ -466,15 +466,15 @@
         createSlices(slider, settings, vars)
         timeBuff = 0
         i = 0
-        slices = $('.nivo-slice', slider)
-        slices = $('.nivo-slice', slider)._reverse() if settings.effect is 'sliceDownLeft' or vars.randAnim is 'sliceDownLeft'
+        slices = $('.rambling-slice', slider)
+        slices = $('.rambling-slice', slider)._reverse() if settings.effect is 'sliceDownLeft' or vars.randAnim is 'sliceDownLeft'
 
         slices.each ->
           slice = $ this
           slice.css top: '0px'
           if i is settings.slices - 1
             setTimeout ->
-              slice.animate({ height:'100%', opacity:'1.0' }, settings.animSpeed, '', -> slider.trigger('nivo:animFinished'))
+              slice.animate({ height:'100%', opacity:'1.0' }, settings.animSpeed, '', -> slider.trigger('rambling:animFinished'))
             , 100 + timeBuff
           else
             setTimeout (-> slice.animate({ height:'100%', opacity:'1.0' }, settings.animSpeed)), 100 + timeBuff
@@ -486,14 +486,14 @@
         createSlices(slider, settings, vars)
         timeBuff = 0
         i = 0
-        slices = $('.nivo-slice', slider)
-        slices = $('.nivo-slice', slider)._reverse() if settings.effect is 'sliceUpLeft' or vars.randAnim is 'sliceUpLeft'
+        slices = $('.rambling-slice', slider)
+        slices = $('.rambling-slice', slider)._reverse() if settings.effect is 'sliceUpLeft' or vars.randAnim is 'sliceUpLeft'
 
         slices.each ->
           slice = $(this)
           slice.css({ 'bottom': '0px' })
           if i is settings.slices - 1
-            setTimeout (-> slice.animate({ height:'100%', opacity:'1.0' }, settings.animSpeed, '', -> slider.trigger('nivo:animFinished'))), 100 + timeBuff
+            setTimeout (-> slice.animate({ height:'100%', opacity:'1.0' }, settings.animSpeed, '', -> slider.trigger('rambling:animFinished'))), 100 + timeBuff
           else
             setTimeout (-> slice.animate({ height:'100%', opacity:'1.0' }, settings.animSpeed)), 100 + timeBuff
 
@@ -505,8 +505,8 @@
         timeBuff = 0
         i = 0
         v = 0
-        slices = $('.nivo-slice', slider)
-        slices = $('.nivo-slice', slider)._reverse() if settings.effect is 'sliceUpDownLeft' or vars.randAnim is 'sliceUpDownLeft'
+        slices = $('.rambling-slice', slider)
+        slices = $('.rambling-slice', slider)._reverse() if settings.effect is 'sliceUpDownLeft' or vars.randAnim is 'sliceUpDownLeft'
 
         slices.each ->
           slice = $ this
@@ -518,7 +518,7 @@
             i = 0
 
           if v is settings.slices - 1
-            setTimeout (-> slice.animate({ height:'100%', opacity:'1.0' }, settings.animSpeed, '', -> slider.trigger('nivo:animFinished'))),
+            setTimeout (-> slice.animate({ height:'100%', opacity:'1.0' }, settings.animSpeed, '', -> slider.trigger('rambling:animFinished'))),
               100 + timeBuff
           else
             setTimeout (-> slice.animate({ height:'100%', opacity:'1.0' }, settings.animSpeed)), 100 + timeBuff
@@ -531,12 +531,12 @@
         timeBuff = 0
         i = 0
 
-        $('.nivo-slice', slider).each ->
+        $('.rambling-slice', slider).each ->
           slice = $ this
           origWidth = slice.width()
           slice.css({ top:'0px', height:'100%', width:'0px' })
           if i is settings.slices - 1
-            setTimeout (-> slice.animate({ width:origWidth, opacity:'1.0' }, settings.animSpeed, '', -> slider.trigger('nivo:animFinished'))),
+            setTimeout (-> slice.animate({ width:origWidth, opacity:'1.0' }, settings.animSpeed, '', -> slider.trigger('rambling:animFinished'))),
               100 + timeBuff
           else
             setTimeout (-> slice.animate({ width:origWidth, opacity:'1.0' }, settings.animSpeed)), 100 + timeBuff
@@ -547,7 +547,7 @@
       else if settings.effect is 'fade' or vars.randAnim is 'fade'
         createSlices(slider, settings, vars)
 
-        firstSlice = $('.nivo-slice:first', slider)
+        firstSlice = $('.rambling-slice:first', slider)
         sliceStyle =
           height: '100%'
           width: slider.width() + 'px'
@@ -556,24 +556,24 @@
           left: 0
 
         firstSlice.css sliceStyle
-        firstSlice.animate({ opacity:'1.0' }, (settings.animSpeed * 2), '', -> slider.trigger('nivo:animFinished'))
+        firstSlice.animate({ opacity:'1.0' }, (settings.animSpeed * 2), '', -> slider.trigger('rambling:animFinished'))
 
       else if settings.effect is 'slideInRight' or vars.randAnim is 'slideInRight'
         createSlices(slider, settings, vars)
 
-        firstSlice = $('.nivo-slice:first', slider)
+        firstSlice = $('.rambling-slice:first', slider)
         sliceStyle =
           height: '100%'
           width: '0px'
           opacity: '1'
 
         firstSlice.css(sliceStyle)
-        firstSlice.animate({ width: slider.width() + 'px' }, (settings.animSpeed * 2), '', -> slider.trigger('nivo:animFinished'))
+        firstSlice.animate({ width: slider.width() + 'px' }, (settings.animSpeed * 2), '', -> slider.trigger('rambling:animFinished'))
 
       else if settings.effect is 'slideInLeft' or vars.randAnim is 'slideInLeft'
         createSlices(slider, settings, vars)
 
-        firstSlice = $('.nivo-slice:first', slider)
+        firstSlice = $('.rambling-slice:first', slider)
         sliceStyle =
           height: '100%'
           width: '0px'
@@ -588,7 +588,7 @@
               left: '0px'
               right: ''
             firstSlice.css(resetStyle)
-            slider.trigger('nivo:animFinished')
+            slider.trigger('rambling:animFinished')
         )
 
       else if settings.effect is 'boxRandom' or vars.randAnim is 'boxRandom'
@@ -598,11 +598,11 @@
         i = 0
         timeBuff = 0
 
-        boxes = shuffle($('.nivo-box', slider))
+        boxes = shuffle($('.rambling-box', slider))
         boxes.each ->
           box = $(this)
           if i is totalBoxes - 1
-            setTimeout (-> box.animate({ opacity:'1' }, settings.animSpeed, '', -> slider.trigger('nivo:animFinished'))),
+            setTimeout (-> box.animate({ opacity:'1' }, settings.animSpeed, '', -> slider.trigger('rambling:animFinished'))),
              100 + timeBuff
           else
             setTimeout (-> box.animate({ opacity:'1' }, settings.animSpeed)), 100 + timeBuff
@@ -624,9 +624,9 @@
         colIndex = 0
         box2Darr = new Array()
         box2Darr[rowIndex] = new Array()
-        boxes = $('.nivo-box', slider)
+        boxes = $('.rambling-box', slider)
         if settings.effect is 'boxRainReverse' or vars.randAnim is 'boxRainReverse' or settings.effect is 'boxRainGrowReverse' or vars.randAnim is 'boxRainGrowReverse'
-          boxes = $('.nivo-box', slider)._reverse()
+          boxes = $('.rambling-box', slider)._reverse()
 
         boxes.each ->
           box2Darr[rowIndex][colIndex] = $(this)
@@ -652,7 +652,7 @@
                     if settings.effect is 'boxRainGrow' or vars.randAnim is 'boxRainGrow' or settings.effect is 'boxRainGrowReverse' or vars.randAnim is 'boxRainGrowReverse'
                       box.width(0).height(0)
                     if i is totalBoxes - 1
-                      setTimeout (-> box.animate({ opacity:'1', width:w, height:h }, settings.animSpeed / 1.3, '', -> slider.trigger('nivo:animFinished'))),
+                      setTimeout (-> box.animate({ opacity:'1', width:w, height:h }, settings.animSpeed / 1.3, '', -> slider.trigger('rambling:animFinished'))),
                         100 + time
                     else
                       setTimeout (-> box.animate({ opacity:'1', width:w, height:h }, settings.animSpeed / 1.3)), 100 + time
@@ -686,14 +686,14 @@
     ###
     this.stop = ->
       $element = $ element
-      if not $element.data('nivo:vars').stop
-        $element.data('nivo:vars').stop = true
+      if not $element.data('rambling:vars').stop
+        $element.data('rambling:vars').stop = true
         trace 'Stop Slider'
 
     this.start = ->
       $element = $ element
-      if $element.data('nivo:vars').stop
-        $element.data('nivo:vars').stop = false
+      if $element.data('rambling:vars').stop
+        $element.data('rambling:vars').stop = false
         trace 'Start Slider'
 
     ###
@@ -703,26 +703,26 @@
 
     this
 
-  $.fn.nivoSlider = (options) ->
+  $.fn.ramblingSlider = (options) ->
     this.each (key, value) ->
       element = $(this)
       ###
       Return early if this element already has a plugin instance
       ###
-      return element.data('nivoslider') if element.data('nivoslider')
+      return element.data('ramblingslider') if element.data('ramblingslider')
       ###
       Pass options to plugin constructor
       ###
-      nivoslider = new NivoSlider(this, options)
+      ramblingslider = new RamblingSlider(this, options)
       ###
       Store plugin object in this element's data
       ###
-      element.data('nivoslider', nivoslider)
+      element.data('ramblingslider', ramblingslider)
 
   ###
   Default settings
   ###
-  $.fn.nivoSlider.defaults =
+  $.fn.ramblingSlider.defaults =
     effect: 'random'
     slices: 15
     boxCols: 8

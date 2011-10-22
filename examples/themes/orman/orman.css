@@ -1,6 +1,5 @@
 /*
 Skin Name: Orman Theme
-Skin URI: http://nivo.dev7studios.com
 Skin Type: fixed
 Image Width: 568
 Image Height: 268
@@ -19,14 +18,14 @@ Author URI: http://dev7studios.com
     position:relative;
 }
 
-.theme-orman .nivoSlider {
+.theme-orman .ramblingSlider {
     position:relative;
     width:568px;
     height:268px;
     margin-left:77px;
     background:url(loading.gif) no-repeat 50% 50%;
 }
-.theme-orman .nivoSlider img {
+.theme-orman .ramblingSlider img {
     position:absolute;
     top:0px;
     left:0px;
@@ -34,18 +33,18 @@ Author URI: http://dev7studios.com
     width:568px; /* Make sure your images are the same size */
     height:268px; /* Make sure your images are the same size */
 }
-.theme-orman .nivoSlider a {
+.theme-orman .ramblingSlider a {
     border:0;
     display:block;
 }
 
-.theme-orman .nivo-controlNav {
+.theme-orman .rambling-controlNav {
     position:absolute;
 	left:50%;
 	bottom:-60px;
     margin-left:-30px; /* Tweak this to center bullets */
 }
-.theme-orman .nivo-controlNav a {
+.theme-orman .rambling-controlNav a {
     display:block;
     width:10px;
     height:10px;
@@ -55,11 +54,11 @@ Author URI: http://dev7studios.com
     margin-right:7px;
     float:left;
 }
-.theme-orman .nivo-controlNav a.active {
+.theme-orman .rambling-controlNav a.active {
     background-position:0 -10px;
 }
 
-.theme-orman .nivo-directionNav a {
+.theme-orman .rambling-directionNav a {
 	display:block;
 	width:25px;
 	height:200px;
@@ -68,24 +67,24 @@ Author URI: http://dev7studios.com
 	border:0;
     top:40px;
 }
-.theme-orman a.nivo-nextNav {
+.theme-orman a.rambling-nextNav {
 	background-position:100% 50%;
 	right:-40px;
     padding-right:20px;
 }
-.theme-orman a.nivo-prevNav {
+.theme-orman a.rambling-prevNav {
 	left:-40px;
     padding-left:20px;
 }
 
-.theme-orman .nivo-caption {
+.theme-orman .rambling-caption {
     font-family: Helvetica, Arial, sans-serif;
 }
-.theme-orman .nivo-caption a { 
+.theme-orman .rambling-caption a {
     color:#fff;
     border-bottom:1px dotted #fff;
 }
-.theme-orman .nivo-caption a:hover { 
+.theme-orman .rambling-caption a:hover {
     color:#fff;
 }
 

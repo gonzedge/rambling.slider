@@ -1,6 +1,5 @@
 /*
 Skin Name: Pascal Theme
-Skin URI: http://nivo.dev7studios.com
 Skin Type: fixed
 Image Width: 630
 Image Height: 235
@@ -19,14 +18,14 @@ Author URI: http://dev7studios.com
     position:relative;
 }
 
-.theme-pascal .nivoSlider {
+.theme-pascal .ramblingSlider {
     position:relative;
     width:630px;
     height:235px;
     margin-left:19px;
     background:url(loading.gif) no-repeat 50% 50%;
 }
-.theme-pascal .nivoSlider img {
+.theme-pascal .ramblingSlider img {
     position:absolute;
     top:0px;
     left:0px;
@@ -34,12 +33,12 @@ Author URI: http://dev7studios.com
     width:630px; /* Make sure your images are the same size */
     height:235px; /* Make sure your images are the same size */
 }
-.theme-pascal .nivoSlider a {
+.theme-pascal .ramblingSlider a {
     border:0;
     display:block;
 }
 
-.theme-pascal .nivo-controlNav {
+.theme-pascal .rambling-controlNav {
     background:url(controlnav.png) no-repeat;
     width:251px;
     height:40px;
@@ -49,7 +48,7 @@ Author URI: http://dev7studios.com
     padding:8px 0 0 82px;
     z-index:20;
 }
-.theme-pascal .nivo-controlNav a {
+.theme-pascal .rambling-controlNav a {
     display:block;
     width:22px;
     height:22px;
@@ -59,15 +58,15 @@ Author URI: http://dev7studios.com
     margin-right:3px;
     float:left;
 }
-.theme-pascal .nivo-controlNav a.active {
+.theme-pascal .rambling-controlNav a.active {
     background-position:0 -22px;
 }
 
-.theme-pascal .nivo-directionNav a {
+.theme-pascal .rambling-directionNav a {
 	display:none;
 }
 
-.theme-pascal .nivo-caption {
+.theme-pascal .rambling-caption {
     bottom:40%;
     left:auto;
     right:0px;
@@ -79,14 +78,14 @@ Author URI: http://dev7studios.com
     font-family: arial, serif;
     color:#4c4b4b;
 }
-.theme-pascal .nivo-caption p {
+.theme-pascal .rambling-caption p {
     padding:5px 15px;
     color:#333;
     font-weight:bold;
     font-size:27px;
     text-transform:uppercase;
 }
-.theme-pascal .nivo-caption a { 
+.theme-pascal .rambling-caption a {
     color:#333;
     font-weight:bold;
     font-size:27px;

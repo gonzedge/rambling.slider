@@ -1,26 +1,27 @@
 /*
- * jQuery Nivo Slider v2.6
- * http://nivo.dev7studios.com
+ * jQuery Rambling Slider
+ * http://github.com/egonzalez0787/rambling.slider
  *
- * Copyright 2011, Gilbert Pellegrom
- * Free to use and abuse under the MIT license.
+ * Copyright 2011, Rambling Labs
+ * Released under the MIT license.
  * http://www.opensource.org/licenses/mit-license.php
- * 
- * March 2010
+ *
+ * October 2011
+ *
+ * Based on jQuery Nivo Slider by Gilbert Pellegrom
  */
- 
- 
-/* The Nivo Slider styles */
-.nivoSlider {
+
+/* The Rambling Slider styles */
+.ramblingSlider {
 	position:relative;
 }
-.nivoSlider img {
+.ramblingSlider img {
 	position:absolute;
 	top:0px;
 	left:0px;
 }
 /* If an image is wrapped in a link */
-.nivoSlider a.nivo-imageLink {
+.ramblingSlider a.rambling-imageLink {
 	position:absolute;
 	top:0px;
 	left:0px;
@@ -33,19 +34,19 @@
 	display:none;
 }
 /* The slices and boxes in the Slider */
-.nivo-slice {
+.rambling-slice {
 	display:block;
 	position:absolute;
 	z-index:5;
 	height:100%;
 }
-.nivo-box {
+.rambling-box {
 	display:block;
 	position:absolute;
 	z-index:5;
 }
 /* Caption styles */
-.nivo-caption {
+.rambling-caption {
 	position:absolute;
 	left:0px;
 	bottom:0px;
@@ -55,36 +56,36 @@
 	width:100%;
 	z-index:8;
 }
-.nivo-caption p {
+.rambling-caption p {
 	padding:5px;
 	margin:0;
 }
-.nivo-caption a {
+.rambling-caption a {
 	display:inline !important;
 }
-.nivo-html-caption {
+.rambling-html-caption {
     display:none;
 }
 /* Direction nav styles (e.g. Next & Prev) */
-.nivo-directionNav a {
+.rambling-directionNav a {
 	position:absolute;
 	top:45%;
 	z-index:9;
 	cursor:pointer;
 }
-.nivo-prevNav {
+.rambling-prevNav {
 	left:0px;
 }
-.nivo-nextNav {
+.rambling-nextNav {
 	right:0px;
 }
 /* Control nav styles (e.g. 1,2,3...) */
-.nivo-controlNav a {
+.rambling-controlNav a {
 	position:relative;
 	z-index:9;
 	cursor:pointer;
 }
-.nivo-controlNav a.active {
+.rambling-controlNav a.active {
 	font-weight:bold;
 }
 
@@ -105,15 +106,15 @@
     left: auto;
 }
 
-.adaptingSlider .nivo-box span,
-.adaptingSlider .nivo-slice span {
+.adaptingSlider .rambling-box span,
+.adaptingSlider .rambling-slice span {
     position: relative;
     display: block;
     height: 100%;
 }
 
-.adaptingSlider .nivo-box img,
-.adaptingSlider .nivo-slice img {
+.adaptingSlider .rambling-box img,
+.adaptingSlider .rambling-slice img {
     display: block;
     position: absolute;
     right: 0;
