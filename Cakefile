@@ -21,8 +21,6 @@ task 'build', 'Build the jquery.rambling.slider files', (options) ->
       log 'Detected production build'
       invoke 'minify'
 
-
-
 task 'minify', 'Minify the generate jquery.rambling.slider files', ->
   log 'Minifying the generated js files'
   exec 'java -jar "/media/d/tools/yuicompressor/yuicompressor-2.4.6.jar" lib/jquery.rambling.slider.js -o lib/jquery.rambling.slider.min.js',

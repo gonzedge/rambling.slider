@@ -372,7 +372,7 @@
         do (i) ->
           sliceWidth = Math.round(slider.width() / settings.slices)
           animationContainer = slider
-          animationContainer = slider.find('#rambling-animation')
+          animationContainer = slider.find('#rambling-animation') if settings.adaptImages
           animationContainer.append(functions.getRamblingSlice(sliceWidth, i, settings.slices, vars))
 
     ###
@@ -387,7 +387,7 @@
           for cols in [0..(settings.boxCols - 1)]
             do (cols) ->
               animationContainer = slider
-              animationContainer = slider.find('#rambling-animation')
+              animationContainer = slider.find('#rambling-animation') if settings.adaptImages
               animationContainer.append(functions.getRamblingBox(boxWidth, boxHeight, rows, cols, settings, vars))
 
     ###
@@ -681,7 +681,7 @@
           j = parseInt(Math.random() * i)
           x = arr[--i]
           arr[i] = arr[j]
-          arr[j] = j
+          arr[j] = x
       arr
 
     ###
