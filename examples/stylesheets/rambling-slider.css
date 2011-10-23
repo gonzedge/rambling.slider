@@ -89,14 +89,17 @@
 	font-weight:bold;
 }
 
-#slider.adaptingSlider {
-    overflow: hidden;
-}
-
 .adaptingSlider img.currentImage {
     display: block;
     width: 100%;
     position: absolute;
+}
+
+.adaptingSlider #rambling-animation {
+    position: absolute;
+    overflow: hidden;
+    top: 0;
+    left: 0;
 }
 
 .adaptingSlider img.currentImage.alignBottom {

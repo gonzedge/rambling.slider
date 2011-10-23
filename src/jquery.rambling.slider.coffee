@@ -83,7 +83,7 @@
           currentImage = $ '<img src="" alt="currentImage" class="currentImage"/>'
           currentImage.addClass alignment
           currentImage.css display: 'block'
-          slider.prepend currentImage
+          slider.find('#rambling-animation').prepend currentImage
 
         currentImage.attr src: image.attr('src'), alt: image.attr('alt')
 
@@ -147,11 +147,16 @@
     slider.data 'rambling:vars', vars
     slider.css position: 'relative'
     slider.addClass 'ramblingSlider'
+    if settings.adaptImages
+      ramblingAnimationContainer = $ '<div id="rambling-animation"></div>'
+      ramblingAnimationContainer.css width: slider.width(), height: slider.height(), overflow: 'hidden'
+      slider.prepend ramblingAnimationContainer
+      slider.addClass 'adaptingSlider'
 
     ###
     Find our slider children
     ###
-    kids = slider.children()
+    kids = slider.children ':not(#rambling-animation)'
     kids.each ->
       child = $ this
       link = ''
@@ -366,7 +371,9 @@
       for i in [0..(settings.slices - 1)]
         do (i) ->
           sliceWidth = Math.round(slider.width() / settings.slices)
-          slider.append(functions.getRamblingSlice(sliceWidth, i, settings.slices, vars))
+          animationContainer = slider
+          animationContainer = slider.find('#rambling-animation')
+          animationContainer.append(functions.getRamblingSlice(sliceWidth, i, settings.slices, vars))
 
     ###
     Add boxes for box animations
@@ -379,7 +386,9 @@
         do (rows) ->
           for cols in [0..(settings.boxCols - 1)]
             do (cols) ->
-              slider.append(functions.getRamblingBox(boxWidth, boxHeight, rows, cols, settings, vars))
+              animationContainer = slider
+              animationContainer = slider.find('#rambling-animation')
+              animationContainer.append(functions.getRamblingBox(boxWidth, boxHeight, rows, cols, settings, vars))
 
     ###
     Private run method
