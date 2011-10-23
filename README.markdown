@@ -3,7 +3,7 @@
 The jQuery Rambling Slider is a CoffeeScript improved modified version of the [jQuery Nivo Slider](http://github.com/gilbitron/Nivo-Slider) by Gilbert Pellegrom, which is "The Most Awesome jQuery Image Slider".
 It includes some new options to give the slider the ability to adapt different image sizes.
 
-You can find more about it on [my blog](http://ramblinglabs.com)
+You can find more about it on [my blog](http://ramblinglabs.com).
 
 ## How to use the jQuery Rambling Slider
 
@@ -12,7 +12,15 @@ The compiled JavaScript files, both for development and production, are in the l
 ### Examples
 
 There are usage examples available in the examples/ directory.
-You might want to see both "examples/default.html" and "examples/adaptive.html"
+You might want to see both "examples/default.html" and "examples/adaptive.html".
+
+## Features
+
+Among others, the new features added on top of the Nivo Slider include:
+
+* <code>adaptImages</code>. __Default value:__ <code>false</code>. __Description:__ When set to <code>true</code>, uses images instead of backgrounds for the animations, and scales the images to the maximum dimension available.
+* <code>useLargerImage</code>. __Default value:__ <code>true</code>. __Description:__ When set to <code>true</code>, uses the larger image dimensions as the maximum dimension available. Otherwise, it uses the slider width as the maximum available.
+* <code>alignBottom</code>. __Default value:__ <code>false</code>. __Description:__ When set to <code>true</code>, aligns the bottom right corner of the scaled images with the bottom right corner of the slider. Otherwise, the images are aligned to the top left of the slider.
 
 ## CoffeeScript and Cake
 
