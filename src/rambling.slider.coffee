@@ -277,17 +277,16 @@
     if settings.controlNav
       ramblingControl = $('<div class="rambling-controlNav"></div>')
       slider.append ramblingControl
-      for i in [0..(kids.length - 1)]
-        do (i) ->
-          if settings.controlNavThumbs
-            child = kids.eq i
-            child = child.find('img:first') if not child.is('img')
-            if settings.controlNavThumbsFromRel
-              ramblingControl.append('<a class="rambling-control" rel="' + i + '"><img src="' + child.attr('rel') + '" alt="" /></a>')
-            else
-              ramblingControl.append('<a class="rambling-control" rel="' + i + '"><img src="' + child.attr('src').replace(settings.controlNavThumbsSearch, settings.controlNavThumbsReplace) + '" alt="" /></a>')
+      for i in [0..(kids.length - 1)] then do (i) ->
+        if settings.controlNavThumbs
+          child = kids.eq i
+          child = child.find('img:first') if not child.is('img')
+          if settings.controlNavThumbsFromRel
+            ramblingControl.append('<a class="rambling-control" rel="' + i + '"><img src="' + child.attr('rel') + '" alt="" /></a>')
+          else
+            ramblingControl.append('<a class="rambling-control" rel="' + i + '"><img src="' + child.attr('src').replace(settings.controlNavThumbsSearch, settings.controlNavThumbsReplace) + '" alt="" /></a>')
 
-          else ramblingControl.append('<a class="rambling-control" rel="' + i + '">' + (i + 1) + '</a>')
+        else ramblingControl.append('<a class="rambling-control" rel="' + i + '">' + (i + 1) + '</a>')
 
       ###
       Set initial active link
@@ -368,12 +367,11 @@
     Add slices for slice animations
     ###
     createSlices = (slider, settings, vars) ->
-      for i in [0..(settings.slices - 1)]
-        do (i) ->
-          sliceWidth = Math.round(slider.width() / settings.slices)
-          animationContainer = slider
-          animationContainer = slider.find('#rambling-animation') if settings.adaptImages
-          animationContainer.append(functions.getRamblingSlice(sliceWidth, i, settings.slices, vars))
+      for i in [0..(settings.slices - 1)] then do (i) ->
+        sliceWidth = Math.round(slider.width() / settings.slices)
+        animationContainer = slider
+        animationContainer = slider.find('#rambling-animation') if settings.adaptImages
+        animationContainer.append(functions.getRamblingSlice(sliceWidth, i, settings.slices, vars))
 
     ###
     Add boxes for box animations
@@ -382,13 +380,11 @@
       boxWidth = Math.round(slider.width() / settings.boxCols)
       boxHeight = Math.round(slider.height() / settings.boxRows)
 
-      for rows in [0..(settings.boxRows - 1)]
-        do (rows) ->
-          for cols in [0..(settings.boxCols - 1)]
-            do (cols) ->
-              animationContainer = slider
-              animationContainer = slider.find('#rambling-animation') if settings.adaptImages
-              animationContainer.append(functions.getRamblingBox(boxWidth, boxHeight, rows, cols, settings, vars))
+      for rows in [0..(settings.boxRows - 1)] then do (rows) ->
+        for cols in [0..(settings.boxCols - 1)] then do (cols) ->
+          animationContainer = slider
+          animationContainer = slider.find('#rambling-animation') if settings.adaptImages
+          animationContainer.append(functions.getRamblingBox(boxWidth, boxHeight, rows, cols, settings, vars))
 
     ###
     Private run method
@@ -648,29 +644,27 @@
         ###
         Run animation
         ###
-        for cols in [0..(settings.boxCols * 2 - 1)]
-          do (cols) ->
-            prevCol = cols
-            for rows in [0..(settings.boxRows - 1)]
-              do (rows) ->
-                if prevCol >= 0 and prevCol < settings.boxCols
-                  ((row, col, time, i, totalBoxes) ->
-                    box = $(box2Darr[row][col])
-                    w = box.width()
-                    h = box.height()
-                    if settings.effect is 'boxRainGrow' or vars.randAnim is 'boxRainGrow' or settings.effect is 'boxRainGrowReverse' or vars.randAnim is 'boxRainGrowReverse'
-                      box.width(0).height(0)
-                    if i is totalBoxes - 1
-                      setTimeout (-> box.animate({ opacity:'1', width:w, height:h }, settings.animSpeed / 1.3, '', -> slider.trigger('rambling:animFinished'))),
-                        100 + time
-                    else
-                      setTimeout (-> box.animate({ opacity:'1', width:w, height:h }, settings.animSpeed / 1.3)), 100 + time
-                  )(rows, prevCol, timeBuff, i, totalBoxes)
-                  i++
+        for cols in [0..(settings.boxCols * 2 - 1)] then do (cols) ->
+          prevCol = cols
+          for rows in [0..(settings.boxRows - 1)] then do (rows) ->
+            if prevCol >= 0 and prevCol < settings.boxCols
+              ((row, col, time, i, totalBoxes) ->
+                box = $(box2Darr[row][col])
+                w = box.width()
+                h = box.height()
+                if settings.effect is 'boxRainGrow' or vars.randAnim is 'boxRainGrow' or settings.effect is 'boxRainGrowReverse' or vars.randAnim is 'boxRainGrowReverse'
+                  box.width(0).height(0)
+                if i is totalBoxes - 1
+                  setTimeout (-> box.animate({ opacity:'1', width:w, height:h }, settings.animSpeed / 1.3, '', -> slider.trigger('rambling:animFinished'))),
+                    100 + time
+                else
+                  setTimeout (-> box.animate({ opacity:'1', width:w, height:h }, settings.animSpeed / 1.3)), 100 + time
+              )(rows, prevCol, timeBuff, i, totalBoxes)
+              i++
 
-                prevCol--
+            prevCol--
 
-            timeBuff += 100
+          timeBuff += 100
 
     ###
     For debugging
