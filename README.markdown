@@ -42,6 +42,20 @@ If you want to minify the existing js:
 
 <code>cake minify</code>
 
+### Unit testing
+
+If you want to run the unit tests, you'll need to install <code>jasmine-node</code>. It's easily installed with:
+
+<code>npm install -g jasmine-node</code>
+
+To run all the tests, you can run:
+
+<code>jasmine-node --coffee spec/</code>
+
+Or simply:
+
+<code>cake spec</code>
+
 ## License and copyright
 
 Copyright (c) 2011 Edgar Gonzalez

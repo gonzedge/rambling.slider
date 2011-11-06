@@ -7,9 +7,9 @@ class BuildUtils
     console.log string.as_console_message()
 
   error_handler: (err, stdout, stderr) ->
-    throw err if err
     console.log stdout if stdout
     console.log stderr if stderr
+    throw err if err
 
   process: (content, callback) ->
     self = @
@@ -35,7 +35,7 @@ class BuildUtils
       content = new Array()
 
       for file, index in files then do (file, index) ->
-        if file.indexOf('.') isnt 0
+        unless file.indexOf('.') is 0
           fs.readFile "./src/#{file}", 'utf8', (err, fileContent) ->
             self.error_handler err
             content[content.length] = fileContent
@@ -59,3 +59,9 @@ task 'minify', 'Minify the generate jquery.rambling.slider files', ->
     (err, stdout, stderr) ->
       utils.error_handler err, stdout, stderr
       utils.log 'Done'
+
+task 'spec', 'Run all specs', ->
+  utils.log 'Running specs...'
+  exec 'jasmine-node --coffee spec/', (err, stdout, stderr) ->
+    utils.error_handler err, stdout, stderr
+    utils.log 'Done' unless err
