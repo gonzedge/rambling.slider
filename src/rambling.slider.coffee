@@ -476,7 +476,7 @@
         timeBuff = 0
         i = 0
         slices = $('.rambling-slice', slider)
-        slices = $('.rambling-slice', slider)._reverse() if settings.effect is 'sliceDownLeft' or vars.randAnim is 'sliceDownLeft'
+        slices = $('.rambling-slice', slider).reverse() if settings.effect is 'sliceDownLeft' or vars.randAnim is 'sliceDownLeft'
 
         slices.each ->
           slice = $ this
@@ -496,7 +496,7 @@
         timeBuff = 0
         i = 0
         slices = $('.rambling-slice', slider)
-        slices = $('.rambling-slice', slider)._reverse() if settings.effect is 'sliceUpLeft' or vars.randAnim is 'sliceUpLeft'
+        slices = $('.rambling-slice', slider).reverse() if settings.effect is 'sliceUpLeft' or vars.randAnim is 'sliceUpLeft'
 
         slices.each ->
           slice = $(this)
@@ -515,7 +515,7 @@
         i = 0
         v = 0
         slices = $('.rambling-slice', slider)
-        slices = $('.rambling-slice', slider)._reverse() if settings.effect is 'sliceUpDownLeft' or vars.randAnim is 'sliceUpDownLeft'
+        slices = $('.rambling-slice', slider).reverse() if settings.effect is 'sliceUpDownLeft' or vars.randAnim is 'sliceUpDownLeft'
 
         slices.each ->
           slice = $ this
@@ -607,7 +607,7 @@
         i = 0
         timeBuff = 0
 
-        boxes = shuffle($('.rambling-box', slider))
+        boxes = $('.rambling-box', slider).shuffle()
         boxes.each ->
           box = $(this)
           if i is totalBoxes - 1
@@ -635,7 +635,7 @@
         box2Darr[rowIndex] = new Array()
         boxes = $('.rambling-box', slider)
         if settings.effect is 'boxRainReverse' or vars.randAnim is 'boxRainReverse' or settings.effect is 'boxRainGrowReverse' or vars.randAnim is 'boxRainGrowReverse'
-          boxes = $('.rambling-box', slider)._reverse()
+          boxes = $('.rambling-box', slider).reverse()
 
         boxes.each ->
           box2Darr[rowIndex][colIndex] = $(this)
@@ -671,18 +671,6 @@
                 prevCol--
 
             timeBuff += 100
-
-    ###
-    Shuffle an array
-    ###
-    shuffle = (arr) ->
-      for i in [arr.length..1]
-        do (i) ->
-          j = parseInt(Math.random() * i)
-          x = arr[--i]
-          arr[i] = arr[j]
-          arr[j] = x
-      arr
 
     ###
     For debugging
@@ -761,5 +749,6 @@
     lastSlide: ->
     afterLoad: ->
 
-  $.fn._reverse = [].reverse
+  $.fn.reverse = [].reverse
+  $.fn.shuffle = [].shuffle
 )(jQuery)
