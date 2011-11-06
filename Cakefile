@@ -24,31 +24,38 @@ class BuildUtils
           self.log 'Done'
           callback()
 
+  compile: (callback) ->
+    @combine_source_files (content) ->
+      utils.process content, callback
+
+  combine_source_files: (callback) ->
+    self = @
+    fs.readdir './src', (err, files) ->
+      self.error_handler err
+      content = new Array()
+
+      for file, index in files then do (file, index) ->
+        if file.indexOf('.') isnt 0
+          fs.readFile "./src/#{file}", 'utf8', (err, fileContent) ->
+            self.error_handler err
+            content[content.length] = fileContent
+
+            if index is files.length - 1
+              callback content
+
 utils = new BuildUtils
 
 option '-e', '--environment [ENVIRONMENT_NAME]', 'set the environment for `build`'
 task 'build', 'Build the jquery.rambling.slider files', (options) ->
   options.environment or= 'development'
-
-  fs.readdir './src', (err, files) ->
-    utils.error_handler err
-    content = new Array()
-
-    for file, index in files then do (file, index) ->
-      if file.indexOf('.') isnt 0
-        fs.readFile "./src/#{file}", 'utf8', (err, fileContent) ->
-          utils.error_handler err
-          content[content.length] = fileContent
-
-          if index is files.length - 1
-            utils.process content, ->
-              if options.environment is 'production'
-                utils.log 'Detected production build'
-                invoke 'minify'
+  utils.compile ->
+    if options.environment is 'production'
+      utils.log 'Detected production build'
+      invoke 'minify'
 
 task 'minify', 'Minify the generate jquery.rambling.slider files', ->
   utils.log 'Minifying the generated js files'
-  exec 'java -jar "/media/d/tools/yuicompressor/yuicompressor-2.4.6.jar" lib/jquery.rambling.slider.js -o lib/jquery.rambling.slider.min.js',
+  exec 'java -jar "build/yuicompressor/yuicompressor-2.4.6.jar" lib/jquery.rambling.slider.js -o lib/jquery.rambling.slider.min.js',
     (err, stdout, stderr) ->
       utils.error_handler err, stdout, stderr
       utils.log 'Done'
