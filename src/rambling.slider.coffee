@@ -462,6 +462,8 @@
           'sliceUpDownLeft',
           'fold',
           'fade',
+          'slideInRight',
+          'slideInLeft',
           'boxRandom',
           'boxRain',
           'boxRainReverse',
@@ -591,75 +593,63 @@
           current_effect_options.callback(firstSlice) if current_effect_options.callback
           slider.trigger 'rambling:animFinished'
 
-      else if current_effect is 'boxRandom'
+      else if current_effect.contains('box')
         createBoxes slider, settings, vars
 
         totalBoxes = settings.boxCols * settings.boxRows
         i = 0
         timeBuff = 0
 
-        boxes = slider.find('.rambling-box').shuffle()
-        boxes.each ->
-          box = $ @
-          if i is totalBoxes - 1
-            setTimeout (-> box.animate({ opacity:'1' }, settings.animSpeed, '', -> slider.trigger('rambling:animFinished'))),
-             100 + timeBuff
-          else
-            setTimeout (-> box.animate({ opacity:'1' }, settings.animSpeed)), 100 + timeBuff
-
-          timeBuff += 20
-          i++
-
-      else if ['boxRain', 'boxRainReverse', 'boxRainGrow', 'boxRainGrowReverse'].contains current_effect
-        createBoxes slider, settings, vars
-
-        totalBoxes = settings.boxCols * settings.boxRows
-        i = 0
-        timeBuff = 0
-
-        ###
-        Split boxes into 2D array
-        ###
-        rowIndex = 0
-        colIndex = 0
-        box2Darr = new Array()
-        box2Darr[rowIndex] = new Array()
         boxes = slider.find '.rambling-box'
-        if current_effect is 'boxRainReverse' or current_effect is 'boxRainGrowReverse'
-          boxes = boxes.reverse()
+        boxes = boxes.reverse() if current_effect.contains('Reverse')
 
-        boxes.each ->
-          box2Darr[rowIndex][colIndex] = $ @
-          colIndex++
-          if colIndex is settings.boxCols
-            rowIndex++
-            colIndex = 0
-            box2Darr[rowIndex] = new Array()
-
-        ###
-        Run animation
-        ###
-        for cols in [0...(settings.boxCols * 2)] then do (cols) ->
-          prevCol = cols
-          for rows in [0...settings.boxRows] then do (rows) ->
-            if prevCol >= 0 and prevCol < settings.boxCols
-              ((row, col, time, i, totalBoxes) ->
-                box = $(box2Darr[row][col])
-                w = box.width()
-                h = box.height()
-                if current_effect is 'boxRainGrow' or current_effect is 'boxRainGrowReverse'
-                  box.width(0).height(0)
+        animation_callbacks =
+          random:
+            beforeAnimation: ->
+              boxes = boxes.shuffle()
+            animate: (boxes) ->
+              boxes.each ->
+                box = $ @
                 if i is totalBoxes - 1
-                  setTimeout (-> box.animate { opacity:'1', width:w, height:h }, settings.animSpeed / 1.3, '', -> slider.trigger 'rambling:animFinished'),
-                    100 + time
+                  setTimeout (-> box.animate { opacity:'1' }, settings.animSpeed, '', -> slider.trigger 'rambling:animFinished'),
+                   100 + timeBuff
                 else
-                  setTimeout (-> box.animate { opacity:'1', width:w, height:h }, settings.animSpeed / 1.3), 100 + time
-              )(rows, prevCol, timeBuff, i, totalBoxes)
-              i++
+                  setTimeout (-> box.animate { opacity:'1' }, settings.animSpeed), 100 + timeBuff
 
-            prevCol--
+                timeBuff += 20
+                i++
+          rain:
+            beforeAnimation: ->
+              boxes = boxes.as2dArray settings.boxCols
+            animate: (boxes) ->
+              for cols in [0...(settings.boxCols * 2)] then do (cols) ->
+                prevCol = cols
+                for rows in [0...settings.boxRows] then do (rows) ->
+                  if prevCol >= 0 and prevCol < settings.boxCols
+                    row = rows
+                    col = prevCol
+                    time = timeBuff
+                    box = $ boxes[row][col]
+                    w = box.width()
+                    h = box.height()
+                    if current_effect.contains('Grow')
+                      box.css width: 0, height: 0
+                    if i is totalBoxes - 1
+                      setTimeout (-> box.animate { opacity:'1', width:w, height:h }, settings.animSpeed / 1.3, '', -> slider.trigger 'rambling:animFinished'),
+                        100 + time
+                    else
+                      setTimeout (-> box.animate { opacity:'1', width:w, height:h }, settings.animSpeed / 1.3), 100 + time
+                    i++
 
-          timeBuff += 100
+                  prevCol--
+
+                timeBuff += 100
+
+        current_animation = current_effect.replace(/box/, '').replace(/Grow/, '').replace(/Reverse/, '').decapitalize()
+        callbacks = animation_callbacks[current_animation]
+
+        callbacks.beforeAnimation()
+        callbacks.animate boxes
 
     ###
     For debugging
@@ -740,4 +730,20 @@
 
   $.fn.reverse = [].reverse
   $.fn.shuffle = [].shuffle
+  $.fn.as2dArray = (totalColumns) ->
+    rowIndex = 0
+    colIndex = 0
+    array_2d = $ ''
+    array_2d[rowIndex] = $ ''
+
+    @each ->
+      array_2d[rowIndex][colIndex] = $ @
+      colIndex++
+      if colIndex is totalColumns
+        rowIndex++
+        colIndex = 0
+        array_2d[rowIndex] = $ ''
+
+    array_2d
+
 )(jQuery)
