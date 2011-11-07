@@ -10,16 +10,61 @@
  *
  * Based on jQuery Nivo Slider by Gilbert Pellegrom
 ###
-(($) ->
-  RamblingSlider = (element, options) ->
-    ###
-    Defaults are below
-    ###
-    settings = $.extend {}, $.fn.ramblingSlider.defaults, options
 
-    ###
-    Useful variables. Play carefully.
-    ###
+(($) ->
+
+  methods = ['stop', 'start']
+
+  $.fn.ramblingSlider = (options) ->
+    @each (key, value) ->
+      element = $ @
+
+      ramblingSlider = element.data 'ramblingSlider'
+
+      if methods.contains(options) and ramblingSlider
+        ramblingSlider[options]()
+
+      return ramblingSlider if ramblingSlider
+
+      ramblingSlider = new RamblingSlider @, options
+      element.data 'ramblingSlider', ramblingSlider
+
+  ###
+  Default settings
+  ###
+  $.fn.ramblingSlider.defaults =
+    effect: 'random'
+    slices: 15
+    boxCols: 8
+    boxRows: 4
+    animSpeed: 500
+    pauseTime: 3000
+    startSlide: 0
+    directionNav: true
+    directionNavHide: true
+    controlNav: true
+    controlNavThumbs: false
+    controlNavThumbsFromRel: false
+    controlNavThumbsSearch: '.jpg'
+    controlNavThumbsReplace: '_thumb.jpg'
+    adaptImages: false
+    useLargerImage: true
+    alignBottom: false
+    keyboardNav: true
+    pauseOnHover: true
+    manualAdvance: false
+    captionOpacity: 0.8
+    prevText: 'Prev'
+    nextText: 'Next'
+    beforeChange: ->
+    afterChange: ->
+    slideshowEnd: ->
+    lastSlide: ->
+    afterLoad: ->
+
+  RamblingSlider = (element, options) ->
+    timer = 0
+    settings = $.extend {}, $.fn.ramblingSlider.defaults, options
     vars =
       currentSlide: 0
       currentImage: ''
@@ -28,6 +73,83 @@
       running: false
       paused: false
       stop: false
+    anims = [
+      'sliceDownRight',
+      'sliceDownLeft',
+      'sliceUpRight',
+      'sliceUpLeft',
+      'sliceUpDown',
+      'sliceUpDownLeft',
+      'fold',
+      'foldLeft',
+      'fade',
+      'slideInRight',
+      'slideInLeft',
+      'boxRandom',
+      'boxRain',
+      'boxRainReverse',
+      'boxRainGrow',
+      'boxRainGrowReverse'
+    ]
+
+    @stop = ->
+      $element = $ element
+      unless $element.data('rambling:vars').stop
+        $element.data('rambling:vars').stop = true
+        trace 'Stop Slider'
+
+    @start = ->
+      $element = $ element
+      if $element.data('rambling:vars').stop
+        $element.data('rambling:vars').stop = false
+        trace 'Start Slider'
+
+    ###
+    For debugging purposes
+    ###
+    trace = (msg) -> console.log(msg) if @console and console and console.log
+
+    processCaption = (settings) ->
+      ramblingCaption = slider.find '.rambling-caption'
+      title = vars.currentImage.attr('title')
+      if title? and title isnt ''
+        title = $(title).html() if title.substr(0, 1) is '#'
+
+        if ramblingCaption.css('display') is 'block'
+          ramblingCaption.find('p').fadeOut settings.animSpeed, ->
+            $(@).html title
+            $(@).fadeIn settings.animSpeed
+        else ramblingCaption.find('p').html title
+
+        ramblingCaption.fadeIn settings.animSpeed
+      else ramblingCaption.fadeOut settings.animSpeed
+
+    setCurrentImage = (kids) ->
+      kid = $ kids[vars.currentSlide]
+      vars.currentImage = kid
+      vars.currentImage = kid.find('img:first') unless kid.is 'img'
+      kid
+
+    clearTimer = ->
+      clearInterval timer
+      timer = ''
+
+    createSlices = (slider, settings, vars) ->
+      for i in [0...settings.slices] then do (i) ->
+        sliceWidth = Math.round(slider.width() / settings.slices)
+        animationContainer = slider
+        animationContainer = slider.find('#rambling-animation') if settings.adaptImages
+        animationContainer.append(functions.getRamblingSlice(sliceWidth, i, settings.slices, vars))
+
+    createBoxes = (slider, settings, vars) ->
+      boxWidth = Math.round(slider.width() / settings.boxCols)
+      boxHeight = Math.round(slider.height() / settings.boxRows)
+
+      for rows in [0...settings.boxRows] then do (rows) ->
+        for cols in [0...settings.boxCols] then do (cols) ->
+          animationContainer = slider
+          animationContainer = slider.find('#rambling-animation') if settings.adaptImages
+          animationContainer.append(functions.getRamblingBox(boxWidth, boxHeight, rows, cols, settings, vars))
 
     ###
     Additional stuff for adapt images
@@ -187,16 +309,13 @@
     ###
     Set startSlide
     ###
-    if settings.startSlide > 0
-      settings.startSlide = (vars.totalSlides - 1) if settings.startSlide >= vars.totalSlides
-      vars.currentSlide = settings.startSlide
+    settings.startSlide = settings.startSlide % vars.totalSlides
+    vars.currentSlide = settings.startSlide
 
     ###
     Get initial image
     ###
-    kid = $(kids[vars.currentSlide])
-    vars.currentImage = kid
-    vars.currentImage = kid.find('img:first') unless kid.is 'img'
+    kid = setCurrentImage kids
 
     ###
     Show initial link
@@ -214,24 +333,6 @@
     slider.append $('<div class="rambling-caption"><p></p></div>').css display:'none', opacity: settings.captionOpacity
 
     ###
-    Process caption function
-    ###
-    processCaption = (settings) ->
-      ramblingCaption = slider.find '.rambling-caption'
-      title = vars.currentImage.attr('title')
-      if title? and title isnt ''
-        title = $(title).html() if title.substr(0, 1) is '#'
-
-        if ramblingCaption.css('display') is 'block'
-          ramblingCaption.find('p').fadeOut settings.animSpeed, ->
-            $(@).html title
-            $(@).fadeIn settings.animSpeed
-        else ramblingCaption.find('p').html title
-
-        ramblingCaption.fadeIn settings.animSpeed
-      else ramblingCaption.fadeOut settings.animSpeed
-
-    ###
     Process initial  caption
     ###
     processCaption settings
@@ -239,13 +340,8 @@
     ###
     In the words of Super Mario "let's a go!"
     ###
-    timer = 0
     if not settings.manualAdvance and kids.length > 1
       timer = setInterval (-> ramblingRun slider, kids, settings, false), settings.pauseTime
-
-    clearTimer = ->
-      clearInterval timer
-      timer = ''
 
     ###
     Add Direction nav
@@ -366,29 +462,6 @@
       settings.afterChange.call @
 
     ###
-    Add slices for slice animations
-    ###
-    createSlices = (slider, settings, vars) ->
-      for i in [0...settings.slices] then do (i) ->
-        sliceWidth = Math.round(slider.width() / settings.slices)
-        animationContainer = slider
-        animationContainer = slider.find('#rambling-animation') if settings.adaptImages
-        animationContainer.append(functions.getRamblingSlice(sliceWidth, i, settings.slices, vars))
-
-    ###
-    Add boxes for box animations
-    ###
-    createBoxes = (slider, settings, vars) ->
-      boxWidth = Math.round(slider.width() / settings.boxCols)
-      boxHeight = Math.round(slider.height() / settings.boxRows)
-
-      for rows in [0...settings.boxRows] then do (rows) ->
-        for cols in [0...settings.boxCols] then do (cols) ->
-          animationContainer = slider
-          animationContainer = slider.find('#rambling-animation') if settings.adaptImages
-          animationContainer.append(functions.getRamblingBox(boxWidth, boxHeight, rows, cols, settings, vars))
-
-    ###
     Private run method
     ###
     ramblingRun = (slider, kids, settings, nudge) ->
@@ -424,9 +497,7 @@
       ###
       Set vars.currentImage
       ###
-      kid = $(kids[vars.currentSlide])
-      vars.currentImage = kid
-      vars.currentImage = kid.find('img:first') unless kid.is 'img'
+      setCurrentImage kids
 
       ###
       Set active links
@@ -442,35 +513,12 @@
       processCaption settings
 
       ###
-      Remove any slices from last transition
+      Remove any slices and boxes from last transition
       ###
       slider.find('.rambling-slice').remove()
-
-      ###
-      Remove any boxes from last transition
-      ###
       slider.find('.rambling-box').remove()
 
       if settings.effect is 'random'
-        anims = [
-          'sliceDownRight',
-          'sliceDownLeft',
-          'sliceUpRight',
-          'sliceUpLeft',
-          'sliceUpDown',
-          'sliceUpDownLeft',
-          'fold',
-          'foldLeft',
-          'fade',
-          'slideInRight',
-          'slideInLeft',
-          'boxRandom',
-          'boxRain',
-          'boxRainReverse',
-          'boxRainGrow',
-          'boxRainGrowReverse'
-        ]
-
         vars.randAnim = anims[Math.floor(Math.random() * (anims.length + 1))]
         vars.randAnim = 'fade' unless vars.randAnim
 
@@ -653,86 +701,9 @@
         callbacks.animate boxes
 
     ###
-    For debugging
-    ###
-    trace = (msg) ->
-      console.log(msg) if @console and console and console.log
-
-    ###
-    Start / Stop
-    ###
-    @stop = ->
-      $element = $ element
-      unless $element.data('rambling:vars').stop
-        $element.data('rambling:vars').stop = true
-        trace 'Stop Slider'
-
-    @start = ->
-      $element = $ element
-      if $element.data('rambling:vars').stop
-        $element.data('rambling:vars').stop = false
-        trace 'Start Slider'
-
-    ###
     Trigger the afterLoad callback
     ###
     settings.afterLoad.call @
 
     @
-
-  methods = ['stop', 'start']
-
-  $.fn.ramblingSlider = (options) ->
-    @each (key, value) ->
-      element = $ @
-
-      ramblingSlider = element.data 'ramblingSlider'
-
-      if methods.contains(options) and ramblingSlider
-        ramblingSlider[options]()
-      ###
-      Return early if this element already has a plugin instance
-      ###
-      return ramblingSlider if ramblingSlider
-      ###
-      Pass options to plugin constructor
-      ###
-      ramblingSlider = new RamblingSlider(@, options)
-      ###
-      Store plugin object in this element's data
-      ###
-      element.data('ramblingSlider', ramblingSlider)
-
-  ###
-  Default settings
-  ###
-  $.fn.ramblingSlider.defaults =
-    effect: 'random'
-    slices: 15
-    boxCols: 8
-    boxRows: 4
-    animSpeed: 500
-    pauseTime: 3000
-    startSlide: 0
-    directionNav: true
-    directionNavHide: true
-    controlNav: true
-    controlNavThumbs: false
-    controlNavThumbsFromRel: false
-    controlNavThumbsSearch: '.jpg'
-    controlNavThumbsReplace: '_thumb.jpg'
-    adaptImages: false
-    useLargerImage: true
-    alignBottom: false
-    keyboardNav: true
-    pauseOnHover: true
-    manualAdvance: false
-    captionOpacity: 0.8
-    prevText: 'Prev'
-    nextText: 'Next'
-    beforeChange: ->
-    afterChange: ->
-    slideshowEnd: ->
-    lastSlide: ->
-    afterLoad: ->
 )(jQuery)
