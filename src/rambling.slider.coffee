@@ -79,7 +79,7 @@
 
         unless currentImage.length
           alignment = 'alignTop'
-          alignment = 'alignBottom'if settings.alignBottom
+          alignment = 'alignBottom' if settings.alignBottom
           currentImage = $ '<img src="" alt="currentImage" class="currentImage"/>'
           currentImage.addClass alignment
           currentImage.css display: 'block'
@@ -179,7 +179,7 @@
       ###
       slider.width childWidth if childWidth > slider.width() and settings.useLargerImage
       slider.height(childHeight) if childHeight > slider.height() and (settings.useLargerImage or not settings.adaptImages)
-      link.css(display: 'none') if link isnt ''
+      link.css(display: 'none') unless link is ''
 
       child.css display: 'none'
       vars.totalSlides++
@@ -194,15 +194,14 @@
     ###
     Get initial image
     ###
-    if $(kids[vars.currentSlide]).is('img')
-      vars.currentImage = $ kids[vars.currentSlide]
-    else
-      vars.currentImage = $(kids[vars.currentSlide]).find 'img:first'
+    kid = $(kids[vars.currentSlide])
+    vars.currentImage = kid
+    vars.currentImage = kid.find('img:first') unless kid.is 'img'
 
     ###
     Show initial link
     ###
-    $(kids[vars.currentSlide]).css('display', 'block') if $(kids[vars.currentSlide]).is('a')
+    kid.css(display: 'block') if kid.is 'a'
 
     ###
     Set first background
@@ -212,7 +211,7 @@
     ###
     Create caption
     ###
-    slider.append $('<div class="rambling-caption"><p></p></div>').css(display:'none', opacity: settings.captionOpacity)
+    slider.append $('<div class="rambling-caption"><p></p></div>').css display:'none', opacity: settings.captionOpacity
 
     ###
     Process caption function
@@ -224,10 +223,9 @@
         title = $(title).html() if title.substr(0, 1) is '#'
 
         if ramblingCaption.css('display') is 'block'
-          ramblingCaption.find('p').fadeOut(settings.animSpeed, ->
+          ramblingCaption.find('p').fadeOut settings.animSpeed, ->
             $(@).html title
             $(@).fadeIn settings.animSpeed
-          )
         else ramblingCaption.find('p').html title
 
         ramblingCaption.fadeIn settings.animSpeed
@@ -243,7 +241,7 @@
     ###
     timer = 0
     if not settings.manualAdvance and kids.length > 1
-      timer = setInterval (-> ramblingRun(slider, kids, settings, false)), settings.pauseTime
+      timer = setInterval (-> ramblingRun slider, kids, settings, false), settings.pauseTime
 
     clearTimer = ->
       clearInterval timer
@@ -253,7 +251,7 @@
     Add Direction nav
     ###
     if settings.directionNav
-      slider.append("<div class='rambling-directionNav'><a class='rambling-prevNav'>#{settings.prevText}</a><a class='rambling-nextNav'>#{settings.nextText}</a></div>")
+      slider.append "<div class='rambling-directionNav'><a class='rambling-prevNav'>#{settings.prevText}</a><a class='rambling-nextNav'>#{settings.nextText}</a></div>"
 
       ###
       Hide Direction nav
@@ -267,27 +265,27 @@
         return false if vars.running
         clearTimer()
         vars.currentSlide -= 2
-        ramblingRun(slider, kids, settings, direction)
+        ramblingRun slider, kids, settings, direction
 
-      slider.find('a.rambling-prevNav').live 'click', -> liveWith('prev')
-      slider.find('a.rambling-nextNav').live 'click', -> liveWith('next')
+      slider.find('a.rambling-prevNav').live 'click', -> liveWith 'prev'
+      slider.find('a.rambling-nextNav').live 'click', -> liveWith 'next'
 
     ###
     Add Control nav
     ###
     if settings.controlNav
-      ramblingControl = $('<div class="rambling-controlNav"></div>')
+      ramblingControl = $ '<div class="rambling-controlNav"></div>'
       slider.append ramblingControl
       for i in [0...kids.length] then do (i) ->
         if settings.controlNavThumbs
           child = kids.eq i
-          child = child.find('img:first') unless child.is('img')
+          child = child.find('img:first') unless child.is 'img'
           if settings.controlNavThumbsFromRel
-            ramblingControl.append("<a class='rambling-control' rel='#{i}'><img src='#{child.attr('rel')}' alt='' /></a>")
+            ramblingControl.append "<a class='rambling-control' rel='#{i}'><img src='#{child.attr('rel')}' alt='' /></a>"
           else
-            ramblingControl.append("<a class='rambling-control' rel='#{i}'><img src='#{child.attr('src').replace(settings.controlNavThumbsSearch, settings.controlNavThumbsReplace)}' alt='' /></a>")
+            ramblingControl.append "<a class='rambling-control' rel='#{i}'><img src='#{child.attr('src').replace(settings.controlNavThumbsSearch, settings.controlNavThumbsReplace)}' alt='' /></a>"
 
-        else ramblingControl.append("<a class='rambling-control' rel='#{i}'>#{i + 1}'</a>")
+        else ramblingControl.append "<a class='rambling-control' rel='#{i}'>#{i + 1}'</a>"
 
       ###
       Set initial active link
@@ -315,14 +313,14 @@
           return false if vars.running
           clearTimer()
           vars.currentSlide -= 2
-          ramblingRun(slider, kids, settings, 'prev')
+          ramblingRun slider, kids, settings, 'prev'
         ###
         Right
         ###
         if event.keyCode == '39'
           return false if vars.running
           clearTimer()
-          ramblingRun(slider, kids, settings, 'next')
+          ramblingRun slider, kids, settings, 'next'
 
     ###
     For pauseOnHover setting
@@ -335,7 +333,7 @@
         vars.paused = false
         #Restart the timer
         if timer is '' and not settings.manualAdvance
-          timer = setInterval (-> ramblingRun(slider, kids, settings, false)), settings.pauseTime
+          timer = setInterval (-> ramblingRun slider, kids, settings, false), settings.pauseTime
 
     ###
     Event when Animation finishes
@@ -346,20 +344,22 @@
       Hide child links
       ###
       $(kids).each ->
-        if $(@).is('a')
-          $(@).css(display: 'none')
+        kid = $ @
+        if kid.is 'a'
+          kid.css display: 'none'
       ###
       Show current link
       ###
-      if $(kids[vars.currentSlide]).is('a')
-          $(kids[vars.currentSlide]).css(display: 'block')
+      kid = $(kids[vars.currentSlide])
+      if kid.is 'a'
+          kid.css display: 'block'
       ###
       Restart the timer
       ###
       if timer is '' and not vars.paused and not settings.manualAdvance
-        timer = setInterval (-> ramblingRun(slider, kids, settings, false)), settings.pauseTime
+        timer = setInterval (-> ramblingRun slider, kids, settings, false), settings.pauseTime
 
-      functions.setSliderBackground(slider, vars)
+      functions.setSliderBackground slider, vars
       ###
       Trigger the afterChange callback
       ###
@@ -424,10 +424,9 @@
       ###
       Set vars.currentImage
       ###
-      if $(kids[vars.currentSlide]).is 'img'
-        vars.currentImage = $ kids[vars.currentSlide]
-      else
-        vars.currentImage = $(kids[vars.currentSlide]).find 'img:first'
+      kid = $(kids[vars.currentSlide])
+      vars.currentImage = kid
+      vars.currentImage = kid.find('img:first') unless kid.is 'img'
 
       ###
       Set active links
@@ -461,6 +460,7 @@
           'sliceUpDown',
           'sliceUpDownLeft',
           'fold',
+          'foldLeft',
           'fade',
           'slideInRight',
           'slideInLeft',
@@ -477,7 +477,7 @@
       ###
       Run random effect from specified set (eg: effect:'fold,fade')
       ###
-      if settings.effect.indexOf(',') isnt -1
+      if settings.effect.contains(',')
         anims = settings.effect.split ','
         vars.randAnim = anims[Math.floor(Math.random() * (anims.length))]
         vars.randAnim = 'fade' unless vars.randAnim
@@ -540,7 +540,7 @@
           fold: ->
             slice = $ @
             origWidth = slice.width()
-            slice.css { top:'0px', height:'100%', width:'0px' }
+            slice.css top: '0px', height: '100%', width: '0px'
             if i is settings.slices - 1
               setTimeout (-> slice.animate { width: origWidth, opacity:'1.0' }, settings.animSpeed, '', -> slider.trigger 'rambling:animFinished'),
                 100 + timeBuff
@@ -632,13 +632,14 @@
                     box = $ boxes[row][col]
                     w = box.width()
                     h = box.height()
-                    if current_effect.contains('Grow')
-                      box.css width: 0, height: 0
+
+                    box.css(width: 0, height: 0) if current_effect.contains('Grow')
+
                     if i is totalBoxes - 1
-                      setTimeout (-> box.animate { opacity:'1', width:w, height:h }, settings.animSpeed / 1.3, '', -> slider.trigger 'rambling:animFinished'),
+                      setTimeout (-> box.animate { opacity:'1', width: w, height: h }, settings.animSpeed / 1.3, '', -> slider.trigger 'rambling:animFinished'),
                         100 + time
                     else
-                      setTimeout (-> box.animate { opacity:'1', width:w, height:h }, settings.animSpeed / 1.3), 100 + time
+                      setTimeout (-> box.animate { opacity:'1', width: w, height: h }, settings.animSpeed / 1.3), 100 + time
                     i++
 
                   prevCol--
