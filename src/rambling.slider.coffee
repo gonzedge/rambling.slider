@@ -77,7 +77,7 @@
         image = vars.currentImage
         currentImage = slider.find('.currentImage')
 
-        if not currentImage.length
+        unless currentImage.length
           alignment = 'alignTop'
           alignment = 'alignBottom'if settings.alignBottom
           currentImage = $ '<img src="" alt="currentImage" class="currentImage"/>'
@@ -160,7 +160,7 @@
     kids.each ->
       child = $ this
       link = ''
-      if not child.is('img')
+      unless child.is('img')
         if child.is('a')
           child.addClass 'rambling-imageLink'
           link = child
@@ -218,7 +218,7 @@
     Process caption function
     ###
     processCaption = (settings) ->
-      ramblingCaption = $ '.rambling-caption', slider
+      ramblingCaption = slider.find '.rambling-caption'
       title = vars.currentImage.attr('title')
       if title? and title isnt ''
         title = $(title).html() if title.substr(0, 1) is '#'
@@ -259,8 +259,9 @@
       Hide Direction nav
       ###
       if settings.directionNavHide
-        $('.rambling-directionNav', slider).hide()
-        slider.hover (-> $('.rambling-directionNav', slider).show()), (-> $('.rambling-directionNav', slider).hide())
+        directionNav = slider.find '.rambling-directionNav'
+        directionNav.hide()
+        slider.hover (-> directionNav.show()), (-> directionNav.hide())
 
       liveWith = (slider, kids, settings, direction) ->
         return false if vars.running
@@ -268,8 +269,8 @@
         vars.currentSlide -= 2
         ramblingRun(slider, kids, settings, direction)
 
-      $('a.rambling-prevNav', slider).live 'click', -> liveWith('prev')
-      $('a.rambling-nextNav', slider).live 'click', -> liveWith('next')
+      slider.find('a.rambling-prevNav').live 'click', -> liveWith('prev')
+      slider.find('a.rambling-nextNav').live 'click', -> liveWith('next')
 
     ###
     Add Control nav
@@ -277,10 +278,10 @@
     if settings.controlNav
       ramblingControl = $('<div class="rambling-controlNav"></div>')
       slider.append ramblingControl
-      for i in [0..(kids.length - 1)] then do (i) ->
+      for i in [0...kids.length] then do (i) ->
         if settings.controlNavThumbs
           child = kids.eq i
-          child = child.find('img:first') if not child.is('img')
+          child = child.find('img:first') unless child.is('img')
           if settings.controlNavThumbsFromRel
             ramblingControl.append('<a class="rambling-control" rel="' + i + '"><img src="' + child.attr('rel') + '" alt="" /></a>')
           else
@@ -291,15 +292,16 @@
       ###
       Set initial active link
       ###
-      $(".rambling-controlNav a:eq(#{vars.currentSlide})", slider).addClass('active')
+      controlNavAnchors = slider.find '.rambling-controlNav a'
+      controlNavAnchors.filter(":eq(#{vars.currentSlide})").addClass 'active'
 
-      $('.rambling-controlNav a', slider).live 'click', ->
+      controlNavAnchors.live 'click', ->
         return false if vars.running
-        return false if $(this).hasClass('active')
+        return false if $(this).hasClass 'active'
         clearTimer()
-        functions.setSliderBackground(slider, vars)
+        functions.setSliderBackground slider, vars
         vars.currentSlide = $(this).attr('rel') - 1
-        ramblingRun(slider, kids, settings, 'control')
+        ramblingRun slider, kids, settings, 'control'
 
     ###
     Keyboard Navigation
@@ -367,7 +369,7 @@
     Add slices for slice animations
     ###
     createSlices = (slider, settings, vars) ->
-      for i in [0..(settings.slices - 1)] then do (i) ->
+      for i in [0...settings.slices] then do (i) ->
         sliceWidth = Math.round(slider.width() / settings.slices)
         animationContainer = slider
         animationContainer = slider.find('#rambling-animation') if settings.adaptImages
@@ -380,8 +382,8 @@
       boxWidth = Math.round(slider.width() / settings.boxCols)
       boxHeight = Math.round(slider.height() / settings.boxRows)
 
-      for rows in [0..(settings.boxRows - 1)] then do (rows) ->
-        for cols in [0..(settings.boxCols - 1)] then do (cols) ->
+      for rows in [0...settings.boxRows] then do (rows) ->
+        for cols in [0...settings.boxCols] then do (cols) ->
           animationContainer = slider
           animationContainer = slider.find('#rambling-animation') if settings.adaptImages
           animationContainer.append(functions.getRamblingBox(boxWidth, boxHeight, rows, cols, settings, vars))
@@ -431,35 +433,36 @@
       Set active links
       ###
       if settings.controlNav
-        $('.rambling-controlNav a', slider).removeClass('active')
-        $('.rambling-controlNav a:eq(' + vars.currentSlide + ')', slider).addClass('active')
+        controlNavAnchors = slider.find '.rambling-controlNav a'
+        controlNavAnchors.removeClass 'active'
+        controlNavAnchors.filter(":eq(#{vars.currentSlide})").addClass 'active'
 
       ###
       Process caption
       ###
-      processCaption(settings)
+      processCaption settings
 
       ###
       Remove any slices from last transition
       ###
-      $('.rambling-slice', slider).remove()
+      slider.find('.rambling-slice').remove()
 
       ###
       Remove any boxes from last transition
       ###
-      $('.rambling-box', slider).remove()
+      slider.find('.rambling-box').remove()
 
       if settings.effect is 'random'
         anims = ['sliceDownRight', 'sliceDownLeft', 'sliceUpRight', 'sliceUpLeft', 'sliceUpDown', 'sliceUpDownLeft', 'fold', 'fade',
             'boxRandom', 'boxRain', 'boxRainReverse', 'boxRainGrow', 'boxRainGrowReverse']
         vars.randAnim = anims[Math.floor(Math.random() * (anims.length + 1))]
-        vars.randAnim = 'fade' if not vars.randAnim
+        vars.randAnim = 'fade' unless vars.randAnim
 
       ###
       Run random effect from specified set (eg: effect:'fold,fade')
       ###
       if settings.effect.indexOf(',') isnt -1
-        anims = settings.effect.split(',')
+        anims = settings.effect.split ','
         vars.randAnim = anims[Math.floor(Math.random() * (anims.length))]
         vars.randAnim = 'fade' if vars.randAnim
 
@@ -471,8 +474,8 @@
         createSlices(slider, settings, vars)
         timeBuff = 0
         i = 0
-        slices = $('.rambling-slice', slider)
-        slices = $('.rambling-slice', slider).reverse() if settings.effect is 'sliceDownLeft' or vars.randAnim is 'sliceDownLeft'
+        slices = slider.find '.rambling-slice'
+        slices = slices.reverse() if settings.effect is 'sliceDownLeft' or vars.randAnim is 'sliceDownLeft'
 
         slices.each ->
           slice = $ this
@@ -491,12 +494,12 @@
         createSlices(slider, settings, vars)
         timeBuff = 0
         i = 0
-        slices = $('.rambling-slice', slider)
-        slices = $('.rambling-slice', slider).reverse() if settings.effect is 'sliceUpLeft' or vars.randAnim is 'sliceUpLeft'
+        slices = slider.find '.rambling-slice'
+        slices = slices.reverse() if settings.effect is 'sliceUpLeft' or vars.randAnim is 'sliceUpLeft'
 
         slices.each ->
-          slice = $(this)
-          slice.css({ 'bottom': '0px' })
+          slice = $ this
+          slice.css bottom: '0px'
           if i is settings.slices - 1
             setTimeout (-> slice.animate({ height:'100%', opacity:'1.0' }, settings.animSpeed, '', -> slider.trigger('rambling:animFinished'))), 100 + timeBuff
           else
@@ -506,20 +509,20 @@
           i++
 
       else if settings.effect is 'sliceUpDown' or settings.effect is 'sliceUpDownRight' or vars.randAnim is 'sliceUpDown' or settings.effect is 'sliceUpDownLeft' or vars.randAnim is 'sliceUpDownLeft'
-        createSlices(slider, settings, vars)
+        createSlices slider, settings, vars
         timeBuff = 0
         i = 0
         v = 0
-        slices = $('.rambling-slice', slider)
-        slices = $('.rambling-slice', slider).reverse() if settings.effect is 'sliceUpDownLeft' or vars.randAnim is 'sliceUpDownLeft'
+        slices = slider.find '.rambling-slice'
+        slices = slices.reverse() if settings.effect is 'sliceUpDownLeft' or vars.randAnim is 'sliceUpDownLeft'
 
         slices.each ->
           slice = $ this
           if i is 0
-            slice.css('top', '0px')
+            slice.css top: '0px'
             i++
           else
-            slice.css('bottom', '0px')
+            slice.css bottom: '0px'
             i = 0
 
           if v is settings.slices - 1
@@ -532,14 +535,14 @@
           v++
 
       else if settings.effect is 'fold' or vars.randAnim is 'fold'
-        createSlices(slider, settings, vars)
+        createSlices slider, settings, vars
         timeBuff = 0
         i = 0
 
-        $('.rambling-slice', slider).each ->
+        slider.find('.rambling-slice').each ->
           slice = $ this
           origWidth = slice.width()
-          slice.css({ top:'0px', height:'100%', width:'0px' })
+          slice.css { top:'0px', height:'100%', width:'0px' }
           if i is settings.slices - 1
             setTimeout (-> slice.animate({ width:origWidth, opacity:'1.0' }, settings.animSpeed, '', -> slider.trigger('rambling:animFinished'))),
               100 + timeBuff
@@ -550,9 +553,9 @@
           i++
 
       else if settings.effect is 'fade' or vars.randAnim is 'fade'
-        createSlices(slider, settings, vars)
+        createSlices slider, settings, vars
 
-        firstSlice = $('.rambling-slice:first', slider)
+        firstSlice = slider.find '.rambling-slice:first'
         sliceStyle =
           height: '100%'
           width: slider.width() + 'px'
@@ -561,24 +564,24 @@
           left: 0
 
         firstSlice.css sliceStyle
-        firstSlice.animate({ opacity:'1.0' }, (settings.animSpeed * 2), '', -> slider.trigger('rambling:animFinished'))
+        firstSlice.animate { opacity:'1.0' }, (settings.animSpeed * 2), '', -> slider.trigger 'rambling:animFinished'
 
       else if settings.effect is 'slideInRight' or vars.randAnim is 'slideInRight'
-        createSlices(slider, settings, vars)
+        createSlices slider, settings, vars
 
-        firstSlice = $('.rambling-slice:first', slider)
+        firstSlice = slider.find '.rambling-slice:first'
         sliceStyle =
           height: '100%'
           width: '0px'
           opacity: '1'
 
-        firstSlice.css(sliceStyle)
-        firstSlice.animate({ width: slider.width() + 'px' }, (settings.animSpeed * 2), '', -> slider.trigger('rambling:animFinished'))
+        firstSlice.css sliceStyle
+        firstSlice.animate { width: slider.width() + 'px' }, (settings.animSpeed * 2), '', -> slider.trigger 'rambling:animFinished'
 
       else if settings.effect is 'slideInLeft' or vars.randAnim is 'slideInLeft'
-        createSlices(slider, settings, vars)
+        createSlices slider, settings, vars
 
-        firstSlice = $('.rambling-slice:first', slider)
+        firstSlice = slider.find '.rambling-slice:first'
         sliceStyle =
           height: '100%'
           width: '0px'
@@ -586,26 +589,25 @@
           left: ''
           right: '0px'
 
-        firstSlice.css(sliceStyle)
-        firstSlice.animate({ width: slider.width() + 'px' }, (settings.animSpeed * 2), '', ->
+        firstSlice.css sliceStyle
+        firstSlice.animate { width: slider.width() + 'px' }, (settings.animSpeed * 2), '', ->
             #Reset positioning
             resetStyle =
               left: '0px'
               right: ''
-            firstSlice.css(resetStyle)
-            slider.trigger('rambling:animFinished')
-        )
+            firstSlice.css resetStyle
+            slider.trigger 'rambling:animFinished'
 
       else if settings.effect is 'boxRandom' or vars.randAnim is 'boxRandom'
-        createBoxes(slider, settings, vars)
+        createBoxes slider, settings, vars
 
         totalBoxes = settings.boxCols * settings.boxRows
         i = 0
         timeBuff = 0
 
-        boxes = $('.rambling-box', slider).shuffle()
+        boxes = slider.find('.rambling-box').shuffle()
         boxes.each ->
-          box = $(this)
+          box = $ this
           if i is totalBoxes - 1
             setTimeout (-> box.animate({ opacity:'1' }, settings.animSpeed, '', -> slider.trigger('rambling:animFinished'))),
              100 + timeBuff
@@ -616,7 +618,7 @@
           i++
 
       else if settings.effect is 'boxRain' or vars.randAnim is 'boxRain' or settings.effect is 'boxRainReverse' or vars.randAnim is 'boxRainReverse' or settings.effect is 'boxRainGrow' or vars.randAnim is 'boxRainGrow' or settings.effect is 'boxRainGrowReverse' or vars.randAnim is 'boxRainGrowReverse'
-        createBoxes(slider, settings, vars)
+        createBoxes slider, settings, vars
 
         totalBoxes = settings.boxCols * settings.boxRows
         i = 0
@@ -629,9 +631,9 @@
         colIndex = 0
         box2Darr = new Array()
         box2Darr[rowIndex] = new Array()
-        boxes = $('.rambling-box', slider)
+        boxes = slider.find('.rambling-box')
         if settings.effect is 'boxRainReverse' or vars.randAnim is 'boxRainReverse' or settings.effect is 'boxRainGrowReverse' or vars.randAnim is 'boxRainGrowReverse'
-          boxes = $('.rambling-box', slider).reverse()
+          boxes = boxes.reverse()
 
         boxes.each ->
           box2Darr[rowIndex][colIndex] = $(this)
@@ -644,9 +646,9 @@
         ###
         Run animation
         ###
-        for cols in [0..(settings.boxCols * 2 - 1)] then do (cols) ->
+        for cols in [0...(settings.boxCols * 2)] then do (cols) ->
           prevCol = cols
-          for rows in [0..(settings.boxRows - 1)] then do (rows) ->
+          for rows in [0...settings.boxRows] then do (rows) ->
             if prevCol >= 0 and prevCol < settings.boxCols
               ((row, col, time, i, totalBoxes) ->
                 box = $(box2Darr[row][col])
@@ -677,7 +679,7 @@
     ###
     this.stop = ->
       $element = $ element
-      if not $element.data('rambling:vars').stop
+      unless $element.data('rambling:vars').stop
         $element.data('rambling:vars').stop = true
         trace 'Stop Slider'
 
