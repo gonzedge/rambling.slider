@@ -16,3 +16,15 @@ describe 'Array Extensions', ->
 
     it 'should not let the original array untouched', ->
       expect(first_copy).not.toEqual original_array
+
+  describe 'when verifying if an array contains an element', ->
+    array = null
+
+    beforeEach ->
+      array = [1...5]
+
+    it 'should return true for a contained element', ->
+      expect(array.contains(1)).toBeTruthy()
+
+    it 'should return false for a non contained element', ->
+      expect(array.contains(5)).toBeFalsy()
