@@ -45,8 +45,8 @@
             width = slider.width() - (sliceWidth * position)
 
         sliceCss =
-          left: (sliceWidth * position) + 'px'
-          width: width + 'px'
+          left: "#{sliceWidth * position}px"
+          width: "#{width}px"
           height: '0px'
           opacity: '0'
           background: background
@@ -63,10 +63,10 @@
 
         boxCss =
           opacity: 0
-          left:(boxWidth * column) + 'px'
-          top:(boxHeight * row) + 'px'
-          width:width + 'px'
-          height:boxHeight + 'px'
+          left: "#{boxWidth * column}px"
+          top: "#{boxHeight * row}px"
+          width: "#{width}px"
+          height: "#{boxHeight}px"
           background: background
           overflow: 'hidden'
 
@@ -101,7 +101,7 @@
         ramblingSliceImageStyle =
           display: 'block'
           width: slider.width()
-          left: '-' + ((sliceWidth + (position * sliceWidth)) - sliceWidth) + 'px'
+          left: "-#{(sliceWidth + (position * sliceWidth)) - sliceWidth}px"
           bottom: bottom
           top: top
 
@@ -121,7 +121,7 @@
         ramblingBoxImageStyle =
           display: 'block'
           width: slider.width()
-          left: "-#{((boxWidth + (column * boxWidth)) - boxWidth)}px"
+          left: "-#{(boxWidth + (column * boxWidth)) - boxWidth}px"
           top: 'auto'
           bottom: 'auto'
 
@@ -129,13 +129,13 @@
         ramblingBoxImageStyle.bottom = "-#{bottom}" if bottom
 
         ramblingBox.css background: 'none', top: top or 'auto', bottom: bottom or 'auto'
-        ramblingBox.append('<span><img src="' + vars.currentImage.attr('src') + '" alt=""/></span>')
+        ramblingBox.append("<span><img src='#{vars.currentImage.attr('src')}' alt=''/></span>")
         ramblingBox.find('img').css ramblingBoxImageStyle
 
         ramblingBox
 
     $.extend functions, defaultFunctions
-    $.extend functions, adaptImagesFunctions  if settings.adaptImages
+    $.extend functions, adaptImagesFunctions if settings.adaptImages
     ###
     End adapt images
     ###
@@ -253,7 +253,7 @@
     Add Direction nav
     ###
     if settings.directionNav
-      slider.append('<div class="rambling-directionNav"><a class="rambling-prevNav">' + settings.prevText + '</a><a class="rambling-nextNav">' + settings.nextText + '</a></div>')
+      slider.append("<div class='rambling-directionNav'><a class='rambling-prevNav'>#{settings.prevText}</a><a class='rambling-nextNav'>#{settings.nextText}</a></div>")
 
       ###
       Hide Direction nav
@@ -283,11 +283,11 @@
           child = kids.eq i
           child = child.find('img:first') unless child.is('img')
           if settings.controlNavThumbsFromRel
-            ramblingControl.append('<a class="rambling-control" rel="' + i + '"><img src="' + child.attr('rel') + '" alt="" /></a>')
+            ramblingControl.append("<a class='rambling-control' rel='#{i}'><img src='#{child.attr('rel')}' alt='' /></a>")
           else
-            ramblingControl.append('<a class="rambling-control" rel="' + i + '"><img src="' + child.attr('src').replace(settings.controlNavThumbsSearch, settings.controlNavThumbsReplace) + '" alt="" /></a>')
+            ramblingControl.append("<a class='rambling-control' rel='#{i}'><img src='#{child.attr('src').replace(settings.controlNavThumbsSearch, settings.controlNavThumbsReplace)}' alt='' /></a>")
 
-        else ramblingControl.append('<a class="rambling-control" rel="' + i + '">' + (i + 1) + '</a>')
+        else ramblingControl.append("<a class='rambling-control' rel='#{i}'>#{i + 1}'</a>")
 
       ###
       Set initial active link
@@ -679,21 +679,28 @@
 
     @
 
+  methods = ['stop', 'start']
+
   $.fn.ramblingSlider = (options) ->
     @each (key, value) ->
       element = $ @
+
+      ramblingSlider = element.data 'ramblingSlider'
+
+      if methods.contains(options) and ramblingSlider
+        ramblingSlider[options]()
       ###
       Return early if this element already has a plugin instance
       ###
-      return element.data('ramblingslider') if element.data('ramblingslider')
+      return ramblingSlider if ramblingSlider
       ###
       Pass options to plugin constructor
       ###
-      ramblingslider = new RamblingSlider(@, options)
+      ramblingSlider = new RamblingSlider(@, options)
       ###
       Store plugin object in this element's data
       ###
-      element.data('ramblingslider', ramblingslider)
+      element.data('ramblingSlider', ramblingSlider)
 
   ###
   Default settings
