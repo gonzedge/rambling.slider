@@ -550,51 +550,46 @@
 
         slices.each animation_callbacks[animation]
 
-      else if current_effect is 'fade'
+      else if current_effect is 'fade' or current_effect is 'slideInRight' or current_effect is 'slideInLeft'
         createSlices slider, settings, vars
 
+        animation_options =
+          fade:
+            style:
+              height: '100%'
+              width: "#{slider.width()}px"
+              position: 'absolute'
+              top: 0
+              left: 0
+            animate:
+              opacity: '1'
+          slideInRight:
+            style:
+              height: '100%'
+              width: '0px'
+              opacity: '1'
+          slideInLeft:
+            style:
+              height: '100%'
+              width: '0px'
+              opacity: '1'
+              left: ''
+              right: '0px'
+            callback: (slice) ->
+              #Reset positioning
+              resetStyle =
+                left: '0px'
+                right: ''
+              slice.css resetStyle
+
+        current_effect_options = animation_options[current_effect]
+        animate = current_effect_options.animate or {width: "#{slider.width()}px"}
+
         firstSlice = slider.find '.rambling-slice:first'
-        sliceStyle =
-          height: '100%'
-          width: slider.width() + 'px'
-          position: 'absolute'
-          top: 0
-          left: 0
-
-        firstSlice.css sliceStyle
-        firstSlice.animate { opacity:'1.0' }, (settings.animSpeed * 2), '', -> slider.trigger 'rambling:animFinished'
-
-      else if current_effect is 'slideInRight'
-        createSlices slider, settings, vars
-
-        firstSlice = slider.find '.rambling-slice:first'
-        sliceStyle =
-          height: '100%'
-          width: '0px'
-          opacity: '1'
-
-        firstSlice.css sliceStyle
-        firstSlice.animate { width: slider.width() + 'px' }, (settings.animSpeed * 2), '', -> slider.trigger 'rambling:animFinished'
-
-      else if current_effect is 'slideInLeft'
-        createSlices slider, settings, vars
-
-        firstSlice = slider.find '.rambling-slice:first'
-        sliceStyle =
-          height: '100%'
-          width: '0px'
-          opacity: '1'
-          left: ''
-          right: '0px'
-
-        firstSlice.css sliceStyle
-        firstSlice.animate { width: slider.width() + 'px' }, (settings.animSpeed * 2), '', ->
-            #Reset positioning
-            resetStyle =
-              left: '0px'
-              right: ''
-            firstSlice.css resetStyle
-            slider.trigger 'rambling:animFinished'
+        firstSlice.css animation_options[current_effect].style
+        firstSlice.animate animate, (settings.animSpeed * 2),'', ->
+          current_effect_options.callback(firstSlice) if current_effect_options.callback
+          slider.trigger 'rambling:animFinished'
 
       else if current_effect is 'boxRandom'
         createBoxes slider, settings, vars
