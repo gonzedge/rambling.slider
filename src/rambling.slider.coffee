@@ -486,87 +486,69 @@
       vars.running = true
       current_effect = vars.randAnim or settings.effect
 
-      if ['sliceDown', 'sliceDownRight', 'sliceDownLeft'].contains current_effect
-        createSlices slider, settings, vars
-        timeBuff = 0
-        i = 0
-        slices = slider.find '.rambling-slice'
-        slices = slices.reverse() if current_effect is 'sliceDownLeft'
-
-        slices.each ->
-          slice = $ @
-          slice.css top: '0px'
-          if i is settings.slices - 1
-            setTimeout ->
-              slice.animate { height:'100%', opacity:'1.0' }, settings.animSpeed, '', -> slider.trigger 'rambling:animFinished'
-            , 100 + timeBuff
-          else
-            setTimeout (-> slice.animate { height:'100%', opacity:'1.0' }, settings.animSpeed), 100 + timeBuff
-
-          timeBuff += 50
-          i++
-
-      else if ['sliceUp', 'sliceUpRight', 'sliceUpLeft'].contains current_effect
-        createSlices slider, settings, vars
-        timeBuff = 0
-        i = 0
-        slices = slider.find '.rambling-slice'
-        slices = slices.reverse() if current_effect is 'sliceUpLeft'
-
-        slices.each ->
-          slice = $ @
-          slice.css bottom: '0px'
-          if i is settings.slices - 1
-            setTimeout (-> slice.animate { height:'100%', opacity:'1.0' }, settings.animSpeed, '', -> slider.trigger 'rambling:animFinished'), 100 + timeBuff
-          else
-            setTimeout (-> slice.animate { height:'100%', opacity:'1.0' }, settings.animSpeed), 100 + timeBuff
-
-          timeBuff += 50
-          i++
-
-      else if ['sliceUpDown', 'sliceUpDownRight', 'sliceUpDownLeft'].contains current_effect
+      if current_effect.contains('slice') or current_effect.contains('fold')
         createSlices slider, settings, vars
         timeBuff = 0
         i = 0
         v = 0
         slices = slider.find '.rambling-slice'
-        slices = slices.reverse() if current_effect is 'sliceUpDownLeft'
+        slices = slices.reverse() if current_effect.contains 'Left'
+        animation = current_effect.replace(/Right/, '').replace(/Left/, '')
 
-        slices.each ->
-          slice = $ @
-          if i is 0
+        animation_callbacks =
+          sliceDown: ->
+            slice = $ @
             slice.css top: '0px'
+            if i is settings.slices - 1
+              setTimeout ->
+                slice.animate { height:'100%', opacity:'1.0' }, settings.animSpeed, '', -> slider.trigger 'rambling:animFinished'
+              , 100 + timeBuff
+            else
+              setTimeout (-> slice.animate { height:'100%', opacity:'1.0' }, settings.animSpeed), 100 + timeBuff
+
+            timeBuff += 50
             i++
-          else
+          sliceUp: ->
+            slice = $ @
             slice.css bottom: '0px'
-            i = 0
+            if i is settings.slices - 1
+              setTimeout (-> slice.animate { height:'100%', opacity:'1.0' }, settings.animSpeed, '', -> slider.trigger 'rambling:animFinished'), 100 + timeBuff
+            else
+              setTimeout (-> slice.animate { height:'100%', opacity:'1.0' }, settings.animSpeed), 100 + timeBuff
 
-          if v is settings.slices - 1
-            setTimeout (-> slice.animate { height:'100%', opacity:'1.0' }, settings.animSpeed, '', -> slider.trigger 'rambling:animFinished'),
-              100 + timeBuff
-          else
-            setTimeout (-> slice.animate { height:'100%', opacity:'1.0' }, settings.animSpeed), 100 + timeBuff
+            timeBuff += 50
+            i++
+          sliceUpDown: ->
+            slice = $ @
+            if i is 0
+              slice.css top: '0px'
+              i++
+            else
+              slice.css bottom: '0px'
+              i = 0
 
-          timeBuff += 50
-          v++
+            if v is settings.slices - 1
+              setTimeout (-> slice.animate { height:'100%', opacity:'1.0' }, settings.animSpeed, '', -> slider.trigger 'rambling:animFinished'),
+                100 + timeBuff
+            else
+              setTimeout (-> slice.animate { height:'100%', opacity:'1.0' }, settings.animSpeed), 100 + timeBuff
 
-      else if current_effect is 'fold'
-        createSlices slider, settings, vars
-        timeBuff = 0
-        i = 0
+            timeBuff += 50
+            v++
+          fold: ->
+            slice = $ @
+            origWidth = slice.width()
+            slice.css { top:'0px', height:'100%', width:'0px' }
+            if i is settings.slices - 1
+              setTimeout (-> slice.animate { width: origWidth, opacity:'1.0' }, settings.animSpeed, '', -> slider.trigger 'rambling:animFinished'),
+                100 + timeBuff
+            else
+              setTimeout (-> slice.animate { width: origWidth, opacity:'1.0' }, settings.animSpeed), 100 + timeBuff
 
-        slider.find('.rambling-slice').each ->
-          slice = $ @
-          origWidth = slice.width()
-          slice.css { top:'0px', height:'100%', width:'0px' }
-          if i is settings.slices - 1
-            setTimeout (-> slice.animate { width:origWidth, opacity:'1.0' }, settings.animSpeed, '', -> slider.trigger 'rambling:animFinished'),
-              100 + timeBuff
-          else
-            setTimeout (-> slice.animate { width:origWidth, opacity:'1.0' }, settings.animSpeed), 100 + timeBuff
+            timeBuff += 50
+            i++
 
-          timeBuff += 50
-          i++
+        slices.each animation_callbacks[animation]
 
       else if current_effect is 'fade'
         createSlices slider, settings, vars
