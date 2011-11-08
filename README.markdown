@@ -44,9 +44,16 @@ If you want to minify the existing js:
 
 ### Unit testing
 
-If you want to run the unit tests, you'll need to install <code>jasmine-node</code>. It's easily installed with:
+If you want to run the unit tests, you'll need to install the following node packages:
+* <code>jasmine-node</code>
+* <code>jsdom</code>
+* <code>jquery</code>
+
+They're easily installed with:
 
 <code>npm install -g jasmine-node</code>
+<code>npm install -g jsdom</code>
+<code>npm install -g jquery</code>
 
 To run all the tests, you can run:
 
