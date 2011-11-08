@@ -63,8 +63,10 @@
     afterLoad: ->
 
   RamblingSlider = (element, options) ->
-    timer = 0
+    self = @
+    slider = $ element
     settings = $.extend {}, $.fn.ramblingSlider.defaults, options
+    timer = 0
     vars =
       currentSlide: 0
       currentImage: ''
@@ -93,26 +95,17 @@
     ]
 
     @stop = ->
-      $element = $ element
-      unless $element.data('rambling:vars').stop
-        $element.data('rambling:vars').stop = true
-        trace 'Stop Slider'
+      sliderData = slider.data 'rambling:vars'
+      sliderData.stop = true unless sliderData.stop
 
     @start = ->
-      $element = $ element
-      if $element.data('rambling:vars').stop
-        $element.data('rambling:vars').stop = false
-        trace 'Start Slider'
-
-    ###
-    For debugging purposes
-    ###
-    trace = (msg) -> console.log(msg) if @console and console and console.log
+      sliderData = slider.data 'rambling:vars'
+      sliderData.stop = false if sliderData.stop
 
     processCaption = (settings) ->
       ramblingCaption = slider.find '.rambling-caption'
-      title = vars.currentImage.attr('title')
-      if title? and title isnt ''
+      title = vars.currentImage.attr 'title'
+      if title
         title = $(title).html() if title.substr(0, 1) is '#'
 
         if ramblingCaption.css('display') is 'block'
@@ -134,12 +127,18 @@
       clearInterval timer
       timer = ''
 
+    slideTo = (direction) ->
+      return false if vars.running
+      clearTimer()
+      vars.currentSlide -= 2 if direction is 'prev'
+      ramblingRun slider, kids, settings, direction
+
     createSlices = (slider, settings, vars) ->
       for i in [0...settings.slices] then do (i) ->
         sliceWidth = Math.round(slider.width() / settings.slices)
         animationContainer = slider
         animationContainer = slider.find('#rambling-animation') if settings.adaptImages
-        animationContainer.append(functions.getRamblingSlice(sliceWidth, i, settings.slices, vars))
+        animationContainer.append self.getRamblingSlice(sliceWidth, i, settings.slices, vars)
 
     createBoxes = (slider, settings, vars) ->
       boxWidth = Math.round(slider.width() / settings.boxCols)
@@ -149,123 +148,116 @@
         for cols in [0...settings.boxCols] then do (cols) ->
           animationContainer = slider
           animationContainer = slider.find('#rambling-animation') if settings.adaptImages
-          animationContainer.append(functions.getRamblingBox(boxWidth, boxHeight, rows, cols, settings, vars))
+          animationContainer.append self.getRamblingBox(boxWidth, boxHeight, rows, cols, settings, vars)
 
-    ###
-    Additional stuff for adapt images
-    ###
-    functions = {}
-    defaultFunctions =
-      setSliderBackground: (slider, vars) ->
-        slider.css background: "url(#{vars.currentImage.attr('src')}) no-repeat"
+    (
+      ->
+        @setSliderBackground = (slider, vars) -> slider.css background: "url(#{vars.currentImage.attr('src')}) no-repeat"
+        @getRamblingSlice = (sliceWidth, position, total, vars) ->
+          background = "url(#{vars.currentImage.attr('src')}) no-repeat -#{((sliceWidth + (position * sliceWidth)) - sliceWidth)}px 0%"
+          width = sliceWidth
+          if position is (total - 1)
+              background = "url(#{vars.currentImage.attr('src')}) no-repeat -#{((sliceWidth + (position * sliceWidth)) - sliceWidth)}px 0%"
+              width = slider.width() - (sliceWidth * position)
 
-      getRamblingSlice: (sliceWidth, position, total, vars) ->
-        background = "url(#{vars.currentImage.attr('src')}) no-repeat -#{((sliceWidth + (position * sliceWidth)) - sliceWidth)}px 0%"
-        width = sliceWidth
-        if position is (total - 1)
-            background = "url(#{vars.currentImage.attr('src')}) no-repeat -#{((sliceWidth + (position * sliceWidth)) - sliceWidth)}px 0%"
-            width = slider.width() - (sliceWidth * position)
+          sliceCss =
+            left: "#{sliceWidth * position}px"
+            width: "#{width}px"
+            height: '0px'
+            opacity: '0'
+            background: background
+            overflow: 'hidden'
 
-        sliceCss =
-          left: "#{sliceWidth * position}px"
-          width: "#{width}px"
-          height: '0px'
-          opacity: '0'
-          background: background
-          overflow: 'hidden'
+          $('<div class="rambling-slice"></div>').css sliceCss
 
-        $('<div class="rambling-slice"></div>').css sliceCss
+        @getRamblingBox = (boxWidth, boxHeight, row, column, settings, vars) ->
+          background = "url(#{vars.currentImage.attr('src')}) no-repeat -#{((boxWidth + (column * boxWidth)) - boxWidth)}px -#{((boxHeight + (row * boxHeight)) - boxHeight)}px"
+          width = boxWidth
+          if column is (settings.boxCols - 1)
+              background = "url(#{vars.currentImage.attr('src')}) no-repeat -#{((boxWidth + (column * boxWidth)) - boxWidth)}px -#{((boxHeight + (row * boxHeight)) - boxHeight)}px"
+              width = (slider.width() - (boxWidth * column))
 
-      getRamblingBox: (boxWidth, boxHeight, row, column, settings, vars) ->
-        background = "url(#{vars.currentImage.attr('src')}) no-repeat -#{((boxWidth + (column * boxWidth)) - boxWidth)}px -#{((boxHeight + (row * boxHeight)) - boxHeight)}px"
-        width = boxWidth
-        if column is (settings.boxCols - 1)
-            background = "url(#{vars.currentImage.attr('src')}) no-repeat -#{((boxWidth + (column * boxWidth)) - boxWidth)}px -#{((boxHeight + (row * boxHeight)) - boxHeight)}px"
-            width = (slider.width() - (boxWidth * column))
+          boxCss =
+            opacity: 0
+            left: "#{boxWidth * column}px"
+            top: "#{boxHeight * row}px"
+            width: "#{width}px"
+            height: "#{boxHeight}px"
+            background: background
+            overflow: 'hidden'
 
-        boxCss =
-          opacity: 0
-          left: "#{boxWidth * column}px"
-          top: "#{boxHeight * row}px"
-          width: "#{width}px"
-          height: "#{boxHeight}px"
-          background: background
-          overflow: 'hidden'
+          $('<div class="rambling-box"></div>').css boxCss
+        if settings.adaptImages
+          getSlice = @getRamblingSlice
+          getBox = @getRamblingBox
 
-        $('<div class="rambling-box"></div>').css boxCss
+          @setSliderBackground = ->
+            image = vars.currentImage
+            currentImage = slider.find('.currentImage')
 
-    adaptImagesFunctions =
-      setSliderBackground: ->
-        image = vars.currentImage
-        currentImage = slider.find('.currentImage')
+            unless currentImage.length
+              alignment = 'alignTop'
+              alignment = 'alignBottom' if settings.alignBottom
+              currentImage = $ '<img src="" alt="currentImage" class="currentImage"/>'
+              currentImage.addClass alignment
+              currentImage.css display: 'block'
+              slider.find('#rambling-animation').prepend currentImage
 
-        unless currentImage.length
-          alignment = 'alignTop'
-          alignment = 'alignBottom' if settings.alignBottom
-          currentImage = $ '<img src="" alt="currentImage" class="currentImage"/>'
-          currentImage.addClass alignment
-          currentImage.css display: 'block'
-          slider.find('#rambling-animation').prepend currentImage
+            currentImage.attr src: image.attr('src'), alt: image.attr('alt')
 
-        currentImage.attr src: image.attr('src'), alt: image.attr('alt')
+          @getRamblingSlice = (sliceWidth, position, total, vars) ->
+            ramblingSlice = getSlice sliceWidth, position, total, vars
+            ramblingSlice.css background: 'none'
+            ramblingSlice.append "<span><img src=\"#{vars.currentImage.attr('src')}\" alt=\"\"/></span>"
 
-      getRamblingSlice: (sliceWidth, position, total, vars) ->
-        ramblingSlice = defaultFunctions.getRamblingSlice sliceWidth, position, total, vars
-        ramblingSlice.css background: 'none'
-        ramblingSlice.append "<span><img src=\"#{vars.currentImage.attr('src')}\" alt=\"\"/></span>"
+            bottom = 0
+            top = 'auto'
+            if settings.alignBottom
+              bottom = 'auto'
+              top = 0
 
-        bottom = 0
-        top = 'auto'
-        if settings.alignBottom
-          bottom = 'auto'
-          top = 0
+            ramblingSliceImageStyle =
+              display: 'block'
+              width: slider.width()
+              left: "-#{(sliceWidth + (position * sliceWidth)) - sliceWidth}px"
+              bottom: bottom
+              top: top
 
-        ramblingSliceImageStyle =
-          display: 'block'
-          width: slider.width()
-          left: "-#{(sliceWidth + (position * sliceWidth)) - sliceWidth}px"
-          bottom: bottom
-          top: top
+            ramblingSlice.find('img').css ramblingSliceImageStyle
 
-        ramblingSlice.find('img').css ramblingSliceImageStyle
+            ramblingSlice
 
-        ramblingSlice
+          @getRamblingBox = (boxWidth, boxHeight, row, column, settings, vars) ->
+            ramblingBox = getBox boxWidth, boxHeight, row, column, settings, vars
 
-      getRamblingBox: (boxWidth, boxHeight, row, column, settings, vars) ->
-        ramblingBox = defaultFunctions.getRamblingBox boxWidth, boxHeight, row, column, settings, vars
+            bottom = false
+            top = "#{((boxHeight + (row * boxHeight)) - boxHeight)}px"
+            if settings.alignBottom
+              bottom = "#{(boxHeight * (settings.boxRows - (row + 1)))}px"
+              top = false
 
-        bottom = false
-        top = "#{((boxHeight + (row * boxHeight)) - boxHeight)}px"
-        if settings.alignBottom
-          bottom = "#{(boxHeight * (settings.boxRows - (row + 1)))}px"
-          top = false
+            ramblingBoxImageStyle =
+              display: 'block'
+              width: slider.width()
+              left: "-#{(boxWidth + (column * boxWidth)) - boxWidth}px"
+              top: 'auto'
+              bottom: 'auto'
 
-        ramblingBoxImageStyle =
-          display: 'block'
-          width: slider.width()
-          left: "-#{(boxWidth + (column * boxWidth)) - boxWidth}px"
-          top: 'auto'
-          bottom: 'auto'
+            ramblingBoxImageStyle.top = "-#{top}" if top
+            ramblingBoxImageStyle.bottom = "-#{bottom}" if bottom
 
-        ramblingBoxImageStyle.top = "-#{top}" if top
-        ramblingBoxImageStyle.bottom = "-#{bottom}" if bottom
+            ramblingBox.css background: 'none', top: top or 'auto', bottom: bottom or 'auto'
+            ramblingBox.append("<span><img src='#{vars.currentImage.attr('src')}' alt=''/></span>")
+            ramblingBox.find('img').css ramblingBoxImageStyle
 
-        ramblingBox.css background: 'none', top: top or 'auto', bottom: bottom or 'auto'
-        ramblingBox.append("<span><img src='#{vars.currentImage.attr('src')}' alt=''/></span>")
-        ramblingBox.find('img').css ramblingBoxImageStyle
+            ramblingBox
 
-        ramblingBox
-
-    $.extend functions, defaultFunctions
-    $.extend functions, adaptImagesFunctions if settings.adaptImages
-    ###
-    End adapt images
-    ###
+        @
+    ).apply @
 
     ###
     Get this slider
     ###
-    slider = $ element
     slider.data 'rambling:vars', vars
     slider.css position: 'relative'
     slider.addClass 'ramblingSlider'
@@ -282,8 +274,8 @@
     kids.each ->
       child = $ @
       link = ''
-      unless child.is('img')
-        if child.is('a')
+      unless child.is 'img'
+        if child.is 'a'
           child.addClass 'rambling-imageLink'
           link = child
         child = child.find 'img:first'
@@ -325,7 +317,7 @@
     ###
     Set first background
     ###
-    functions.setSliderBackground slider, vars
+    @setSliderBackground slider, vars
 
     ###
     Create caption
@@ -357,14 +349,8 @@
         directionNav.hide()
         slider.hover (-> directionNav.show()), (-> directionNav.hide())
 
-      liveWith = (slider, kids, settings, direction) ->
-        return false if vars.running
-        clearTimer()
-        vars.currentSlide -= 2
-        ramblingRun slider, kids, settings, direction
-
-      slider.find('a.rambling-prevNav').live 'click', -> liveWith 'prev'
-      slider.find('a.rambling-nextNav').live 'click', -> liveWith 'next'
+      slider.find('a.rambling-prevNav').live 'click', -> slideTo 'prev'
+      slider.find('a.rambling-nextNav').live 'click', -> slideTo 'next'
 
     ###
     Add Control nav
@@ -393,7 +379,7 @@
         return false if vars.running
         return false if $(@).hasClass 'active'
         clearTimer()
-        functions.setSliderBackground slider, vars
+        @setSliderBackground slider, vars
         vars.currentSlide = $(@).attr('rel') - 1
         ramblingRun slider, kids, settings, 'control'
 
@@ -455,7 +441,7 @@
       if timer is '' and not vars.paused and not settings.manualAdvance
         timer = setInterval (-> ramblingRun slider, kids, settings, false), settings.pauseTime
 
-      functions.setSliderBackground slider, vars
+      self.setSliderBackground slider, vars
       ###
       Trigger the afterChange callback
       ###
