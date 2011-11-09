@@ -1,5 +1,6 @@
 fs = require 'fs'
 {exec} = require 'child_process'
+require './string_extensions'
 
 class BuildUtils
   log: (string) ->
@@ -34,13 +35,13 @@ class BuildUtils
       self.error_handler err
       content = new Array()
 
-      for file, index in files then do (file, index) ->
-        unless file.indexOf('.') is 0
-          fs.readFile "./src/#{file}", 'utf8', (err, fileContent) ->
-            self.error_handler err
-            content[content.length] = fileContent
+      files = files.sort()
+      for file, index in files when file.indexOf('.') isnt 0 then do (file, index) ->
+        fs.readFile "./src/#{file}", 'utf8', (err, fileContent) ->
+          self.error_handler err
+          content[content.length] = fileContent
 
-            if index is files.length - 1
-              callback content
+          if index is files.length - 1
+            callback content
 
 global.BuildUtils = BuildUtils

@@ -1,5 +1,4 @@
 {exec} = require 'child_process'
-require './build/string_extensions'
 require './build/build_utils'
 
 utils = new BuildUtils
