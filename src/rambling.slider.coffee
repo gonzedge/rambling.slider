@@ -23,11 +23,12 @@
         ramblingSlider[options]() if methods.contains(options)
         return ramblingSlider
 
-      element.data 'rambling:slider', new RamblingSlider(@, options)
+      ramblingSlider = new RamblingSlider @, options
+      element.data 'rambling:slider', ramblingSlider
 
-  ###
-  Default settings
-  ###
+      ramblingSlider.initialize()
+      ramblingSlider.run()
+
   $.fn.ramblingSlider.defaults =
     effect: 'random'
     slices: 15
@@ -60,8 +61,10 @@
 
   RamblingSlider = (element, options) ->
     slider = $ element
+    kids = slider.children ':not(#rambling-animation)'
     settings = $.extend {}, $.fn.ramblingSlider.defaults, options
     timer = 0
+    animationTimeBuffer = 0
     vars =
       currentSlide: 0
       currentImage: ''
@@ -70,7 +73,7 @@
       running: false
       paused: false
       stop: false
-    anims = [
+    animationsToRun = [
       'sliceDownRight',
       'sliceDownLeft',
       'sliceUpRight',
@@ -88,11 +91,11 @@
       'boxRainGrow',
       'boxRainGrowReverse'
     ]
-    anims = settings.effect.split(',') if settings.effect.contains(',')
+    animationsToRun = settings.effect.split(',') if settings.effect.contains(',')
 
-    @stop = -> vars.stop = true unless vars.stop
+    stop = -> vars.stop = true unless vars.stop
 
-    @start = -> vars.stop = false if vars.stop
+    start = -> vars.stop = false if vars.stop
 
     initialize = ->
       setSliderInitialState()
@@ -212,7 +215,7 @@
 
         settings.afterChange.call @
 
-    getRandomAnimation = -> anims[Math.floor(Math.random() * (anims.length + 1))] or 'fade'
+    getRandomAnimation = -> animationsToRun[Math.floor(Math.random() * (animationsToRun.length + 1))] or 'fade'
 
     processCaption = (settings) ->
       ramblingCaption = slider.find '.rambling-caption'
@@ -260,6 +263,8 @@
         animationContainer = slider.find('#rambling-animation') if settings.adaptImages
         animationContainer.append getRamblingSlice(sliceWidth, i, settings.slices, vars)
 
+      slider.find '.rambling-slice'
+
     createBoxes = (slider, settings, vars) ->
       boxWidth = Math.round(slider.width() / settings.boxCols)
       boxHeight = Math.round(slider.height() / settings.boxRows)
@@ -270,7 +275,10 @@
           animationContainer = slider.find('#rambling-animation') if settings.adaptImages
           animationContainer.append getRamblingBox(boxWidth, boxHeight, rows, cols, settings, vars)
 
+      slider.find '.rambling-box'
+
     setSliderBackground = (slider, vars) -> slider.css background: "url(#{vars.currentImage.attr('src')}) no-repeat"
+
     getRamblingSlice = (sliceWidth, position, total, vars) ->
       background = "url(#{vars.currentImage.attr('src')}) no-repeat -#{((sliceWidth + (position * sliceWidth)) - sliceWidth)}px 0%"
       width = sliceWidth
@@ -370,14 +378,174 @@
 
         ramblingBox
 
-    kids = slider.children ':not(#rambling-animation)'
-    initialize()
-    run()
+    animateFullImage = (options) ->
+      slices = createSlices slider, settings, vars
+      slice = slices.filter ':first'
+      slice.css options.style
+      slice.animate (options.animate or width: "#{slider.width()}px"), (settings.animSpeed * 2), '', ->
+        options.afterChange.apply(slice) if options.afterChange
+        slider.trigger 'rambling:finished'
+
+    animateSlices = (animationCallback, reorderCallback) ->
+      slices = createSlices slider, settings, vars
+      animationTimeBuffer = 0
+      slices = reorderCallback.apply(slices) if reorderCallback
+      slices.each animationCallback
+
+    animateBoxes = (animationCallback, reorderCallback) ->
+      boxes = createBoxes slider, settings, vars
+      animationTimeBuffer = 0
+      boxes = reorderCallback.apply(boxes) if reorderCallback
+      animationCallback.apply boxes
+
+    slideDownSlices = (reorderCallback) ->
+      animateSlices (index) ->
+          slice = $ @
+          slice.css top: '0px'
+          if index is settings.slices - 1
+            setTimeout ->
+              slice.animate { height:'100%', opacity:'1.0' }, settings.animSpeed, '', -> slider.trigger 'rambling:finished'
+            , 100 + animationTimeBuffer
+          else
+            setTimeout (-> slice.animate { height:'100%', opacity:'1.0' }, settings.animSpeed), 100 + animationTimeBuffer
+
+          animationTimeBuffer += 50
+        , reorderCallback
+
+    slideUpSlices = (reorderCallback) ->
+      animateSlices (index) ->
+          slice = $ @
+          slice.css bottom: '0px'
+          if index is settings.slices - 1
+            setTimeout (-> slice.animate { height:'100%', opacity:'1.0' }, settings.animSpeed, '', -> slider.trigger 'rambling:finished'), 100 + animationTimeBuffer
+          else
+            setTimeout (-> slice.animate { height:'100%', opacity:'1.0' }, settings.animSpeed), 100 + animationTimeBuffer
+
+          animationTimeBuffer += 50
+        , reorderCallback
+
+    slideUpDownSlices = (reorderCallback) ->
+      animateSlices (index) ->
+          slice = $ @
+          slice.css (if index % 2 then bottom: '0px' else top: '0px')
+
+          if index is settings.slices - 1
+            setTimeout (-> slice.animate { height:'100%', opacity:'1.0' }, settings.animSpeed, '', -> slider.trigger 'rambling:finished'),
+              100 + animationTimeBuffer
+          else
+            setTimeout (-> slice.animate { height:'100%', opacity:'1.0' }, settings.animSpeed), 100 + animationTimeBuffer
+
+          animationTimeBuffer += 50
+        , reorderCallback
+
+    foldSlices = (reorderCallback) ->
+      animateSlices (index) ->
+          slice = $ @
+          origWidth = slice.width()
+          slice.css top: '0px', height: '100%', width: '0px'
+          if index is settings.slices - 1
+            setTimeout (-> slice.animate { width: origWidth, opacity:'1.0' }, settings.animSpeed, '', -> slider.trigger 'rambling:finished'),
+              100 + animationTimeBuffer
+          else
+            setTimeout (-> slice.animate { width: origWidth, opacity:'1.0' }, settings.animSpeed), 100 + animationTimeBuffer
+
+          animationTimeBuffer += 50
+        , reorderCallback
+
+    randomBoxes = ->
+      animateBoxes ->
+          totalBoxes = @length
+          @each (index) ->
+            box = $ @
+            if index is totalBoxes - 1
+              setTimeout (-> box.animate { opacity:'1' }, settings.animSpeed, '', -> slider.trigger 'rambling:finished'),
+               100 + animationTimeBuffer
+            else
+              setTimeout (-> box.animate { opacity:'1' }, settings.animSpeed), 100 + animationTimeBuffer
+
+            animationTimeBuffer += 20
+        , $.fn.shuffle
+
+    rainBoxes = (reorderCallback, grow) ->
+      animateBoxes ->
+          boxes = @
+          totalBoxes = settings.boxCols * settings.boxRows
+          index = 0
+          for cols in [0...(settings.boxCols * 2)] then do (cols) ->
+            prevCol = cols
+            for rows in [0...settings.boxRows] then do (rows) ->
+              if prevCol >= 0 and prevCol < settings.boxCols
+                row = rows
+                col = prevCol
+                time = animationTimeBuffer
+                box = $ boxes[row][col]
+                w = box.width()
+                h = box.height()
+
+                box.css(width: 0, height: 0) if grow
+
+                if index is totalBoxes - 1
+                  setTimeout (-> box.animate { opacity:'1', width: w, height: h }, settings.animSpeed / 1.3, '', -> slider.trigger 'rambling:finished'),
+                    100 + animationTimeBuffer
+                else
+                  setTimeout (-> box.animate { opacity:'1', width: w, height: h }, settings.animSpeed / 1.3), 100 + animationTimeBuffer
+
+                index++
+                animationTimeBuffer += 20
+
+              prevCol--
+        , reorderCallback
+
+    animationOptions =
+      fade:
+        style:
+          height: '100%'
+          width: "#{slider.width()}px"
+          position: 'absolute'
+          top: 0
+          left: 0
+        animate:
+          opacity: '1'
+      slideInRight:
+        style:
+          height: '100%'
+          width: '0px'
+          opacity: '1'
+      slideInLeft:
+        style:
+          height: '100%'
+          width: '0px'
+          opacity: '1'
+          left: ''
+          right: '0px'
+        afterChange: -> @.css left: '0px', right: ''
+
+    animations =
+      sliceDown: slideDownSlices
+      sliceDownRight: slideDownSlices
+      sliceDownLeft: -> slideDownSlices $.fn.reverse
+      sliceUp: slideUpSlices
+      sliceUpRight: slideUpSlices
+      sliceUpLeft: -> slideUpSlices $.fn.reverse
+      sliceUpDown: slideUpDownSlices
+      sliceUpDownRight: slideUpDownSlices
+      sliceUpDownLeft: -> slideUpDownSlices $.fn.reverse
+      fold: foldSlices
+      foldLeft: -> foldSlices $.fn.reverse
+      fade: -> animateFullImage animationOptions.fade
+      slideIn: -> animateFullImage animationOptions.slideInRight
+      slideInRight: -> animateFullImage animationOptions.slideInRight
+      slideInLeft: -> animateFullImage animationOptions.slideInLeft
+      boxRandom: randomBoxes
+      boxRain: -> rainBoxes -> $(@).as2dArray settings.boxCols
+      boxRainReverse: -> rainBoxes -> $(@).reverse().as2dArray settings.boxCols
+      boxRainGrow: -> rainBoxes (-> $(@).as2dArray settings.boxCols), true
+      boxRainGrowReverse: -> rainBoxes (-> $(@).reverse().as2dArray settings.boxCols), true
 
     ramblingRun = (slider, kids, settings, nudge) ->
-      settings.lastSlide.call(@) if vars and vars.currentSlide is vars.totalSlides - 1
+      settings.lastSlide.call(@) if vars.currentSlide is vars.totalSlides - 1
 
-      return false if (not vars or vars.stop) and not nudge
+      return false if vars.stop and not nudge
 
       settings.beforeChange.call @
 
@@ -390,200 +558,23 @@
       vars.currentSlide = (vars.totalSlides - 1) if vars.currentSlide < 0
       setCurrentSlideImage kids
 
-      ###
-      Set active links
-      ###
-      if settings.controlNav
-        controlNavAnchors = slider.find '.rambling-controlNav a'
-        controlNavAnchors.removeClass 'active'
-        controlNavAnchors.filter(":eq(#{vars.currentSlide})").addClass 'active'
+      slider.find('.rambling-controlNav a').removeClass('active').filter(":eq(#{vars.currentSlide})").addClass('active') if settings.controlNav
 
-      ###
-      Process caption
-      ###
       processCaption settings
-
-      ###
-      Remove any slices and boxes from last transition
-      ###
       slider.find('.rambling-slice,.rambling-box').remove()
 
-      ###
-      Run random effect from specified or default set (eg: effect:'fold,fade')
-      ###
       vars.randAnim = getRandomAnimation() if settings.effect is 'random' or settings.effect.contains(',')
 
-      ###
-      Run effects
-      ###
       vars.running = true
       current_effect = vars.randAnim or settings.effect
-
-      if current_effect.contains('slice') or current_effect.contains('fold')
-        createSlices slider, settings, vars
-        timeBuff = 0
-        i = 0
-        v = 0
-        slices = slider.find '.rambling-slice'
-        slices = slices.reverse() if current_effect.contains 'Left'
-        animation = current_effect.replace(/Right/, '').replace(/Left/, '')
-
-        animation_callbacks =
-          sliceDown: ->
-            slice = $ @
-            slice.css top: '0px'
-            if i is settings.slices - 1
-              setTimeout ->
-                slice.animate { height:'100%', opacity:'1.0' }, settings.animSpeed, '', -> slider.trigger 'rambling:finished'
-              , 100 + timeBuff
-            else
-              setTimeout (-> slice.animate { height:'100%', opacity:'1.0' }, settings.animSpeed), 100 + timeBuff
-
-            timeBuff += 50
-            i++
-          sliceUp: ->
-            slice = $ @
-            slice.css bottom: '0px'
-            if i is settings.slices - 1
-              setTimeout (-> slice.animate { height:'100%', opacity:'1.0' }, settings.animSpeed, '', -> slider.trigger 'rambling:finished'), 100 + timeBuff
-            else
-              setTimeout (-> slice.animate { height:'100%', opacity:'1.0' }, settings.animSpeed), 100 + timeBuff
-
-            timeBuff += 50
-            i++
-          sliceUpDown: ->
-            slice = $ @
-            if i is 0
-              slice.css top: '0px'
-              i++
-            else
-              slice.css bottom: '0px'
-              i = 0
-
-            if v is settings.slices - 1
-              setTimeout (-> slice.animate { height:'100%', opacity:'1.0' }, settings.animSpeed, '', -> slider.trigger 'rambling:finished'),
-                100 + timeBuff
-            else
-              setTimeout (-> slice.animate { height:'100%', opacity:'1.0' }, settings.animSpeed), 100 + timeBuff
-
-            timeBuff += 50
-            v++
-          fold: ->
-            slice = $ @
-            origWidth = slice.width()
-            slice.css top: '0px', height: '100%', width: '0px'
-            if i is settings.slices - 1
-              setTimeout (-> slice.animate { width: origWidth, opacity:'1.0' }, settings.animSpeed, '', -> slider.trigger 'rambling:finished'),
-                100 + timeBuff
-            else
-              setTimeout (-> slice.animate { width: origWidth, opacity:'1.0' }, settings.animSpeed), 100 + timeBuff
-
-            timeBuff += 50
-            i++
-
-        slices.each animation_callbacks[animation]
-
-      else if current_effect is 'fade' or current_effect is 'slideInRight' or current_effect is 'slideInLeft'
-        createSlices slider, settings, vars
-
-        animation_options =
-          fade:
-            style:
-              height: '100%'
-              width: "#{slider.width()}px"
-              position: 'absolute'
-              top: 0
-              left: 0
-            animate:
-              opacity: '1'
-          slideInRight:
-            style:
-              height: '100%'
-              width: '0px'
-              opacity: '1'
-          slideInLeft:
-            style:
-              height: '100%'
-              width: '0px'
-              opacity: '1'
-              left: ''
-              right: '0px'
-            callback: (slice) ->
-              #Reset positioning
-              resetStyle =
-                left: '0px'
-                right: ''
-              slice.css resetStyle
-
-        current_effect_options = animation_options[current_effect]
-        animate = current_effect_options.animate or {width: "#{slider.width()}px"}
-
-        firstSlice = slider.find '.rambling-slice:first'
-        firstSlice.css animation_options[current_effect].style
-        firstSlice.animate animate, (settings.animSpeed * 2),'', ->
-          current_effect_options.callback(firstSlice) if current_effect_options.callback
-          slider.trigger 'rambling:finished'
-
-      else if current_effect.contains('box')
-        createBoxes slider, settings, vars
-
-        totalBoxes = settings.boxCols * settings.boxRows
-        i = 0
-        timeBuff = 0
-
-        boxes = slider.find '.rambling-box'
-        boxes = boxes.reverse() if current_effect.contains('Reverse')
-
-        animation_callbacks =
-          random:
-            beforeAnimation: ->
-              boxes = boxes.shuffle()
-            animate: (boxes) ->
-              boxes.each ->
-                box = $ @
-                if i is totalBoxes - 1
-                  setTimeout (-> box.animate { opacity:'1' }, settings.animSpeed, '', -> slider.trigger 'rambling:finished'),
-                   100 + timeBuff
-                else
-                  setTimeout (-> box.animate { opacity:'1' }, settings.animSpeed), 100 + timeBuff
-
-                timeBuff += 20
-                i++
-          rain:
-            beforeAnimation: ->
-              boxes = boxes.as2dArray settings.boxCols
-            animate: (boxes) ->
-              for cols in [0...(settings.boxCols * 2)] then do (cols) ->
-                prevCol = cols
-                for rows in [0...settings.boxRows] then do (rows) ->
-                  if prevCol >= 0 and prevCol < settings.boxCols
-                    row = rows
-                    col = prevCol
-                    time = timeBuff
-                    box = $ boxes[row][col]
-                    w = box.width()
-                    h = box.height()
-
-                    box.css(width: 0, height: 0) if current_effect.contains('Grow')
-
-                    if i is totalBoxes - 1
-                      setTimeout (-> box.animate { opacity:'1', width: w, height: h }, settings.animSpeed / 1.3, '', -> slider.trigger 'rambling:finished'),
-                        100 + time
-                    else
-                      setTimeout (-> box.animate { opacity:'1', width: w, height: h }, settings.animSpeed / 1.3), 100 + time
-                    i++
-
-                  prevCol--
-
-                timeBuff += 100
-
-        current_animation = current_effect.replace(/box/, '').replace(/Grow/, '').replace(/Reverse/, '').decapitalize()
-        callbacks = animation_callbacks[current_animation]
-
-        callbacks.beforeAnimation()
-        callbacks.animate boxes
+      animations[current_effect].apply @
 
     settings.afterLoad.call @
+
+    @stop = stop
+    @start = start
+    @initialize = initialize
+    @run = run
 
     @
 )(jQuery)
