@@ -225,7 +225,7 @@
       processCaption settings
 
     addDirectionNavigation = ->
-      if settings.directionNav
+      if settings.directionNav and vars.totalSlides > 1
         directionNav = $ "<div class='rambling-directionNav'><a class='rambling-prevNav'>#{settings.prevText}</a><a class='rambling-nextNav'>#{settings.nextText}</a></div>"
         slider.append directionNav
 
@@ -319,7 +319,7 @@
       run() if timer is ''
 
     slideTo = (direction) ->
-      return false if vars.running
+      return false if vars.running or vars.totalSlides is 1
       resetTimer()
       vars.currentSlide -= 2 if direction is 'prev'
       ramblingRun slider, kids, settings, direction
