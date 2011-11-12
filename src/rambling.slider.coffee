@@ -110,9 +110,13 @@
       paused: false
       stopped: false
 
-    stop = -> vars.stopped = true
+    stop = ->
+      vars.stopped = true
+      slider
 
-    start = -> vars.stopped = false
+    start = ->
+      vars.stopped = false
+      slider
 
     option = (options...) ->
       return settings unless options.length
