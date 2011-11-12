@@ -21,5 +21,6 @@ task 'minify', 'Minify the generate jquery.rambling.slider files', ->
 task 'spec', 'Run all specs', ->
   utils.log 'Running specs...'
   exec 'jasmine-node --coffee spec/', (err, stdout, stderr) ->
-    utils.error_handler err, stdout, stderr
+    utils.log stdout
+    utils.log "Error: #{stderr}" if stderr
     utils.log 'Done' unless err

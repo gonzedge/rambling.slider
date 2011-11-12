@@ -19,12 +19,12 @@
     methodExists = options in publicMethods
     optionsIsString = (typeof options) is 'string'
     ramblingSlider = @data 'rambling:slider'
-    isCallingGetter = (others) -> not others.length or (others.length is 1 and typeof(others[0]) is 'string')
+    isCallingGetter = (options, others) -> not others.length or (options is 'option' and others.length is 1 and typeof(others[0]) is 'string')
 
     if ramblingSlider
       return if methodExists
         value = ramblingSlider[options](others...)
-        if isCallingGetter others
+        if isCallingGetter options, others
           value
         else
           @
@@ -109,6 +109,7 @@
       running: false
       paused: false
       stopped: false
+    slider.data 'rambling:vars', vars
 
     stop = ->
       vars.stopped = true
