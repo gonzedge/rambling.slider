@@ -3,66 +3,70 @@
 The jQuery Rambling Slider is a CoffeeScript improved modified version of the [jQuery Nivo Slider](http://github.com/gilbitron/Nivo-Slider) by Gilbert Pellegrom, which is "The Most Awesome jQuery Image Slider".
 It includes some new options to give the slider the ability to adapt different image sizes.
 
-You can find more about it on [my blog](http://ramblinglabs.com).
+You can find more about it on [my blog](http://ramblinglabs.com) or on [this repository's wiki](http://github.com/egonzalez0787/rambling.slider/wiki).
 
 ## How to use the jQuery Rambling Slider
 
-The compiled JavaScript files, both for development and production, are in the lib/ directory, named "jquery.rambling.slider.js" and "jquery.rambling.slider.min.js" respectively.
+The compiled JavaScript files, both for development and production, are in the `lib/` directory, named `jquery.rambling.slider.js` and `jquery.rambling.slider.min.js` respectively. Include one of them on your html and then initialize your slider with:
+
+`$('#slider').ramblingSlider()`
 
 ### Examples
 
-There are usage examples available in the examples/ directory.
-You might want to see both "examples/default.html" and "examples/adaptive.html".
+There are usage examples available in the `examples/` directory.
+You might want to see both `default.html` and `examples/adaptive.html`.
 
 ## Features
 
 Among others, the new features added on top of the Nivo Slider include:
 
-* <code>adaptImages</code>. __Default value:__ <code>false</code>. __Description:__ When set to <code>true</code>, uses images instead of backgrounds for the animations, and scales the images to the maximum dimension available.
-* <code>useLargerImage</code>. __Default value:__ <code>true</code>. __Description:__ When set to <code>true</code>, uses the larger image dimensions as the maximum dimension available. Otherwise, it uses the slider width as the maximum available.
-* <code>alignBottom</code>. __Default value:__ <code>false</code>. __Description:__ When set to <code>true</code>, aligns the bottom right corner of the scaled images with the bottom right corner of the slider. Otherwise, the images are aligned to the top left of the slider.
+* `adaptImages`. __Default value:__ `false`. __Description:__ When set to `true`, uses images instead of backgrounds for the animations, and scales the images to the maximum dimension available.
+* `useLargerImage`. __Default value:__ `true`. __Description:__ When set to `true`, uses the larger image dimensions as the maximum dimension available. Otherwise, it uses the slider width as the maximum available.
+* `alignBottom`. __Default value:__ `false`. __Description:__ When set to `true`, aligns the bottom right corner of the scaled images with the bottom right corner of the slider. Otherwise, the images are aligned to the top left of the slider.
+* Methods `stop`, `start` can be called via `$('#slider').ramblingSlider('stop')`
+* Methods `option` and `effect` were added.
 
 ## CoffeeScript and Cake
 
 If you're interested in modifying or improving this script, you'll need to resolve these dependencies first:
 
-* NodeJS (<code>apt-get install nodejs</code>)
-* Node Package Manager -- optional (<code>apt-get install npm</code>)
-* CoffeeScript (<code>apt-get install coffeescript</code> or <code>npm install -g coffee-script</code>)
+* NodeJS (`apt-get install nodejs`)
+* Node Package Manager -- optional (`apt-get install npm`)
+* CoffeeScript (`apt-get install coffeescript` or `npm install -g coffee-script`)
 
 You can run your development build like this:
 
-<code>cake build</code>
+`cake build`
 
 And your production build like this:
 
-<code>cake -e 'production' build</code>
+`cake -e 'production' build`
 
 If you want to minify the existing js:
 
-<code>cake minify</code>
+`cake minify`
 
 ### Unit testing
 
 If you want to run the unit tests, you'll need to install the following node packages:
 
-* <code>jasmine-node</code>
-* <code>jsdom</code>
-* <code>jquery</code>
+* `jasmine-node`
+* `jsdom`
+* `jquery`
 
 They're easily installed with:
 
-<code>npm install -g jasmine-node</code>
-<code>npm install -g jsdom</code>
-<code>npm install -g jquery</code>
+`npm install -g jasmine-node`
+`npm install -g jsdom`
+`npm install -g jquery`
 
 To run all the tests, you can run:
 
-<code>jasmine-node --coffee spec/</code>
+`jasmine-node --coffee spec/`
 
 Or simply:
 
-<code>cake spec</code>
+`cake spec`
 
 ## License and copyright
 
