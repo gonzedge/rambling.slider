@@ -16,7 +16,13 @@ describe 'Rambling Slider', ->
 
   beforeEach ->
     rambling_slider = $ '<div id="#slider"><img src="image1.jpg" alt="image1" /><img src="image2.jpg" alt="image2" /></div>'
-    result = rambling_slider.ramblingSlider()
+    result = rambling_slider.ramblingSlider manualAdvance: true
+    jasmine.Clock.useMock();
+
+  afterEach ->
+    rambling_slider.data 'rambling:slider', null
+    rambling_slider.data 'rambling:vars', null
+    rambling_slider.remove()
 
   it 'should return the jQuery Array for method chaining', ->
     expect(result).toEqualJquery rambling_slider
@@ -49,7 +55,7 @@ describe 'Rambling Slider', ->
       other_slider = $ '<div id="#slider2"><img src="image1.jpg" alt="image1" /><img src="image2.jpg" alt="image2" /></div>'
       effect = 'boxRain'
 
-      other_slider.ramblingSlider effect: effect
+      other_slider.ramblingSlider manualAdvance: true, effect: effect
       expect(other_slider.ramblingSlider 'effect').toEqual effect
 
   describe 'when setting the effect', ->
@@ -107,7 +113,7 @@ describe 'Rambling Slider', ->
       other_slider = $ '<div id="#slider2"><img src="image1.jpg" alt="image1" /><img src="image2.jpg" alt="image2" /></div>'
       slices = 20
 
-      other_slider.ramblingSlider slices: slices
+      other_slider.ramblingSlider manualAdvance: true, slices: slices
       expect(other_slider.ramblingSlider('option', 'slices')).toEqual slices
 
   describe 'when setting a writable option', ->
@@ -167,10 +173,10 @@ describe 'Rambling Slider', ->
 
     beforeEach ->
       other_slider = $ '<div><img src="image1.jpg" alt="image1"/></div>'
-      other_slider.ramblingSlider()
+      other_slider.ramblingSlider manualAdvance: true
 
     it 'should never show the direction nav', ->
       expect(other_slider.find('rambling-directionNav').is(':visible')).toBeFalsy()
 
-      other_slider.trigger 'mouseenter', {type: 'mouseenter'}
+      other_slider.trigger 'mouseenter', type: 'mouseenter'
       expect(other_slider.find('rambling-directionNav').is(':visible')).toBeFalsy()

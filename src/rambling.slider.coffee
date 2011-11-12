@@ -587,7 +587,7 @@
           opacity: '1'
           left: ''
           right: '0px'
-        afterChange: -> @.css left: '0px', right: ''
+        afterChange: -> @css left: '0px', right: ''
 
     animations =
       sliceDown: slideDownSlices
