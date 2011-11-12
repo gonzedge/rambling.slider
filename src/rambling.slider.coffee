@@ -13,15 +13,32 @@
 
 (($) ->
 
-  methods = ['stop', 'start']
+  publicMethods = ['stop', 'start', 'option', 'effect']
 
-  $.fn.ramblingSlider = (options) ->
+  $.fn.ramblingSlider = (options, others...) ->
+    methodExists = options in publicMethods
+    optionsIsString = (typeof options) is 'string'
+    ramblingSlider = @data 'rambling:slider'
+    isCallingGetter = (others) -> not others.length or (others.length is 1 and typeof(others[0]) is 'string')
+
+    if ramblingSlider
+      return if methodExists
+        value = ramblingSlider[options](others...)
+        if isCallingGetter others
+          value
+        else
+          @
+      else
+        if optionsIsString
+          $.error "Method '#{options}' not found."
+        else
+          $.error "Slider already initialized." if options
+    else
+      return $.error "Tried to call method '#{options}' on element without slider." if methodExists or optionsIsString
+
     @each (key, value) ->
       element = $ @
-
-      if (ramblingSlider = element.data 'rambling:slider')
-        ramblingSlider[options]() if methods.contains(options)
-        return ramblingSlider
+      return if element.data 'rambling:slider'
 
       ramblingSlider = new RamblingSlider @, options
       element.data 'rambling:slider', ramblingSlider
@@ -30,13 +47,15 @@
       ramblingSlider.run()
 
   $.fn.ramblingSlider.defaults =
-    effect: 'random'
     slices: 15
     boxCols: 8
     boxRows: 4
     animSpeed: 500
     pauseTime: 3000
+    manualAdvance: false
+    captionOpacity: 0.8
     startSlide: 0
+    effect: 'random'
     directionNav: true
     directionNavHide: true
     controlNav: true
@@ -49,8 +68,6 @@
     alignBottom: false
     keyboardNav: true
     pauseOnHover: true
-    manualAdvance: false
-    captionOpacity: 0.8
     prevText: 'Prev'
     nextText: 'Next'
     beforeChange: ->
@@ -59,45 +76,92 @@
     lastSlide: ->
     afterLoad: ->
 
+  cannotChange = [
+   'startSlide',
+   'directionNav',
+   'directionNavHide',
+   'controlNav',
+   'controlNavThumbs',
+   'controlNavThumbsFromRel',
+   'controlNavThumbsSearch',
+   'controlNavThumbsReplace',
+   'adaptImages',
+   'useLargerImage',
+   'alignBottom',
+   'keyboardNav',
+   'pauseOnHover',
+   'prevText',
+   'nextText'
+  ]
+
   RamblingSlider = (element, options) ->
     slider = $ element
     kids = slider.children ':not(#rambling-animation)'
     settings = $.extend {}, $.fn.ramblingSlider.defaults, options
+    animationsToRun = []
     timer = 0
     animationTimeBuffer = 0
     vars =
       currentSlide: 0
       currentImage: ''
       totalSlides: 0
-      randAnim: ''
+      randomAnimation: ''
       running: false
       paused: false
-      stop: false
-    animationsToRun = [
-      'sliceDownRight',
-      'sliceDownLeft',
-      'sliceUpRight',
-      'sliceUpLeft',
-      'sliceUpDown',
-      'sliceUpDownLeft',
-      'fold',
-      'foldLeft',
-      'fade',
-      'slideInRight',
-      'slideInLeft',
-      'boxRandom',
-      'boxRain',
-      'boxRainReverse',
-      'boxRainGrow',
-      'boxRainGrowReverse'
-    ]
-    animationsToRun = settings.effect.split(',') if settings.effect.contains(',')
+      stopped: false
 
-    stop = -> vars.stop = true unless vars.stop
+    stop = -> vars.stopped = true
 
-    start = -> vars.stop = false if vars.stop
+    start = -> vars.stopped = false
+
+    option = (options...) ->
+      return settings unless options.length
+
+      option = options[0]
+      value = options[1]
+      optionIsObject =  typeof(option) is 'object'
+
+      if option is 'effect'
+        return if value then effect(value) else effect()
+
+      return if optionIsObject
+        $.extend settings, option
+      else
+        if value?
+          if option in cannotChange
+            return $.error "Slider already running. Option '#{option}' cannot be changed."
+
+          settings[option] = value
+        else
+          settings[option]
+
+    effect = (effects...) ->
+      return settings.effect unless effects.length
+
+      settings.effect = effects[0]
+      animationsToRun = [
+        'sliceDownRight',
+        'sliceDownLeft',
+        'sliceUpRight',
+        'sliceUpLeft',
+        'sliceUpDown',
+        'sliceUpDownLeft',
+        'fold',
+        'foldLeft',
+        'fade',
+        'slideInRight',
+        'slideInLeft',
+        'boxRandom',
+        'boxRain',
+        'boxRainReverse',
+        'boxRainGrow',
+        'boxRainGrowReverse'
+      ]
+      animationsToRun = settings.effect.split(',') if settings.effect.contains(',')
+      settings.effect
 
     initialize = ->
+      effect settings.effect
       setSliderInitialState()
 
       vars.currentSlide = settings.startSlide = settings.startSlide % vars.totalSlides
@@ -545,7 +609,7 @@
     ramblingRun = (slider, kids, settings, nudge) ->
       settings.lastSlide.call(@) if vars.currentSlide is vars.totalSlides - 1
 
-      return false if vars.stop and not nudge
+      return false if vars.stopped and not nudge
 
       settings.beforeChange.call @
 
@@ -563,16 +627,21 @@
       processCaption settings
       slider.find('.rambling-slice,.rambling-box').remove()
 
-      vars.randAnim = getRandomAnimation() if settings.effect is 'random' or settings.effect.contains(',')
+      if settings.effect is 'random' or settings.effect.contains(',')
+        vars.randomAnimation = getRandomAnimation()
+      else
+        vars.randomAnimation = null
 
       vars.running = true
-      current_effect = vars.randAnim or settings.effect
-      animations[current_effect].apply @
+      currentEffect = vars.randomAnimation or settings.effect
+      animations[currentEffect].apply @
 
     settings.afterLoad.call @
 
     @stop = stop
     @start = start
+    @effect = effect
+    @option = option
     @initialize = initialize
     @run = run
 
