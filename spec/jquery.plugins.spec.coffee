@@ -11,7 +11,7 @@ describe 'jQuery Plugins', ->
 
   beforeEach ->
     html_box = $ '<div></div>'
-    html_box.append($('<ul></ul>').append($('<li></li>')).append($('<li></li>')).append($('<li></li>')).append($('<li></li>')))
+    html_box.append '<ul><li></li><li></li><li></li><li></li></ul>'
 
   describe 'when reversing a jQuery array', ->
     original_array = null
