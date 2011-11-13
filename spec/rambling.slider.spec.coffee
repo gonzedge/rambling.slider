@@ -15,9 +15,11 @@ describe 'Rambling Slider', ->
   error = null
 
   beforeEach ->
+    spyOn window, 'setTimeout'
+    spyOn window, 'setInterval'
+
     rambling_slider = $ '<div id="#slider"><img src="image1.jpg" alt="image1" /><img src="image2.jpg" alt="image2" /></div>'
-    result = rambling_slider.ramblingSlider manualAdvance: true
-    jasmine.Clock.useMock();
+    result = rambling_slider.ramblingSlider()
 
   afterEach ->
     rambling_slider.data 'rambling:slider', null
@@ -55,7 +57,7 @@ describe 'Rambling Slider', ->
       other_slider = $ '<div id="#slider2"><img src="image1.jpg" alt="image1" /><img src="image2.jpg" alt="image2" /></div>'
       effect = 'boxRain'
 
-      other_slider.ramblingSlider manualAdvance: true, effect: effect
+      other_slider.ramblingSlider effect: effect
       expect(other_slider.ramblingSlider 'effect').toEqual effect
 
   describe 'when setting the effect', ->
@@ -113,7 +115,7 @@ describe 'Rambling Slider', ->
       other_slider = $ '<div id="#slider2"><img src="image1.jpg" alt="image1" /><img src="image2.jpg" alt="image2" /></div>'
       slices = 20
 
-      other_slider.ramblingSlider manualAdvance: true, slices: slices
+      other_slider.ramblingSlider slices: slices
       expect(other_slider.ramblingSlider('option', 'slices')).toEqual slices
 
   describe 'when setting a writable option', ->
@@ -173,7 +175,7 @@ describe 'Rambling Slider', ->
 
     beforeEach ->
       other_slider = $ '<div><img src="image1.jpg" alt="image1"/></div>'
-      other_slider.ramblingSlider manualAdvance: true
+      other_slider.ramblingSlider()
 
     it 'should never show the direction nav', ->
       expect(other_slider.find('rambling-directionNav').is(':visible')).toBeFalsy()

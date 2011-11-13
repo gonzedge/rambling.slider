@@ -182,7 +182,7 @@
 
     run = ->
       if not settings.manualAdvance and kids.length > 1
-        timer = setInterval (-> ramblingRun slider, kids, settings, false), settings.pauseTime
+        timer = window.setInterval (-> ramblingRun slider, kids, settings, false), settings.pauseTime
 
     setSliderInitialState = ->
       slider.css position: 'relative'
@@ -472,11 +472,11 @@
           slice = $ @
           slice.css top: '0px'
           if index is settings.slices - 1
-            setTimeout ->
+            window.setTimeout ->
               slice.animate { height:'100%', opacity:'1.0' }, settings.speed, '', -> slider.trigger 'rambling:finished'
             , 100 + animationTimeBuffer
           else
-            setTimeout (-> slice.animate { height:'100%', opacity:'1.0' }, settings.speed), 100 + animationTimeBuffer
+            window.setTimeout (-> slice.animate { height:'100%', opacity:'1.0' }, settings.speed), 100 + animationTimeBuffer
 
           animationTimeBuffer += 50
         , reorderCallback
@@ -486,9 +486,9 @@
           slice = $ @
           slice.css bottom: '0px'
           if index is settings.slices - 1
-            setTimeout (-> slice.animate { height:'100%', opacity:'1.0' }, settings.speed, '', -> slider.trigger 'rambling:finished'), 100 + animationTimeBuffer
+            window.setTimeout (-> slice.animate { height:'100%', opacity:'1.0' }, settings.speed, '', -> slider.trigger 'rambling:finished'), 100 + animationTimeBuffer
           else
-            setTimeout (-> slice.animate { height:'100%', opacity:'1.0' }, settings.speed), 100 + animationTimeBuffer
+            window.setTimeout (-> slice.animate { height:'100%', opacity:'1.0' }, settings.speed), 100 + animationTimeBuffer
 
           animationTimeBuffer += 50
         , reorderCallback
@@ -499,10 +499,10 @@
           slice.css (if index % 2 then bottom: '0px' else top: '0px')
 
           if index is settings.slices - 1
-            setTimeout (-> slice.animate { height:'100%', opacity:'1.0' }, settings.speed, '', -> slider.trigger 'rambling:finished'),
+            window.setTimeout (-> slice.animate { height:'100%', opacity:'1.0' }, settings.speed, '', -> slider.trigger 'rambling:finished'),
               100 + animationTimeBuffer
           else
-            setTimeout (-> slice.animate { height:'100%', opacity:'1.0' }, settings.speed), 100 + animationTimeBuffer
+            window.setTimeout (-> slice.animate { height:'100%', opacity:'1.0' }, settings.speed), 100 + animationTimeBuffer
 
           animationTimeBuffer += 50
         , reorderCallback
@@ -513,10 +513,10 @@
           origWidth = slice.width()
           slice.css top: '0px', height: '100%', width: '0px'
           if index is settings.slices - 1
-            setTimeout (-> slice.animate { width: origWidth, opacity:'1.0' }, settings.speed, '', -> slider.trigger 'rambling:finished'),
+            window.setTimeout (-> slice.animate { width: origWidth, opacity:'1.0' }, settings.speed, '', -> slider.trigger 'rambling:finished'),
               100 + animationTimeBuffer
           else
-            setTimeout (-> slice.animate { width: origWidth, opacity:'1.0' }, settings.speed), 100 + animationTimeBuffer
+            window.setTimeout (-> slice.animate { width: origWidth, opacity:'1.0' }, settings.speed), 100 + animationTimeBuffer
 
           animationTimeBuffer += 50
         , reorderCallback
@@ -527,10 +527,10 @@
           @each (index) ->
             box = $ @
             if index is totalBoxes - 1
-              setTimeout (-> box.animate { opacity:'1' }, settings.speed, '', -> slider.trigger 'rambling:finished'),
+              window.setTimeout (-> box.animate { opacity:'1' }, settings.speed, '', -> slider.trigger 'rambling:finished'),
                100 + animationTimeBuffer
             else
-              setTimeout (-> box.animate { opacity:'1' }, settings.speed), 100 + animationTimeBuffer
+              window.setTimeout (-> box.animate { opacity:'1' }, settings.speed), 100 + animationTimeBuffer
 
             animationTimeBuffer += 20
         , $.fn.shuffle
@@ -554,10 +554,10 @@
                 box.css(width: 0, height: 0) if grow
 
                 if index is totalBoxes - 1
-                  setTimeout (-> box.animate { opacity:'1', width: w, height: h }, settings.speed / 1.3, '', -> slider.trigger 'rambling:finished'),
+                  window.setTimeout (-> box.animate { opacity:'1', width: w, height: h }, settings.speed / 1.3, '', -> slider.trigger 'rambling:finished'),
                     100 + animationTimeBuffer
                 else
-                  setTimeout (-> box.animate { opacity:'1', width: w, height: h }, settings.speed / 1.3), 100 + animationTimeBuffer
+                  window.setTimeout (-> box.animate { opacity:'1', width: w, height: h }, settings.speed / 1.3), 100 + animationTimeBuffer
 
                 index++
                 animationTimeBuffer += 20
