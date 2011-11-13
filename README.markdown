@@ -26,6 +26,18 @@ Among others, the new features added on top of the Nivo Slider include:
 * Methods `stop`, `start` can be called via `$('#slider').ramblingSlider('stop')`
 * Methods `option` and `effect` were added.
 
+## Supported jQuery versions
+
+The jQuery Rambling Slider has been tested with the following jQuery Releases:
+
+* 1.7
+* 1.6.x
+* 1.5.x
+* 1.4.x
+* 1.3.x
+
+For more info on the jQuery versions supported go to the [Supported jQuery Versions page](http://github.com/egonzalez0787/rambling.slider/wiki/Supported-jQuery-Versions).
+
 ## CoffeeScript and Cake
 
 If you're interested in modifying or improving this script, you'll need to resolve these dependencies first:
