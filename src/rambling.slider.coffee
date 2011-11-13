@@ -284,7 +284,7 @@
 
         settings.afterChange.call @
 
-    getRandomAnimation = -> animationsToRun[Math.floor(Math.random() * (animationsToRun.length + 1))] or 'fade'
+    getRandomAnimation = -> animationsToRun[Math.floor(Math.random() * animationsToRun.length)] or 'fade'
 
     processCaption = (settings) ->
       ramblingCaption = slider.find '.rambling-caption'
