@@ -473,10 +473,10 @@
           slice.css top: '0px'
           if index is settings.slices - 1
             window.setTimeout ->
-              slice.animate { height:'100%', opacity:'1.0' }, settings.speed, '', -> slider.trigger 'rambling:finished'
+              slice.animate { height: "#{slider.height()}px", opacity:'1.0' }, settings.speed, '', -> slider.trigger 'rambling:finished'
             , 100 + animationTimeBuffer
           else
-            window.setTimeout (-> slice.animate { height:'100%', opacity:'1.0' }, settings.speed), 100 + animationTimeBuffer
+            window.setTimeout (-> slice.animate { height: "#{slider.height()}px", opacity:'1.0' }, settings.speed), 100 + animationTimeBuffer
 
           animationTimeBuffer += 50
         , reorderCallback
@@ -486,9 +486,9 @@
           slice = $ @
           slice.css bottom: '0px'
           if index is settings.slices - 1
-            window.setTimeout (-> slice.animate { height:'100%', opacity:'1.0' }, settings.speed, '', -> slider.trigger 'rambling:finished'), 100 + animationTimeBuffer
+            window.setTimeout (-> slice.animate { height: "#{slider.height()}px", opacity:'1.0' }, settings.speed, '', -> slider.trigger 'rambling:finished'), 100 + animationTimeBuffer
           else
-            window.setTimeout (-> slice.animate { height:'100%', opacity:'1.0' }, settings.speed), 100 + animationTimeBuffer
+            window.setTimeout (-> slice.animate { height: "#{slider.height()}px", opacity:'1.0' }, settings.speed), 100 + animationTimeBuffer
 
           animationTimeBuffer += 50
         , reorderCallback
@@ -499,10 +499,10 @@
           slice.css (if index % 2 then bottom: '0px' else top: '0px')
 
           if index is settings.slices - 1
-            window.setTimeout (-> slice.animate { height:'100%', opacity:'1.0' }, settings.speed, '', -> slider.trigger 'rambling:finished'),
+            window.setTimeout (-> slice.animate { height: "#{slider.height()}px", opacity:'1.0' }, settings.speed, '', -> slider.trigger 'rambling:finished'),
               100 + animationTimeBuffer
           else
-            window.setTimeout (-> slice.animate { height:'100%', opacity:'1.0' }, settings.speed), 100 + animationTimeBuffer
+            window.setTimeout (-> slice.animate { height: "#{slider.height()}px", opacity:'1.0' }, settings.speed), 100 + animationTimeBuffer
 
           animationTimeBuffer += 50
         , reorderCallback
