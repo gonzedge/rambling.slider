@@ -451,7 +451,13 @@
       slices = createSlices slider, settings, vars
       slice = slices.filter ':first'
       slice.css options.style
-      slice.animate (options.animate or width: "#{slider.width()}px"), (settings.speed * 2), '', ->
+      if settings.adaptImages and options.style['background-position']
+        image = slice.find 'img'
+        position = options.style['background-position'].split ' '
+        image.css left: position[0]
+        image.animate {left: options.animate['background-position'].split(' ')[0]}, settings.speed * 2
+
+      slice.animate (options.animate or width: "#{slider.width()}px"), settings.speed * 2, '', ->
         options.afterChange.apply(slice) if options.afterChange
         slider.trigger 'rambling:finished'
 
@@ -575,11 +581,31 @@
           left: 0
         animate:
           opacity: '1'
-      slideInRight:
+      rolloverRight:
         style:
           height: '100%'
           width: '0px'
           opacity: '1'
+      rolloverLeft:
+        animate:
+          width: "#{slider.width()}"
+          'background-position': "0px"
+        style:
+          height: '100%'
+          width: '0px'
+          opacity: '1'
+          left: ''
+          right: '0px'
+          'background-position': "#{-slider.width()}px"
+      slideInRight:
+        animate:
+          width: "#{slider.width()}"
+          'background-position': "0px"
+        style:
+          height: '100%'
+          width: '0px'
+          opacity: '1'
+          'background-position': "#{-slider.width()}px"
       slideInLeft:
         style:
           height: '100%'
@@ -605,6 +631,9 @@
       slideIn: -> animateFullImage animationOptions.slideInRight
       slideInRight: -> animateFullImage animationOptions.slideInRight
       slideInLeft: -> animateFullImage animationOptions.slideInLeft
+      rollover: -> animateFullImage animationOptions.rolloverRight
+      rolloverRight: -> animateFullImage animationOptions.rolloverRight
+      rolloverLeft: -> animateFullImage animationOptions.rolloverLeft
       boxRandom: randomBoxes
       boxRain: -> rainBoxes -> $(@).as2dArray settings.boxCols
       boxRainReverse: -> rainBoxes -> $(@).reverse().as2dArray settings.boxCols

@@ -11,7 +11,7 @@ The compiled JavaScript files, both for development and production, are in the `
 
 <pre><code>&lt;div id="slider"&gt;
   &lt;img src="images/image1.jpg" alt="image1"/&gt;
-  &lt;a href="#a_link"&gt;&lt;img src="images/image2.jpg" alt="image2"/&gt;&lt;/a&gt;
+  &lt;a href="#link"&gt;&lt;img src="images/image2.jpg" alt="image2"/&gt;&lt;/a&gt;
   &lt;img src="images/image3.jpg" alt="image3"/&gt;
   &lt;img src="images/image4.jpg" alt="image4"/&gt;
 &lt;/div&gt;
