@@ -626,6 +626,7 @@
       sliceUpDownRight: slideUpDownSlices
       sliceUpDownLeft: -> slideUpDownSlices $.fn.reverse
       fold: foldSlices
+      foldRight: foldSlices
       foldLeft: -> foldSlices $.fn.reverse
       fade: -> animateFullImage animationOptions.fade
       slideIn: -> animateFullImage animationOptions.slideInRight
