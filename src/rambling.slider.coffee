@@ -13,7 +13,7 @@
 
 (($) ->
 
-  publicMethods = ['stop', 'start', 'option', 'effect']
+  publicMethods = ['stop', 'start', 'option', 'effect', 'destroy']
 
   $.fn.ramblingSlider = (options, others...) ->
     methodExists = options in publicMethods
@@ -109,6 +109,7 @@
       running: false
       paused: false
       stopped: false
+
     slider.data 'rambling:vars', vars
 
     stop = ->
@@ -117,6 +118,19 @@
 
     start = ->
       vars.stopped = false
+      slider
+
+    destroy = ->
+      slider.find('#rambling-animation,.rambling-slice,.rambling-box,.rambling-caption,.rambling-directionNav,.rambling-controlNav').remove()
+      slider.removeClass 'ramblingSlider'
+      slider.removeClass 'adaptingSlider'
+      slider.removeAttr 'style'
+      slider.data 'rambling:vars', null
+      slider.data 'rambling:slider', null
+      slider.unbind 'rambling:finished'
+      slider.unbind 'hover'
+      resetTimer()
+      kids.show().children().show()
       slider
 
     option = (options...) ->
@@ -679,6 +693,7 @@
     @start = start
     @effect = effect
     @option = option
+    @destroy = destroy
     @initialize = initialize
     @run = run
 
