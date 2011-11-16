@@ -161,12 +161,16 @@
       animationsToRun = [
         'sliceDownRight',
         'sliceDownLeft',
+        'sliceDownRandom',
         'sliceUpRight',
         'sliceUpLeft',
+        'sliceUpRandom',
         'sliceUpDown',
         'sliceUpDownLeft',
+        'sliceUpDownRandom',
         'foldRight',
         'foldLeft',
+        'foldRandom',
         'fade',
         'slideInRight',
         'slideInLeft',
@@ -635,15 +639,19 @@
       sliceDown: slideDownSlices
       sliceDownRight: slideDownSlices
       sliceDownLeft: -> slideDownSlices $.fn.reverse
+      sliceDownRandom: -> slideDownSlices $.fn.shuffle
       sliceUp: slideUpSlices
       sliceUpRight: slideUpSlices
       sliceUpLeft: -> slideUpSlices $.fn.reverse
+      sliceUpRandom: -> slideUpSlices $.fn.shuffle
       sliceUpDown: slideUpDownSlices
       sliceUpDownRight: slideUpDownSlices
       sliceUpDownLeft: -> slideUpDownSlices $.fn.reverse
+      sliceUpDownRandom: -> slideUpDownSlices $.fn.shuffle
       fold: foldSlices
       foldRight: foldSlices
       foldLeft: -> foldSlices $.fn.reverse
+      foldRandom: -> foldSlices $.fn.shuffle
       fade: -> animateFullImage animationOptions.fade
       slideIn: -> animateFullImage animationOptions.slideInRight
       slideInRight: -> animateFullImage animationOptions.slideInRight
