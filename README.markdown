@@ -33,8 +33,9 @@ Among others, the new features added on top of the Nivo Slider include:
 * `adaptImages`. __Default value:__ `false`. __Description:__ When set to `true`, uses images instead of backgrounds for the animations, and scales the images to the maximum dimension available.
 * `useLargerImage`. __Default value:__ `true`. __Description:__ When set to `true`, uses the larger image dimensions as the maximum dimension available. Otherwise, it uses the slider width as the maximum available.
 * `alignBottom`. __Default value:__ `false`. __Description:__ When set to `true`, aligns the bottom right corner of the scaled images with the bottom right corner of the slider. Otherwise, the images are aligned to the top left of the slider.
-* Methods `stop`, `start` can be called via `$('#slider').ramblingSlider('stop')`
-* Methods `option` and `effect` were added.
+* Methods `stop`, `start` can be called via `$('#slider').ramblingSlider('stop')` and allow method chaining.
+* Methods `option` and `effect` were added. Allow method chaining when calling the setters.
+* Method `destroy` was added and allows method chaining.
 
 ## Supported jQuery versions
 
