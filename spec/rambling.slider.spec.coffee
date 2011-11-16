@@ -40,12 +40,15 @@ describe 'Rambling Slider', ->
     expect(result).toEqualJquery rambling_slider
 
   it 'should set the first image as the current image', ->
-    expect(rambling_slider.css 'background').toContain(rambling_slider.find('img').attr 'src')
+    expect(rambling_slider.find('.currentImage').attr 'src').toEqual(rambling_slider.children('img').first().attr 'src')
 
   it 'should add all the expected html elements', ->
     expect(rambling_slider).toContainElementWithClass 'rambling-caption'
     expect(rambling_slider).toContainElementWithClass 'rambling-directionNav'
     expect(rambling_slider).toContainElementWithClass 'rambling-controlNav'
+
+  it 'should add the animation container element', ->
+    expect(rambling_slider).toContainElementWithId 'rambling-animation'
 
   it 'should add the "ramblingSlider" class', ->
     expect(rambling_slider).toHaveClass 'ramblingSlider'
@@ -178,6 +181,9 @@ describe 'Rambling Slider', ->
       expect(rambling_slider).not.toContainElementWithClass 'rambling-directionNav'
       expect(rambling_slider).not.toContainElementWithClass 'rambling-controlNav'
 
+    it 'should remove the animation container element', ->
+      expect(rambling_slider).not.toContainElementWithId 'rambling-animation'
+
     it 'should remove the "ramblingSlider" class', ->
       expect(rambling_slider).not.toHaveClass 'ramblingSlider'
 
@@ -230,18 +236,12 @@ describe 'Rambling Slider', ->
     beforeEach ->
       create_slider adaptImages: true
 
-    it 'should add the animation container element', ->
-      expect(rambling_slider).toContainElementWithId 'rambling-animation'
-
     it 'should add the "adaptingSlider" class', ->
       expect(rambling_slider).toHaveClass 'adaptingSlider'
 
     describe 'and the slider is destroyed', ->
       beforeEach ->
         rambling_slider.ramblingSlider 'destroy'
-
-      it 'should remove the animation container element', ->
-        expect(rambling_slider).not.toContainElementWithId 'rambling-animation'
 
       it 'should remove the "adaptingSlider" class', ->
         expect(rambling_slider).not.toHaveClass 'adaptingSlider'
