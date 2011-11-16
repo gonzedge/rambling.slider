@@ -328,7 +328,7 @@
       kid
 
     resetTimer = ->
-      clearInterval timer
+      window.clearInterval timer
       timer = ''
 
     pauseSlider = ->

@@ -13,24 +13,46 @@ describe 'Rambling Slider', ->
   rambling_slider = null
   result = null
   error = null
+  fake_timer = {}
 
-  beforeEach ->
-    spyOn window, 'setTimeout'
-    spyOn window, 'setInterval'
-
+  create_slider = (options...) ->
     rambling_slider = $ '<div id="#slider"><img src="image1.jpg" alt="image1" /><img src="image2.jpg" alt="image2" /></div>'
-    result = rambling_slider.ramblingSlider()
+    if options.length
+      rambling_slider.ramblingSlider options[0]
+    else
+      rambling_slider.ramblingSlider()
 
-  afterEach ->
+  destroy_slider = ->
     rambling_slider.data 'rambling:slider', null
     rambling_slider.data 'rambling:vars', null
     rambling_slider.remove()
+
+  beforeEach ->
+    spyOn window, 'setTimeout'
+    spyOn(window, 'setInterval').andReturn fake_timer
+    spyOn window, 'clearInterval'
+
+    result = create_slider()
+
+  afterEach destroy_slider
 
   it 'should return the jQuery Array for method chaining', ->
     expect(result).toEqualJquery rambling_slider
 
   it 'should set the first image as the current image', ->
     expect(rambling_slider.css 'background').toContain(rambling_slider.find('img').attr 'src')
+
+  it 'should add all the expected html elements', ->
+    expect(rambling_slider).toContainElementWithClass 'rambling-caption'
+    expect(rambling_slider).toContainElementWithClass 'rambling-directionNav'
+    expect(rambling_slider).toContainElementWithClass 'rambling-controlNav'
+
+  it 'should add the "ramblingSlider" class', ->
+    expect(rambling_slider).toHaveClass 'ramblingSlider'
+
+  it 'should add the slider data', ->
+    expect(rambling_slider).toHaveData 'rambling:slider'
+    expect(rambling_slider).toHaveData 'rambling:vars'
 
   #describe 'when the startSlide is not the default', ->
   #  other_slider = null
@@ -54,10 +76,8 @@ describe 'Rambling Slider', ->
       expect(rambling_slider.ramblingSlider 'effect').toEqual $.fn.ramblingSlider.defaults.effect
 
     it 'should return the one set at initialization', ->
-      other_slider = $ '<div id="#slider2"><img src="image1.jpg" alt="image1" /><img src="image2.jpg" alt="image2" /></div>'
       effect = 'boxRain'
-
-      other_slider.ramblingSlider effect: effect
+      other_slider = create_slider effect: effect
       expect(other_slider.ramblingSlider 'effect').toEqual effect
 
   describe 'when setting the effect', ->
@@ -147,8 +167,31 @@ describe 'Rambling Slider', ->
     it 'should not change the value', ->
       expect(rambling_slider.ramblingSlider('option', 'startSlide')).toEqual $.fn.ramblingSlider.defaults.startSlide
 
-  describe 'when trying to call a non existent method', ->
+  describe 'when destroying the slider', ->
+    beforeEach ->
+      rambling_slider.ramblingSlider 'destroy'
 
+    it 'should remove all the added html elements', ->
+      expect(rambling_slider).not.toContainElementWithClass 'rambling-slice'
+      expect(rambling_slider).not.toContainElementWithClass 'rambling-box'
+      expect(rambling_slider).not.toContainElementWithClass 'rambling-caption'
+      expect(rambling_slider).not.toContainElementWithClass 'rambling-directionNav'
+      expect(rambling_slider).not.toContainElementWithClass 'rambling-controlNav'
+
+    it 'should remove the "ramblingSlider" class', ->
+      expect(rambling_slider).not.toHaveClass 'ramblingSlider'
+
+    it 'should remove the custom styles from the slider', ->
+      expect(rambling_slider.attr 'style').toEqual ''
+
+    it 'should clear the timer', ->
+      expect(window.clearInterval).toHaveBeenCalledWith fake_timer
+
+    it 'should remove the slider data', ->
+      expect(rambling_slider).not.toHaveData 'rambling:slider'
+      expect(rambling_slider).not.toHaveData 'rambling:vars'
+
+  describe 'when trying to call a non existent method', ->
     beforeEach ->
       try
         rambling_slider.ramblingSlider 'methodNotPresent'
@@ -182,3 +225,23 @@ describe 'Rambling Slider', ->
 
       other_slider.trigger 'mouseenter', type: 'mouseenter'
       expect(other_slider.find('rambling-directionNav').is(':visible')).toBeFalsy()
+
+  describe 'when the slider is adaptive', ->
+    beforeEach ->
+      create_slider adaptImages: true
+
+    it 'should add the animation container element', ->
+      expect(rambling_slider).toContainElementWithId 'rambling-animation'
+
+    it 'should add the "adaptingSlider" class', ->
+      expect(rambling_slider).toHaveClass 'adaptingSlider'
+
+    describe 'and the slider is destroyed', ->
+      beforeEach ->
+        rambling_slider.ramblingSlider 'destroy'
+
+      it 'should remove the animation container element', ->
+        expect(rambling_slider).not.toContainElementWithId 'rambling-animation'
+
+      it 'should remove the "adaptingSlider" class', ->
+        expect(rambling_slider).not.toHaveClass 'adaptingSlider'
