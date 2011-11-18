@@ -1,5 +1,5 @@
 String::contains = (string) ->
-  @match "#{string}"
+  @indexOf(string) isnt -1
 
 String::decapitalize = ->
   first = @[0..0]
@@ -8,4 +8,4 @@ String::decapitalize = ->
   "#{first.toLowerCase()}#{rest}"
 
 String::startsWith = (string) ->
-  @match "^#{string}"
+  @substring(0, string.length) is string
