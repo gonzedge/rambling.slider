@@ -24,7 +24,7 @@ You can then initialize your slider with:
 ### Examples
 
 There are usage examples available in the `examples/` directory.
-You might want to see both `default.html` and `examples/adaptive.html`.
+You might want to see both `default.html` and `adaptive.html`.
 
 ## Features
 
