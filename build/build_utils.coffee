@@ -1,6 +1,8 @@
 fs = require 'fs'
 {exec} = require 'child_process'
 require './string_extensions'
+require '../src/string_extensions'
+require '../src/array_extensions'
 
 class BuildUtils
   log: (string) ->
@@ -29,19 +31,30 @@ class BuildUtils
     @combine_source_files (content) ->
       self.process content, callback
 
+  file_sorter: (first, second) ->
+    return -1 if first is 'comments.coffee'
+    return 1 if second is 'comments.coffee'
+    return -1 if first < second
+    return 1 if first > second
+    0
+
   combine_source_files: (callback) ->
     self = @
     fs.readdir './src', (err, files) ->
       self.error_handler err
-      content = new Array()
+      content = []
+      contentAdded = 0
 
-      files = files.sort()
-      for file, index in files when file.indexOf('.') isnt 0 then do (file, index) ->
+      files = files.where (file) -> not file.startsWith '.'
+      files = files.sort self.file_sorter
+
+      for file, index in files then do (file, index) ->
         fs.readFile "./src/#{file}", 'utf8', (err, fileContent) ->
           self.error_handler err
           content[content.length] = fileContent
+          contentAdded++
 
-          if index is files.length - 1
+          if contentAdded is files.length
             callback content
 
 global.BuildUtils = BuildUtils
