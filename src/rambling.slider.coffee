@@ -98,17 +98,17 @@
     slider = $ element
     kids = slider.children ':not(#rambling-animation)'
     settings = $.extend {}, $.fn.ramblingSlider.defaults, options
-    animationsToRun = []
     timer = 0
     animationTimeBuffer = 0
     vars =
       currentSlide: 0
-      currentImage: ''
+      currentSlideElement: ''
       totalSlides: 0
       randomAnimation: ''
       running: false
       paused: false
       stopped: false
+    animationsToRun = []
 
     slider.data 'rambling:vars', vars
 
@@ -182,7 +182,8 @@
         'boxRainGrow',
         'boxRainGrowReverse'
       ]
-      animationsToRun = settings.effect.split(',') if settings.effect.contains(',')
+      animationsToRun = settings.effect.split(',') if settings.effect.contains ','
+
       settings.effect
 
     initialize = ->
@@ -215,7 +216,7 @@
       prepareSliderChildren()
 
     prepareAnimationContainer = ->
-      ramblingAnimationContainer = $ '<div id="rambling-animation"></div>'
+      ramblingAnimationContainer = $ '<div id="rambling-animation"><img src="" alt="currentSlideElement" class="currentSlideElement"></div>'
       ramblingAnimationContainer.css width: slider.width(), height: slider.height(), overflow: 'hidden'
       slider.prepend ramblingAnimationContainer
 
@@ -226,7 +227,7 @@
         child = $ @
         link = null
         if child.is 'a'
-          link = child.addClass('rambling-imageLink')
+          link = child.addClass 'rambling-imageLink'
           child = child.find 'img:first'
 
         childWidth = child.width() or child.attr('width')
@@ -306,18 +307,19 @@
 
         settings.afterChange.call @
 
-    getRandomAnimation = -> animationsToRun[Math.floor(Math.random() * animationsToRun.length)] or 'fade'
+    getRandomAnimation = -> animationsToRun[Math.floor Math.random() * animationsToRun.length] or 'fade'
 
     processCaption = (settings) ->
       ramblingCaption = slider.find '.rambling-caption'
-      title = vars.currentImage.attr 'title'
+      title = vars.currentSlideElement.attr 'title'
       if title
-        title = $(title).html() if title.substr(0, 1) is '#'
+        title = $(title).html() if title.startsWith '#'
 
         if ramblingCaption.css('display') is 'block'
           ramblingCaption.find('p').fadeOut settings.speed, ->
-            $(@).html title
-            $(@).fadeIn settings.speed
+            p = $ @
+            p.html title
+            p.fadeIn settings.speed
         else ramblingCaption.find('p').html title
 
         ramblingCaption.fadeIn settings.speed
@@ -325,8 +327,8 @@
 
     setCurrentSlideImage = (kids) ->
       kid = $ kids[vars.currentSlide]
-      vars.currentImage = kid
-      vars.currentImage = kid.find('img:first') unless kid.is 'img'
+      vars.currentSlideElement = kid
+      vars.currentSlideElement = kid.find('img:first') if kid.is 'a'
       kid
 
     resetTimer = ->
@@ -367,10 +369,10 @@
       slider.find '.rambling-box'
 
     getSlice = (sliceWidth, position, total, vars) ->
-      background = "url(#{vars.currentImage.attr('src')}) no-repeat -#{((sliceWidth + (position * sliceWidth)) - sliceWidth)}px 0%"
+      background = "url(#{vars.currentSlideElement.attr('src')}) no-repeat -#{((sliceWidth + (position * sliceWidth)) - sliceWidth)}px 0%"
       width = sliceWidth
       if position is (total - 1)
-          background = "url(#{vars.currentImage.attr('src')}) no-repeat -#{((sliceWidth + (position * sliceWidth)) - sliceWidth)}px 0%"
+          background = "url(#{vars.currentSlideElement.attr('src')}) no-repeat -#{((sliceWidth + (position * sliceWidth)) - sliceWidth)}px 0%"
           width = slider.width() - (sliceWidth * position)
 
       sliceCss =
@@ -384,10 +386,10 @@
       $('<div class="rambling-slice"></div>').css sliceCss
 
     getBox = (boxWidth, boxHeight, row, column, settings, vars) ->
-      background = "url(#{vars.currentImage.attr('src')}) no-repeat -#{((boxWidth + (column * boxWidth)) - boxWidth)}px -#{((boxHeight + (row * boxHeight)) - boxHeight)}px"
+      background = "url(#{vars.currentSlideElement.attr('src')}) no-repeat -#{((boxWidth + (column * boxWidth)) - boxWidth)}px -#{((boxHeight + (row * boxHeight)) - boxHeight)}px"
       width = boxWidth
       if column is (settings.boxCols - 1)
-          background = "url(#{vars.currentImage.attr('src')}) no-repeat -#{((boxWidth + (column * boxWidth)) - boxWidth)}px -#{((boxHeight + (row * boxHeight)) - boxHeight)}px"
+          background = "url(#{vars.currentSlideElement.attr('src')}) no-repeat -#{((boxWidth + (column * boxWidth)) - boxWidth)}px -#{((boxHeight + (row * boxHeight)) - boxHeight)}px"
           width = (slider.width() - (boxWidth * column))
 
       boxCss =
@@ -402,23 +404,19 @@
       $('<div class="rambling-box"></div>').css boxCss
 
     setSliderBackground = ->
-      image = vars.currentImage
-      currentImage = slider.find '.currentImage'
+      image = vars.currentSlideElement.clone().addClass 'currentSlideElement'
+      alignment = 'alignTop'
+      alignment = 'alignBottom' if settings.alignBottom
 
-      unless currentImage.length
-        alignment = 'alignTop'
-        alignment = 'alignBottom' if settings.alignBottom
-        currentImage = $ '<img src="" alt="currentImage" class="currentImage"/>'
-        currentImage.addClass alignment
-        currentImage.css display: 'block'
-        slider.find('#rambling-animation').prepend currentImage
+      image.addClass alignment
+      image.css display: 'block'
 
-      currentImage.attr src: image.attr('src'), alt: image.attr('alt')
+      slider.find('#rambling-animation').prepend(image) unless slider.find('.currentSlideElement').replaceWith(image).length
 
     getRamblingSlice = (sliceWidth, position, total, vars) ->
       ramblingSlice = getSlice sliceWidth, position, total, vars
       ramblingSlice.css background: 'none'
-      ramblingSlice.append "<span><img src=\"#{vars.currentImage.attr('src')}\" alt=\"\"/></span>"
+      ramblingSlice.append "<span><img src=\"#{vars.currentSlideElement.attr('src')}\" alt=\"\"/></span>"
 
       bottom = 0
       top = 'auto'
@@ -457,7 +455,7 @@
       ramblingBoxImageStyle.bottom = "-#{bottom}" if bottom
 
       ramblingBox.css background: 'none', top: top or 'auto', bottom: bottom or 'auto'
-      ramblingBox.append("<span><img src='#{vars.currentImage.attr('src')}' alt=''/></span>")
+      ramblingBox.append("<span><img src='#{vars.currentSlideElement.attr('src')}' alt=''/></span>")
       ramblingBox.find('img').css ramblingBoxImageStyle
 
       ramblingBox

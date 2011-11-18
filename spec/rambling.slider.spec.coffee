@@ -39,8 +39,8 @@ describe 'Rambling Slider', ->
   it 'should return the jQuery Array for method chaining', ->
     expect(result).toEqualJquery rambling_slider
 
-  it 'should set the first image as the current image', ->
-    expect(rambling_slider.find('.currentImage').attr 'src').toEqual(rambling_slider.children('img').first().attr 'src')
+  it 'should set the first image as the current slide element', ->
+    expect(rambling_slider.find('.currentSlideElement').attr 'src').toEqual(rambling_slider.children('img').first().attr 'src')
 
   it 'should add all the expected html elements', ->
     expect(rambling_slider).toContainElementWithClass 'rambling-caption'

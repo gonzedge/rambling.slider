@@ -89,7 +89,7 @@
 	font-weight:bold;
 }
 
-.adaptingSlider img.currentImage {
+.adaptingSlider img.currentSlideElement {
     display: block;
     width: 100%;
     position: absolute;
@@ -102,7 +102,7 @@
     left: 0;
 }
 
-.adaptingSlider img.currentImage.alignBottom {
+.adaptingSlider img.currentSlideElement.alignBottom {
     right: 0;
     bottom: 0;
     top: auto;
