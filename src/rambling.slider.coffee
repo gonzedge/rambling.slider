@@ -103,6 +103,7 @@
     vars =
       currentSlide: 0
       currentSlideElement: ''
+      previousSlideElement: ''
       totalSlides: 0
       randomAnimation: ''
       running: false
@@ -192,7 +193,7 @@
 
       vars.currentSlide = settings.startSlide = settings.startSlide % vars.totalSlides
 
-      setSliderBackground slider, vars
+      setSliderBackground()
 
       addCaption()
       addDirectionNavigation()
@@ -282,7 +283,7 @@
           return false if vars.running
           return false if $(@).hasClass 'active'
           resetTimer()
-          setSliderBackground slider, vars
+          setSliderBackground()
           vars.currentSlide = $(@).attr('rel') - 1
           ramblingRun slider, kids, settings, 'control'
 
@@ -303,7 +304,7 @@
 
         run() if timer is '' and not vars.paused
 
-        setSliderBackground slider, vars
+        setSliderBackground() unless vars.currentSlideElement.find('object,embed').length
 
         settings.afterChange.call @
 
@@ -327,6 +328,7 @@
 
     setCurrentSlideElement = (kids) ->
       kid = $ kids[vars.currentSlide]
+      vars.previousSlideElement = vars.currentSlideElement
       vars.currentSlideElement = kid
       vars.currentSlideElement = kid.find('img:first') if kid.is 'a'
       kid
@@ -349,11 +351,11 @@
       vars.currentSlide -= 2 if direction is 'prev'
       ramblingRun slider, kids, settings, direction
 
-    createSlices = (slider, settings, vars) ->
+    createSlices = (slider, settings, vars, slideElement = vars.currentSlideElement) ->
       for i in [0...settings.slices] then do (i) ->
         sliceWidth = Math.round(slider.width() / settings.slices)
         animationContainer = slider.find '#rambling-animation'
-        animationContainer.append getRamblingSlice(sliceWidth, i, settings.slices, vars)
+        animationContainer.append getRamblingSlice(sliceWidth, i, settings.slices, vars, slideElement)
 
       slider.find '.rambling-slice'
 
@@ -368,11 +370,11 @@
 
       slider.find '.rambling-box'
 
-    getSlice = (sliceWidth, position, total, vars) ->
-      background = "url(#{vars.currentSlideElement.attr('src')}) no-repeat -#{((sliceWidth + (position * sliceWidth)) - sliceWidth)}px 0%"
+    getSlice = (sliceWidth, position, total, vars, slideElement) ->
+      background = "url(#{slideElement.attr('src')}) no-repeat -#{((sliceWidth + (position * sliceWidth)) - sliceWidth)}px 0%"
       width = sliceWidth
       if position is (total - 1)
-          background = "url(#{vars.currentSlideElement.attr('src')}) no-repeat -#{((sliceWidth + (position * sliceWidth)) - sliceWidth)}px 0%"
+          background = "url(#{slideElement.attr('src')}) no-repeat -#{((sliceWidth + (position * sliceWidth)) - sliceWidth)}px 0%"
           width = slider.width() - (sliceWidth * position)
 
       sliceCss =
@@ -410,16 +412,16 @@
 
       slideElement.addClass alignment
       slideElement.css display: 'block'
-      iFrame = slideElement.find 'iframe,object,embed'
+      iFrame = slideElement.find 'object,embed'
       iFrame.height slider.height()
       iFrame.width slider.width()
 
       slider.find('#rambling-animation').prepend(slideElement) unless slider.find('.currentSlideElement').replaceWith(slideElement).length
 
-    getRamblingSlice = (sliceWidth, position, total, vars) ->
-      ramblingSlice = getSlice sliceWidth, position, total, vars
+    getRamblingSlice = (sliceWidth, position, total, vars, slideElement) ->
+      ramblingSlice = getSlice sliceWidth, position, total, vars, slideElement
       ramblingSlice.css background: 'none'
-      ramblingSlice.append "<span><img src=\"#{vars.currentSlideElement.attr('src')}\" alt=\"\"/></span>"
+      ramblingSlice.append "<span><img src=\"#{slideElement.attr('src')}\" alt=\"\"/></span>"
 
       bottom = 0
       top = 'auto'
@@ -464,7 +466,12 @@
       ramblingBox
 
     animateFullImage = (options) ->
-      slices = createSlices slider, settings, vars
+      hasFlash = vars.currentSlideElement.find('object,embed').length
+      slices = if hasFlash
+        createSlices slider, settings, vars, vars.previousSlideElement
+      else
+        createSlices slider, settings, vars
+
       slice = slices.first()
 
       if settings.alignBottom
@@ -477,9 +484,15 @@
       image.css options.imageStyle if options.imageStyle
       image.animate(options.imageAnimate, settings.speed * 2) if options.imageAnimate
 
-      slice.animate (options.animate or width: "#{slider.width()}px"), settings.speed * 2, '', ->
+      animate = -> slice.animate (options.animate or width: "#{slider.width()}px"), settings.speed * 2, '', ->
         options.afterChange.apply(slice) if options.afterChange
         slider.trigger 'rambling:finished'
+
+      if hasFlash
+        setSliderBackground()
+        window.setTimeout animate, settings.speed * 1.5
+      else
+        animate()
 
     animateSlices = (animationCallback, reorderCallback) ->
       slices = createSlices slider, settings, vars
@@ -592,7 +605,7 @@
         , reorderCallback
 
     animationOptions =
-      fade:
+      fadeIn:
         style:
           height: '100%'
           width: "#{slider.width()}px"
@@ -601,6 +614,16 @@
           left: 0
         animate:
           opacity: '1'
+      fadeOut:
+        style:
+          height: '100%'
+          width: "#{slider.width()}px"
+          position: 'absolute'
+          top: 0
+          left: 0
+          opacity: '1'
+        animate:
+          opacity: '0'
       rolloverRight:
         style:
           height: '100%'
@@ -656,7 +679,9 @@
       foldRight: foldSlices
       foldLeft: -> foldSlices $.fn.reverse
       foldRandom: -> foldSlices $.fn.shuffle
-      fade: -> animateFullImage animationOptions.fade
+      fade: -> animateFullImage animationOptions.fadeIn
+      fadeIn: -> animateFullImage animationOptions.fadeIn
+      fadeOut: -> animateFullImage animationOptions.fadeOut
       slideIn: -> animateFullImage animationOptions.slideInRight
       slideInRight: -> animateFullImage animationOptions.slideInRight
       slideInLeft: -> animateFullImage animationOptions.slideInLeft
@@ -696,7 +721,11 @@
         null
 
       vars.running = true
-      currentEffect = vars.randomAnimation or settings.effect
+      currentEffect = if vars.currentSlideElement.find('object,embed').length
+        'fadeOut'
+      else
+        vars.randomAnimation or settings.effect
+
       animations[currentEffect].apply @
 
     settings.afterLoad.call @
