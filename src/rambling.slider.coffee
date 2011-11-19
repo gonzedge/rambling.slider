@@ -21,8 +21,8 @@
     ramblingSlider = @data 'rambling:slider'
     isCallingGetter = (options, others) -> not others.length or (options is 'option' and others.length is 1 and typeof(others[0]) is 'string')
 
-    if ramblingSlider
-      return if methodExists
+    return if ramblingSlider
+      if methodExists
         value = ramblingSlider[options](others...)
         if isCallingGetter options, others
           value
@@ -34,7 +34,7 @@
         else
           $.error "Slider already initialized." if options
     else
-      return $.error "Tried to call method '#{options}' on element without slider." if methodExists or optionsIsString
+      $.error "Tried to call method '#{options}' on element without slider." if methodExists or optionsIsString
 
     @each (key, value) ->
       element = $ @
@@ -239,7 +239,7 @@
         link.css(display: 'none') if link
         child.css display: 'none'
 
-      kid = setCurrentSlideImage kids
+      kid = setCurrentSlideElement kids
       kid.css(display: 'block') if kid.is 'a'
 
     addCaption = ->
@@ -325,7 +325,7 @@
         ramblingCaption.fadeIn settings.speed
       else ramblingCaption.fadeOut settings.speed
 
-    setCurrentSlideImage = (kids) ->
+    setCurrentSlideElement = (kids) ->
       kid = $ kids[vars.currentSlide]
       vars.currentSlideElement = kid
       vars.currentSlideElement = kid.find('img:first') if kid.is 'a'
@@ -404,14 +404,17 @@
       $('<div class="rambling-box"></div>').css boxCss
 
     setSliderBackground = ->
-      image = vars.currentSlideElement.clone().addClass 'currentSlideElement'
+      slideElement = vars.currentSlideElement.clone().addClass 'currentSlideElement'
       alignment = 'alignTop'
       alignment = 'alignBottom' if settings.alignBottom
 
-      image.addClass alignment
-      image.css display: 'block'
+      slideElement.addClass alignment
+      slideElement.css display: 'block'
+      iFrame = slideElement.find 'iframe,object,embed'
+      iFrame.height slider.height()
+      iFrame.width slider.width()
 
-      slider.find('#rambling-animation').prepend(image) unless slider.find('.currentSlideElement').replaceWith(image).length
+      slider.find('#rambling-animation').prepend(slideElement) unless slider.find('.currentSlideElement').replaceWith(slideElement).length
 
     getRamblingSlice = (sliceWidth, position, total, vars) ->
       ramblingSlice = getSlice sliceWidth, position, total, vars
@@ -463,6 +466,12 @@
     animateFullImage = (options) ->
       slices = createSlices slider, settings, vars
       slice = slices.first()
+
+      if settings.alignBottom
+        options.style.bottom = '0'
+      else
+        options.style.top = '0'
+
       slice.css options.style
       image = slice.find 'img'
       image.css options.imageStyle if options.imageStyle
@@ -674,17 +683,17 @@
         settings.slideshowEnd.call @
 
       vars.currentSlide = (vars.totalSlides - 1) if vars.currentSlide < 0
-      setCurrentSlideImage kids
+      setCurrentSlideElement kids
 
       slider.find('.rambling-controlNav a').removeClass('active').filter(":eq(#{vars.currentSlide})").addClass('active') if settings.controlNav
 
       processCaption settings
       slider.find('.rambling-slice,.rambling-box').remove()
 
-      if settings.effect is 'random' or settings.effect.contains(',')
-        vars.randomAnimation = getRandomAnimation()
+      vars.randomAnimation = if settings.effect is 'random' or settings.effect.contains(',')
+        getRandomAnimation()
       else
-        vars.randomAnimation = null
+        null
 
       vars.running = true
       currentEffect = vars.randomAnimation or settings.effect
