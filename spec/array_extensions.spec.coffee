@@ -1,40 +1,36 @@
 require '../src/array_extensions'
 
 describe 'Array Extensions', ->
+  array = null
+
+  beforeEach ->
+    array = [1...10]
+
   describe 'when shuffling an array', ->
-    original_array = null
     first_copy = null
     second_copy = null
 
     beforeEach ->
-      original_array = [1..100]
-      first_copy = original_array.slice()
-      second_copy = original_array.shuffle()
+      first_copy = array.slice()
+      second_copy = array.shuffle()
 
     it 'should return the same array with shifted the positions', ->
-      expect(second_copy).toEqual original_array
+      expect(second_copy).toEqual array
 
     it 'should not let the original array untouched', ->
-      expect(first_copy).not.toEqual original_array
+      expect(first_copy).not.toEqual array
 
   describe 'when verifying if an array contains an element', ->
-    array = null
-
-    beforeEach ->
-      array = [1...5]
-
     it 'should return true for a contained element', ->
       expect(array.contains(1)).toBeTruthy()
 
     it 'should return false for a non contained element', ->
-      expect(array.contains(5)).toBeFalsy()
+      expect(array.contains(array.length + 1)).toBeFalsy()
 
   describe 'when getting the values that match a predicate', ->
-    array = null
     new_array = null
 
     beforeEach ->
-      array = [1..5]
       new_array = array.where (number) -> number > 2
 
     it 'should contain the matching elements', ->
@@ -46,11 +42,9 @@ describe 'Array Extensions', ->
         expect(new_array).not.toContain number
 
   describe 'when getting the first value of an array', ->
-    array = null
     predicate = null
 
     beforeEach ->
-      array = [1..5]
       predicate = (number) -> number > array[1]
 
     it 'should return the first element', ->
@@ -68,11 +62,6 @@ describe 'Array Extensions', ->
         expect([].first()).toBeNull()
 
   describe 'when mapping the array to another value', ->
-    array = null
-
-    beforeEach ->
-      array = [1..5]
-
     it 'should map the values correctly', ->
       new_array = array.map (number) -> number * number
       for number in array then do (number) ->
@@ -83,7 +72,6 @@ describe 'Array Extensions', ->
         expect(array.map()).toEqual array
 
   describe 'when adding values from an object', ->
-    array = null
     object = null
 
     beforeEach ->
@@ -109,3 +97,11 @@ describe 'Array Extensions', ->
       it 'should contain the expected values', ->
         for key, value of object then do (key, value) ->
           expect(array).toContain value_selector(key, value)
+
+  describe 'when getting a random value from the array', ->
+    it 'should return a contained element', ->
+      expect(array).toContain array.random()
+
+    describe 'and the array is empty', ->
+      it 'should return null', ->
+        expect([].random()).toBeUndefined()

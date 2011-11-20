@@ -42,6 +42,9 @@ Array::map = (map) ->
 
   newArray
 
+Array::random = ->
+  @[Math.floor Math.random() * @length]
+
 Array::fromObject = (object, valueSelector) ->
   self = @
   valueSelector = ((key, value) -> value) unless valueSelector
