@@ -202,7 +202,7 @@
       setAnimationFinishedActions()
 
     run = ->
-      if not settings.manualAdvance and kids.length > 1
+      if not settings.manualAdvance and vars.totalSlides > 1
         timer = window.setInterval (-> ramblingRun slider, kids, settings, false), settings.pauseTime
 
     setSliderInitialState = ->

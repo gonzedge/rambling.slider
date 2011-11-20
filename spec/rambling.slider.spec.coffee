@@ -40,7 +40,7 @@ describe 'Rambling Slider', ->
     expect(result).toEqualJquery rambling_slider
 
   it 'should set the first image as the current slide element', ->
-    expect(rambling_slider.find('.currentSlideElement').attr 'src').toEqual(rambling_slider.children('img').first().attr 'src')
+    expect(rambling_slider.find '.currentSlideElement').toEqualJquery rambling_slider.find('img').first()
 
   it 'should add all the expected html elements', ->
     expect(rambling_slider).toContainElementWithClass 'rambling-caption'
