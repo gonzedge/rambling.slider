@@ -226,6 +226,7 @@
       ramblingAnimationContainer = $ '#rambling-animation'
       kids.each ->
         kid = $(@)
+        kid.addClass 'slideElement'
         kid.css display: 'none'
         ramblingAnimationContainer.append kid.clone()
       kids = ramblingAnimationContainer.children()
@@ -413,7 +414,7 @@
 
     setSliderBackground = ->
       slider.find('.currentSlideElement').removeClass('currentSlideElement alignTop alignBottom').css display: 'none'
-      vars.currentSlideElement.siblings().css display: 'none'
+      vars.currentSlideElement.siblings('.slideElement').css display: 'none'
       slideElement = vars.currentSlideElement.addClass 'currentSlideElement'
       alignment = 'alignTop'
       alignment = 'alignBottom' if settings.alignBottom
