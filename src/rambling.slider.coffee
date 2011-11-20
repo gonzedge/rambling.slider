@@ -123,8 +123,7 @@
 
     destroy = ->
       slider.find('#rambling-animation,.rambling-slice,.rambling-box,.rambling-caption,.rambling-directionNav,.rambling-controlNav').remove()
-      slider.removeClass 'ramblingSlider'
-      slider.removeClass 'adaptingSlider'
+      slider.removeClass 'ramblingSlider adaptingSlider'
       slider.removeAttr 'style'
       slider.data 'rambling:vars', null
       slider.data 'rambling:slider', null
@@ -217,13 +216,20 @@
       prepareSliderChildren()
 
     prepareAnimationContainer = ->
-      ramblingAnimationContainer = $ '<div id="rambling-animation"><img src="" alt="currentSlideElement" class="currentSlideElement"></div>'
+      ramblingAnimationContainer = $ '<div id="rambling-animation"></div>'
       ramblingAnimationContainer.css width: slider.width(), height: slider.height(), overflow: 'hidden'
       slider.prepend ramblingAnimationContainer
 
     prepareAdaptiveSlider = -> slider.addClass 'adaptingSlider'
 
     prepareSliderChildren = ->
+      ramblingAnimationContainer = $ '#rambling-animation'
+      kids.each ->
+        kid = $(@)
+        kid.css display: 'none'
+        ramblingAnimationContainer.append kid.clone()
+      kids = ramblingAnimationContainer.children()
+
       kids.each ->
         child = $ @
         link = null
@@ -406,7 +412,9 @@
       $('<div class="rambling-box"></div>').css boxCss
 
     setSliderBackground = ->
-      slideElement = vars.currentSlideElement.clone().addClass 'currentSlideElement'
+      slider.find('.currentSlideElement').removeClass('currentSlideElement alignTop alignBottom').css display: 'none'
+      vars.currentSlideElement.siblings().css display: 'none'
+      slideElement = vars.currentSlideElement.addClass 'currentSlideElement'
       alignment = 'alignTop'
       alignment = 'alignBottom' if settings.alignBottom
 
@@ -415,8 +423,6 @@
       iFrame = slideElement.find 'object,embed'
       iFrame.height slider.height()
       iFrame.width slider.width()
-
-      slider.find('#rambling-animation').prepend(slideElement) unless slider.find('.currentSlideElement').replaceWith(slideElement).length
 
     getRamblingSlice = (sliceWidth, position, total, vars, slideElement) ->
       ramblingSlice = getSlice sliceWidth, position, total, vars, slideElement
@@ -491,7 +497,7 @@
 
       if hasFlash
         setSliderBackground()
-        window.setTimeout animate(-> @remove()), settings.speed * 1.5
+        window.setTimeout (-> animate -> @remove()), settings.speed * 1.5
       else
         animate()
 
