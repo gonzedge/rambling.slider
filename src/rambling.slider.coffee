@@ -105,11 +105,9 @@
       currentSlideElement: ''
       previousSlideElement: ''
       totalSlides: 0
-      randomAnimation: ''
       running: false
       paused: false
       stopped: false
-    animationsToRun = []
 
     slider.data 'rambling:vars', vars
 
@@ -158,33 +156,6 @@
       return settings.effect unless effects.length
 
       settings.effect = effects[0]
-      animationsToRun = [
-        'sliceDownRight',
-        'sliceDownLeft',
-        'sliceDownRandom',
-        'sliceUpRight',
-        'sliceUpLeft',
-        'sliceUpRandom',
-        'sliceUpDown',
-        'sliceUpDownLeft',
-        'sliceUpDownRandom',
-        'foldRight',
-        'foldLeft',
-        'foldRandom',
-        'fade',
-        'slideInRight',
-        'slideInLeft',
-        'rolloverRight',
-        'rolloverLeft',
-        'boxRandom',
-        'boxRain',
-        'boxRainReverse',
-        'boxRainGrow',
-        'boxRainGrowReverse'
-      ]
-      animationsToRun = settings.effect.split(',') if settings.effect.contains ','
-
-      settings.effect
 
     initialize = ->
       effect settings.effect
@@ -226,9 +197,8 @@
       ramblingAnimationContainer = $ '#rambling-animation'
       kids.each ->
         kid = $(@)
-        kid.addClass 'slideElement'
         kid.css display: 'none'
-        ramblingAnimationContainer.append kid.clone()
+        ramblingAnimationContainer.append kid.clone().addClass('slideElement')
       kids = ramblingAnimationContainer.children()
 
       kids.each ->
@@ -315,7 +285,16 @@
 
         settings.afterChange.call @
 
-    getRandomAnimation = -> animationsToRun[Math.floor Math.random() * animationsToRun.length] or 'fade'
+    getAnimationsForCurrentSlideElement = ->
+      if vars.currentSlideElement.find('object,embed').length
+        [flashTransitions.fadeOut]
+      else
+        allImageTransitions = [].fromObject imageTransitions, (key, value) -> key
+        allImageTransitions = (allImageTransitions.where (animationName) -> settings.effect.contains animationName) unless settings.effect is 'random'
+        allImageTransitions.map (animationName) -> imageTransitions[animationName]
+
+    getRandomAnimation = ->
+      getAnimationsForCurrentSlideElement().random() or imageTransitions.fade
 
     processCaption = (settings) ->
       ramblingCaption = slider.find '.rambling-caption'
@@ -358,20 +337,23 @@
       vars.currentSlide -= 2 if direction is 'prev'
       ramblingRun slider, kids, settings, direction
 
-    createSlices = (slider, settings, vars, slideElement = vars.currentSlideElement) ->
-      for i in [0...settings.slices] then do (i) ->
-        sliceWidth = Math.round(slider.width() / settings.slices)
+    getOneSlice = (slideElement = vars.currentSlideElement) ->
+      createSlices 1, slideElement
+
+    createSlices = (slices = settings.slices, slideElement = vars.currentSlideElement) ->
+      for i in [0...slices] then do (i) ->
+        sliceWidth = Math.round(slider.width() / slices)
         animationContainer = slider.find '#rambling-animation'
-        animationContainer.append getRamblingSlice(sliceWidth, i, settings.slices, vars, slideElement)
+        animationContainer.append getRamblingSlice(sliceWidth, i, slices, vars, slideElement)
 
       slider.find '.rambling-slice'
 
-    createBoxes = (slider, settings, vars) ->
-      boxWidth = Math.round(slider.width() / settings.boxCols)
-      boxHeight = Math.round(slider.height() / settings.boxRows)
+    createBoxes = (boxCols = settings.boxCols, boxRows = settings.boxRows) ->
+      boxWidth = Math.round(slider.width() / boxCols)
+      boxHeight = Math.round(slider.height() / boxRows)
 
-      for rows in [0...settings.boxRows] then do (rows) ->
-        for cols in [0...settings.boxCols] then do (cols) ->
+      for rows in [0...boxRows] then do (rows) ->
+        for cols in [0...boxCols] then do (cols) ->
           animationContainer = slider.find '#rambling-animation'
           animationContainer.append getRamblingBox(boxWidth, boxHeight, rows, cols, settings, vars)
 
@@ -473,43 +455,31 @@
       ramblingBox
 
     animateFullImage = (options) ->
-      hasFlash = vars.currentSlideElement.find('object,embed').length
-      slices = if hasFlash
-        createSlices slider, settings, vars, vars.previousSlideElement
-      else
-        createSlices slider, settings, vars
-
-      slice = slices.first()
+      slice = getOneSlice()
 
       if settings.alignBottom
         options.style.bottom = '0'
+        options.style.top = 'auto'
       else
         options.style.top = '0'
+        options.style.bottom = 'auto'
 
       slice.css options.style
       image = slice.find 'img'
       image.css options.imageStyle if options.imageStyle
       image.animate(options.imageAnimate, settings.speed * 2) if options.imageAnimate
-
-      animate = (callback) -> slice.animate (options.animate or width: "#{slider.width()}px"), settings.speed * 2, '', ->
+      slice.animate (options.animate or width: "#{slider.width()}px"), settings.speed * 2, '', ->
         settings.afterChange.apply(slice) if settings.afterChange
         slider.trigger 'rambling:finished'
-        callback.apply(slice) if callback
-
-      if hasFlash
-        setSliderBackground()
-        window.setTimeout (-> animate -> @remove()), settings.speed * 1.5
-      else
-        animate()
 
     animateSlices = (animationCallback, reorderCallback) ->
-      slices = createSlices slider, settings, vars
+      slices = createSlices()
       animationTimeBuffer = 0
       slices = reorderCallback.apply(slices) if reorderCallback
       slices.each animationCallback
 
     animateBoxes = (animationCallback, reorderCallback) ->
-      boxes = createBoxes slider, settings, vars
+      boxes = createBoxes()
       animationTimeBuffer = 0
       boxes = reorderCallback.apply(boxes) if reorderCallback
       animationCallback.apply boxes
@@ -612,7 +582,7 @@
               prevCol--
         , reorderCallback
 
-    animationOptions =
+    transitionOptions =
       fadeIn:
         style:
           height: '100%'
@@ -670,7 +640,7 @@
           right: '0px'
         afterChange: -> @css left: '0px', right: ''
 
-    animations =
+    imageTransitions =
       sliceDown: slideDownSlices
       sliceDownRight: slideDownSlices
       sliceDownLeft: -> slideDownSlices $.fn.reverse
@@ -687,20 +657,31 @@
       foldRight: foldSlices
       foldLeft: -> foldSlices $.fn.reverse
       foldRandom: -> foldSlices $.fn.shuffle
-      fade: -> animateFullImage animationOptions.fadeIn
-      fadeIn: -> animateFullImage animationOptions.fadeIn
-      fadeOut: -> animateFullImage animationOptions.fadeOut
-      slideIn: -> animateFullImage animationOptions.slideInRight
-      slideInRight: -> animateFullImage animationOptions.slideInRight
-      slideInLeft: -> animateFullImage animationOptions.slideInLeft
-      rollover: -> animateFullImage animationOptions.rolloverRight
-      rolloverRight: -> animateFullImage animationOptions.rolloverRight
-      rolloverLeft: -> animateFullImage animationOptions.rolloverLeft
+      fade: -> animateFullImage transitionOptions.fadeIn
+      fadeIn: -> animateFullImage transitionOptions.fadeIn
+      slideIn: -> animateFullImage transitionOptions.slideInRight
+      slideInRight: -> animateFullImage transitionOptions.slideInRight
+      slideInLeft: -> animateFullImage transitionOptions.slideInLeft
+      rollover: -> animateFullImage transitionOptions.rolloverRight
+      rolloverRight: -> animateFullImage transitionOptions.rolloverRight
+      rolloverLeft: -> animateFullImage transitionOptions.rolloverLeft
       boxRandom: randomBoxes
       boxRain: -> rainBoxes -> $(@).as2dArray settings.boxCols
       boxRainReverse: -> rainBoxes -> $(@).reverse().as2dArray settings.boxCols
       boxRainGrow: -> rainBoxes (-> $(@).as2dArray settings.boxCols), true
       boxRainGrowReverse: -> rainBoxes (-> $(@).reverse().as2dArray settings.boxCols), true
+
+    flashTransitions =
+      fadeOut: ->
+        hasFlash = vars.currentSlideElement.find('object,embed').length
+        slice = getOneSlice vars.previousSlideElement
+        slice.css transitionOptions.fadeOut.style
+
+        setSliderBackground()
+        slice.animate transitionOptions.fadeOut.animate, settings.speed * 2, '', ->
+          settings.afterChange.apply(slice) if settings.afterChange
+          slice.css display: 'none'
+          slider.trigger 'rambling:finished'
 
     ramblingRun = (slider, kids, settings, nudge) ->
       settings.lastSlide.call(@) if vars.currentSlide is vars.totalSlides - 1
@@ -723,18 +704,8 @@
       processCaption settings
       slider.find('.rambling-slice,.rambling-box').remove()
 
-      vars.randomAnimation = if settings.effect is 'random' or settings.effect.contains(',')
-        getRandomAnimation()
-      else
-        null
-
       vars.running = true
-      currentEffect = if vars.currentSlideElement.find('object,embed').length
-        'fadeOut'
-      else
-        vars.randomAnimation or settings.effect
-
-      animations[currentEffect].apply @
+      getRandomAnimation().apply @
 
     settings.afterLoad.call @
 
