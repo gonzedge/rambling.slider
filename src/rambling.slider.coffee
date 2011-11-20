@@ -484,13 +484,14 @@
       image.css options.imageStyle if options.imageStyle
       image.animate(options.imageAnimate, settings.speed * 2) if options.imageAnimate
 
-      animate = -> slice.animate (options.animate or width: "#{slider.width()}px"), settings.speed * 2, '', ->
-        options.afterChange.apply(slice) if options.afterChange
+      animate = (callback) -> slice.animate (options.animate or width: "#{slider.width()}px"), settings.speed * 2, '', ->
+        settings.afterChange.apply(slice) if settings.afterChange
         slider.trigger 'rambling:finished'
+        callback.apply(slice) if callback
 
       if hasFlash
         setSliderBackground()
-        window.setTimeout animate, settings.speed * 1.5
+        window.setTimeout animate(-> @remove()), settings.speed * 1.5
       else
         animate()
 
