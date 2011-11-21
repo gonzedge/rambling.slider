@@ -286,6 +286,8 @@
         run() if timer is '' and not vars.paused
 
         setSliderBackground()
+        slider.find('.rambling-slice,.rambling-box').remove()
+
         settings.afterChange.call @
 
     getAnimationsForCurrentSlideElement = ->
@@ -721,7 +723,6 @@
       slider.find('.rambling-controlNav a').removeClass('active').filter(":eq(#{vars.currentSlide})").addClass('active') if settings.controlNav
 
       processCaption settings
-      slider.find('.rambling-slice,.rambling-box').remove()
 
       vars.running = true
       getRandomAnimation().apply @
