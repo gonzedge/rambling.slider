@@ -88,17 +88,17 @@
 	font-weight:bold;
 }
 
-.adaptingSlider img.currentSlideElement {
-    display: block;
-    width: 100%;
-    position: absolute;
-}
-
-.adaptingSlider #rambling-animation {
+.ramblingSlider #rambling-animation {
     position: absolute;
     overflow: hidden;
     top: 0;
     left: 0;
+}
+
+.adaptingSlider img.currentSlideElement {
+    display: block;
+    width: 100%;
+    position: absolute;
 }
 
 .adaptingSlider img.currentSlideElement.alignBottom {

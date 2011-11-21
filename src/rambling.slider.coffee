@@ -96,7 +96,7 @@
 
   RamblingSlider = (element, options) ->
     slider = $ element
-    kids = slider.children ':not(#rambling-animation)'
+    children = slider.children ':not(#rambling-animation)'
     settings = $.extend {}, $.fn.ramblingSlider.defaults, options
     timer = 0
     animationTimeBuffer = 0
@@ -128,7 +128,7 @@
       slider.unbind 'rambling:finished'
       slider.unbind 'hover'
       resetTimer()
-      kids.show().children().show()
+      children.show().children().show()
       slider
 
     option = (options...) ->
@@ -167,20 +167,20 @@
 
       addCaption()
       addDirectionNavigation()
-      addControlNavigation(kids)
+      addControlNavigation(children)
       addKeyboardNavigation()
       slider.hover(pauseSlider, unpauseSlider) if settings.pauseOnHover
       setAnimationFinishedActions()
 
     run = ->
       if not settings.manualAdvance and vars.totalSlides > 1
-        timer = window.setInterval (-> ramblingRun slider, kids, settings, false), settings.pauseTime
+        timer = window.setInterval (-> ramblingRun slider, children, settings, false), settings.pauseTime
 
     setSliderInitialState = ->
       slider.css position: 'relative'
       slider.addClass 'ramblingSlider'
 
-      vars.totalSlides = kids.length
+      vars.totalSlides = children.length
 
       prepareAnimationContainer()
       prepareAdaptiveSlider() if settings.adaptImages
@@ -195,13 +195,13 @@
 
     prepareSliderChildren = ->
       ramblingAnimationContainer = $ '#rambling-animation'
-      kids.each ->
-        kid = $(@)
-        kid.css display: 'none'
-        ramblingAnimationContainer.append kid.clone().addClass('slideElement')
-      kids = ramblingAnimationContainer.children()
+      children.each ->
+        child = $(@)
+        child.css display: 'none'
+        ramblingAnimationContainer.append child.clone().addClass('slideElement')
+      children = ramblingAnimationContainer.children()
 
-      kids.each ->
+      children.each ->
         child = $ @
         link = null
         if child.is 'a'
@@ -214,11 +214,15 @@
         slider.width(childWidth) if childWidth > slider.width() and settings.useLargerImage
         slider.height(childHeight) if childHeight > slider.height() and (settings.useLargerImage or not settings.adaptImages)
 
+        iFrame = child.find 'object,embed'
+        iFrame.height slider.height()
+        iFrame.width slider.width()
+
         link.css(display: 'none') if link
         child.css display: 'none'
 
-      kid = setCurrentSlideElement kids
-      kid.css(display: 'block') if kid.is 'a'
+      child = setCurrentSlideElement children
+      child.css(display: 'block') if child.is 'a'
 
     addCaption = ->
       caption = $('<div class="rambling-caption"><p></p></div>').css display:'none', opacity: settings.captionOpacity
@@ -242,9 +246,9 @@
       if settings.controlNav
         ramblingControl = $ '<div class="rambling-controlNav"></div>'
         slider.append ramblingControl
-        for i in [0...kids.length] then do (i) ->
+        for i in [0...children.length] then do (i) ->
           if settings.controlNavThumbs
-            child = kids.eq i
+            child = children.eq i
             child = child.find('img:first') unless child.is 'img'
             if settings.controlNavThumbsFromRel
               ramblingControl.append "<a class='rambling-control' rel='#{i}'><img src='#{child.attr('rel')}' alt='' /></a>"
@@ -262,7 +266,7 @@
           resetTimer()
           setSliderBackground()
           vars.currentSlide = $(@).attr('rel') - 1
-          ramblingRun slider, kids, settings, 'control'
+          ramblingRun slider, children, settings, 'control'
 
     addKeyboardNavigation = ->
       if settings.keyboardNav
@@ -274,27 +278,41 @@
       slider.bind 'rambling:finished', ->
         vars.running = false
 
-        kids.filter('a').css display: 'none'
+        children.filter('a').css display: 'none'
 
-        kid = $(kids[vars.currentSlide])
-        kid.css(display: 'block') if kid.is 'a'
+        child = $(children[vars.currentSlide])
+        child.css(display: 'block') if child.is 'a'
 
         run() if timer is '' and not vars.paused
 
-        setSliderBackground() unless vars.currentSlideElement.find('object,embed').length
-
+        setSliderBackground()
         settings.afterChange.call @
 
     getAnimationsForCurrentSlideElement = ->
-      if vars.currentSlideElement.find('object,embed').length
-        [flashTransitions.fadeOut]
+      transitions = []
+      sourceTransitions = []
+      if vars.currentSlideElement.containsFlash()
+        if vars.previousSlideElement.containsFlash()
+          sourceTransitions = [flashTransitions.slideIn]
+          defaultTransition = flashTransitions.slideIn
+        else
+          sourceTransitions = [flashTransitions.fadeOut]
+          defaultTransition = flashTransitions.fadeOut
+
       else
-        allImageTransitions = [].fromObject imageTransitions, (key, value) -> key
-        allImageTransitions = (allImageTransitions.where (animationName) -> settings.effect.contains animationName) unless settings.effect is 'random'
-        allImageTransitions.map (animationName) -> imageTransitions[animationName]
+        sourceTransitions = imageTransitions
+        defaultTransition = imageTransitions.fade
+
+      transitions = [].fromObject sourceTransitions, (key, value) -> key
+      transitions = (transitions.where (animationName) -> settings.effect.contains animationName) unless settings.effect is 'random'
+      transitions = transitions.map (animationName) -> imageTransitions[animationName]
+      transitions.default = defaultTransition
+
+      transitions
 
     getRandomAnimation = ->
-      getAnimationsForCurrentSlideElement().random() or imageTransitions.fade
+      transitions = getAnimationsForCurrentSlideElement()
+      transitions.random() or transitions.default
 
     processCaption = (settings) ->
       ramblingCaption = slider.find '.rambling-caption'
@@ -312,12 +330,12 @@
         ramblingCaption.fadeIn settings.speed
       else ramblingCaption.fadeOut settings.speed
 
-    setCurrentSlideElement = (kids) ->
-      kid = $ kids[vars.currentSlide]
+    setCurrentSlideElement = (children) ->
+      child = $ children[vars.currentSlide]
       vars.previousSlideElement = vars.currentSlideElement
-      vars.currentSlideElement = kid
-      vars.currentSlideElement = kid.find('img:first') if kid.is 'a'
-      kid
+      vars.currentSlideElement = child
+      vars.currentSlideElement = child.find('img:first') if child.is 'a'
+      child
 
     resetTimer = ->
       window.clearInterval timer
@@ -335,7 +353,7 @@
       return false if vars.running or vars.totalSlides is 1
       resetTimer()
       vars.currentSlide -= 2 if direction is 'prev'
-      ramblingRun slider, kids, settings, direction
+      ramblingRun slider, children, settings, direction
 
     getOneSlice = (slideElement = vars.currentSlideElement) ->
       createSlices 1, slideElement
@@ -403,9 +421,6 @@
 
       slideElement.addClass alignment
       slideElement.css display: 'block'
-      iFrame = slideElement.find 'object,embed'
-      iFrame.height slider.height()
-      iFrame.width slider.width()
 
     getRamblingSlice = (sliceWidth, position, total, vars, slideElement) ->
       ramblingSlice = getSlice sliceWidth, position, total, vars, slideElement
@@ -673,7 +688,6 @@
 
     flashTransitions =
       fadeOut: ->
-        hasFlash = vars.currentSlideElement.find('object,embed').length
         slice = getOneSlice vars.previousSlideElement
         slice.css transitionOptions.fadeOut.style
 
@@ -682,8 +696,13 @@
           settings.afterChange.apply(slice) if settings.afterChange
           slice.css display: 'none'
           slider.trigger 'rambling:finished'
+      slideIn: ->
+        vars.currentSlideElement.css top: '0', left: "#{-slider.width()}px", position: 'absolute', display: 'block'
+        window.setTimeout (-> vars.currentSlideElement.animate {left: '0'}, settings.speed * 2, ->
+            vars.currentSlideElement.css top: 'auto', left: 'auto', position: 'relative'
+          ), settings.speed * 1.5
 
-    ramblingRun = (slider, kids, settings, nudge) ->
+    ramblingRun = (slider, children, settings, nudge) ->
       settings.lastSlide.call(@) if vars.currentSlide is vars.totalSlides - 1
 
       return false if vars.stopped and not nudge
@@ -697,7 +716,7 @@
         settings.slideshowEnd.call @
 
       vars.currentSlide = (vars.totalSlides - 1) if vars.currentSlide < 0
-      setCurrentSlideElement kids
+      setCurrentSlideElement children
 
       slider.find('.rambling-controlNav a').removeClass('active').filter(":eq(#{vars.currentSlide})").addClass('active') if settings.controlNav
 
