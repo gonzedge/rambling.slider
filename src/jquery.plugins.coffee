@@ -18,4 +18,7 @@
         array_2d[rowIndex] = $ ''
 
     array_2d
+
+  $.fn.containsFlash = ->
+    @find('object,embed').length
 )(jQuery)

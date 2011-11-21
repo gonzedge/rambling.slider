@@ -50,3 +50,22 @@ describe 'jQuery Plugins', ->
       for i in [0...2]
         for j in [0...2]
           expect(array[i][j].get(0)).toEqual list_items.get(i * 2 + j)
+
+  describe 'when find out if an element contains a flash element', ->
+    describe 'and there is an object element', ->
+      beforeEach ->
+        html_box.append '<object></object>'
+
+      it 'should return true', ->
+        expect(html_box.containsFlash()).toBeTruthy()
+
+    describe 'and there is an embed element', ->
+      beforeEach ->
+        html_box.append '<embed></embed>'
+
+      it 'should return true', ->
+        expect(html_box.containsFlash()).toBeTruthy()
+
+    describe 'and there is no flash', ->
+      it 'should return false', ->
+        expect(html_box.containsFlash()).toBeFalsy()
