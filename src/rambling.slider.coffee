@@ -208,7 +208,7 @@
       children.each ->
         child = $ @
         link = null
-        if child.is 'a'
+        if child.is 'a' and not child.containsFlash()
           link = child.addClass 'rambling-imageLink'
           child = child.find 'img:first'
 
@@ -340,7 +340,7 @@
       child = $ children[vars.currentSlide]
       vars.previousSlideElement = vars.currentSlideElement
       vars.currentSlideElement = child
-      vars.currentSlideElement = child.find('img:first') if child.is 'a'
+      vars.currentSlideElement = child.find('img:first') if child.is 'a' and not child.containsFlash()
       child
 
     resetTimer = ->
@@ -384,10 +384,11 @@
       slider.find '.rambling-box'
 
     getSlice = (sliceWidth, position, total, vars, slideElement) ->
-      background = "url(#{slideElement.attr('src')}) no-repeat -#{((sliceWidth + (position * sliceWidth)) - sliceWidth)}px 0%"
+      imageSrc = slideElement.attr('src') or slideElement.find('img').attr('src')
+      background = "url(#{imageSrc}) no-repeat -#{((sliceWidth + (position * sliceWidth)) - sliceWidth)}px 0%"
       width = sliceWidth
       if position is (total - 1)
-          background = "url(#{slideElement.attr('src')}) no-repeat -#{((sliceWidth + (position * sliceWidth)) - sliceWidth)}px 0%"
+          background = "url(#{imageSrc}) no-repeat -#{((sliceWidth + (position * sliceWidth)) - sliceWidth)}px 0%"
           width = slider.width() - (sliceWidth * position)
 
       sliceCss =
@@ -401,10 +402,11 @@
       $('<div class="rambling-slice"></div>').css sliceCss
 
     getBox = (boxWidth, boxHeight, row, column, settings, vars) ->
-      background = "url(#{vars.currentSlideElement.attr('src')}) no-repeat -#{((boxWidth + (column * boxWidth)) - boxWidth)}px -#{((boxHeight + (row * boxHeight)) - boxHeight)}px"
+      imageSrc = vars.currentSlideElement.attr('src') or vars.currentSlideElement.find('img').attr('src')
+      background = "url(#{imageSrc}) no-repeat -#{((boxWidth + (column * boxWidth)) - boxWidth)}px -#{((boxHeight + (row * boxHeight)) - boxHeight)}px"
       width = boxWidth
       if column is (settings.boxCols - 1)
-          background = "url(#{vars.currentSlideElement.attr('src')}) no-repeat -#{((boxWidth + (column * boxWidth)) - boxWidth)}px -#{((boxHeight + (row * boxHeight)) - boxHeight)}px"
+          background = "url(#{imageSrc}) no-repeat -#{((boxWidth + (column * boxWidth)) - boxWidth)}px -#{((boxHeight + (row * boxHeight)) - boxHeight)}px"
           width = (slider.width() - (boxWidth * column))
 
       boxCss =
@@ -427,11 +429,12 @@
 
       slideElement.addClass alignment
       slideElement.css display: 'block', 'z-index': '0'
+      slideElement.find('img').css display: 'block'
 
     getRamblingSlice = (sliceWidth, position, total, vars, slideElement) ->
       ramblingSlice = getSlice sliceWidth, position, total, vars, slideElement
       ramblingSlice.css background: 'none'
-      ramblingSlice.append "<span><img src=\"#{slideElement.attr('src')}\" alt=\"\"/></span>"
+      ramblingSlice.append "<span><img src=\"#{slideElement.attr('src') or slideElement.find('img').attr('src')}\" alt=\"\"/></span>"
 
       bottom = 0
       top = 'auto'
@@ -470,7 +473,7 @@
       ramblingBoxImageStyle.bottom = "-#{bottom}" if bottom
 
       ramblingBox.css background: 'none', top: top or 'auto', bottom: bottom or 'auto'
-      ramblingBox.append("<span><img src='#{vars.currentSlideElement.attr('src')}' alt=''/></span>")
+      ramblingBox.append("<span><img src='#{vars.currentSlideElement.attr('src') or vars.currentSlideElement.find('img').attr('src')}' alt=''/></span>")
       ramblingBox.find('img').css ramblingBoxImageStyle
 
       ramblingBox

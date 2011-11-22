@@ -95,6 +95,7 @@
     left: 0;
 }
 
+.adaptingSlider .currentSlideElement img,
 .adaptingSlider img.currentSlideElement {
     display: block;
     width: 100%;
