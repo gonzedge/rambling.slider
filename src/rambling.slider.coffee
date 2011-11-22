@@ -128,7 +128,7 @@
       slider.unbind 'rambling:finished'
       slider.unbind 'hover'
       resetTimer()
-      children.show().children().show()
+      slider.children().show().children().show()
       slider
 
     option = (options...) ->

@@ -197,6 +197,10 @@ describe 'Rambling Slider', ->
       expect(rambling_slider).not.toHaveData 'rambling:slider'
       expect(rambling_slider).not.toHaveData 'rambling:vars'
 
+    it 'should make the slider inner elements visible', ->
+      rambling_slider.children().each ->
+        expect($(@).is ':visible').toBeTruthy()
+
   describe 'when trying to call a non existent method', ->
     beforeEach ->
       try
