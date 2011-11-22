@@ -19,12 +19,17 @@ The compiled JavaScript files, both for development and production, are in the `
 
 You can then initialize your slider with:
 
-`$('#slider').ramblingSlider()`
+<pre><code>$(window).load(function(){
+  $('#slider').ramblingSlider();
+});
+</code></pre>
+
+Note that it's set up in the `load` event from `window`, to ensure that the images are already loaded.
 
 ### Examples
 
 There are usage examples available in the `examples/` directory.
-You might want to see both `default.html` and `adaptive.html`.
+You might want to see `default.html`, `adaptive.html` and `flash.html`.
 
 ## Features
 
@@ -36,6 +41,10 @@ Among others, the new features added on top of the Nivo Slider include:
 * Methods `stop`, `start` can be called via `$('#slider').ramblingSlider('stop')` and allow method chaining.
 * Methods `option` and `effect` were added. Allow method chaining when calling the setters.
 * Method `destroy` was added and allows method chaining.
+* Some new transitions as `foldLeft`, `rolloverLeft`, `rolloverRight`.
+* Support for flash elements.
+* `fadeOut` transition from image to flash object.
+* `slideIn` transition from flash object to another flash object.
 
 ## Supported jQuery versions
 
