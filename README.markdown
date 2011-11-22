@@ -41,7 +41,7 @@ Among others, the new features added on top of the Nivo Slider include:
 * Methods `stop`, `start` can be called via `$('#slider').ramblingSlider('stop')` and allow method chaining.
 * Methods `option` and `effect` were added. Allow method chaining when calling the setters.
 * Method `destroy` was added and allows method chaining.
-* Some new transitions as `foldLeft`, `rolloverLeft`, `rolloverRight`.
+* Some new transitions as `foldLeft`, `rolloverLeft`, `rolloverRight`, `slideInRight`, `sliceUpRandom`, `sliceDownRandom`, `sliceUpDownRandom` and `foldRandom`.
 * Support for flash elements.
 * `fadeOut` transition from image to flash object.
 * `slideIn` transition from flash object to another flash object.
