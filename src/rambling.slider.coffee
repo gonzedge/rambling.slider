@@ -198,7 +198,11 @@
       children.each ->
         child = $(@)
         child.css display: 'none'
-        ramblingAnimationContainer.append child.clone().addClass('slideElement')
+        clone = child.clone().addClass 'slideElement'
+        if clone.containsFlash()
+          clone.find('object').prepend('<param name="wmode" value="opaque" />') unless clone.find('param[name=wmode]').length
+          clone.find('embed').attr wmode: 'opaque'
+        ramblingAnimationContainer.append clone
       children = ramblingAnimationContainer.children()
 
       children.each ->
@@ -415,14 +419,14 @@
       $('<div class="rambling-box"></div>').css boxCss
 
     setSliderBackground = ->
-      slider.find('.currentSlideElement').removeClass('currentSlideElement alignTop alignBottom').css display: 'none'
+      slider.find('.currentSlideElement').removeClass('currentSlideElement alignTop alignBottom').css display: 'none', 'z-index': '0'
       vars.currentSlideElement.siblings('.slideElement').css display: 'none'
       slideElement = vars.currentSlideElement.addClass 'currentSlideElement'
       alignment = 'alignTop'
       alignment = 'alignBottom' if settings.alignBottom
 
       slideElement.addClass alignment
-      slideElement.css display: 'block'
+      slideElement.css display: 'block', 'z-index': '0'
 
     getRamblingSlice = (sliceWidth, position, total, vars, slideElement) ->
       ramblingSlice = getSlice sliceWidth, position, total, vars, slideElement
