@@ -208,7 +208,7 @@
       children.each ->
         child = $ @
         link = null
-        if child.is 'a' and not child.containsFlash()
+        if child.is('a') and not child.containsFlash()
           link = child.addClass 'rambling-imageLink'
           child = child.find 'img:first'
 
@@ -340,7 +340,7 @@
       child = $ children[vars.currentSlide]
       vars.previousSlideElement = vars.currentSlideElement
       vars.currentSlideElement = child
-      vars.currentSlideElement = child.find('img:first') if child.is 'a' and not child.containsFlash()
+      vars.currentSlideElement = child.find('img:first') if child.is('a') and not child.containsFlash()
       child
 
     resetTimer = ->
