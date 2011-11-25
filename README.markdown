@@ -31,6 +31,10 @@ Note that it's set up in the `load` event from `window`, to ensure that the imag
 There are usage examples available in the `examples/` directory.
 You might want to see `default.html`, `adaptive.html` and `flash.html`.
 
+## Issues
+
+Please submit any issue you have or any bug that you find with the slider to [the project's issues on GitHub](http://github.com/egonzalez0787/rambling.slider/issues)
+
 ## Features
 
 Among others, the new features added on top of the Nivo Slider include:
