@@ -13,7 +13,7 @@
 
 (($) ->
 
-  publicMethods = ['stop', 'start', 'option', 'effect', 'destroy']
+  publicMethods = ['stop', 'start', 'option', 'effect', 'destroy', 'previousSlide', 'nextSlide', 'slide']
 
   $.fn.ramblingSlider = (options, others...) ->
     methodExists = options in publicMethods
@@ -117,6 +117,25 @@
 
     start = ->
       vars.stopped = false
+      slider
+
+    previousSlide = ->
+      slideTo 'prev'
+      slider
+
+    nextSlide = ->
+      slideTo 'next'
+      slider
+
+    slide = (slideNumbers...) ->
+      return vars.currentSlide unless slideNumbers.length
+
+      slideNumber = slideNumbers[0] % vars.totalSlides
+
+      unless vars.running or vars.totalSlides is 1
+        vars.currentSlide = slideNumber - 1
+        ramblingRun slider, children, settings, 'control'
+
       slider
 
     destroy = ->
@@ -299,7 +318,7 @@
       sourceTransitions = []
       if vars.currentSlideElement.containsFlash()
         if vars.previousSlideElement.containsFlash()
-          sourceTransitions = [flashTransitions.slideIn]
+          sourceTransitions = [flashTransitions.slideIn, flashTransitions.slideInLeft]
           defaultTransition = flashTransitions.slideIn
         else
           sourceTransitions = [flashTransitions.fadeOut]
@@ -710,6 +729,11 @@
         window.setTimeout (-> vars.currentSlideElement.animate {left: '0'}, settings.speed * 2, ->
             vars.currentSlideElement.css top: 'auto', left: 'auto', position: 'relative'
           ), settings.speed * 1.5
+      slideInLeft: ->
+        vars.currentSlideElement.css top: '0', left: "#{slider.width()}px", position: 'absolute', display: 'block'
+        window.setTimeout (-> vars.currentSlideElement.animate {left: '0'}, settings.speed * 2, ->
+            vars.currentSlideElement.css top: 'auto', left: 'auto', position: 'relative'
+          ), settings.speed * 1.5
 
     ramblingRun = (slider, children, settings, nudge) ->
       settings.lastSlide.call(@) if vars.currentSlide is vars.totalSlides - 1
@@ -738,6 +762,9 @@
 
     @stop = stop
     @start = start
+    @previousSlide = previousSlide
+    @nextSlide = nextSlide
+    @slide = slide
     @effect = effect
     @option = option
     @destroy = destroy

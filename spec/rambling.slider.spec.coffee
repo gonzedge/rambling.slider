@@ -16,7 +16,7 @@ describe 'Rambling Slider', ->
   fake_timer = {}
 
   create_slider = (options...) ->
-    rambling_slider = $ '<div id="#slider"><img src="image1.jpg" alt="image1" /><img src="image2.jpg" alt="image2" /></div>'
+    rambling_slider = $ '<div id="#slider"><img src="image1.jpg" alt="image1" /><img src="image2.jpg" alt="image2" /><img src="image3.jpg" alt="image3" /></div>'
     if options.length
       rambling_slider.ramblingSlider options[0]
     else
@@ -200,6 +200,46 @@ describe 'Rambling Slider', ->
     it 'should make the slider inner elements visible', ->
       rambling_slider.children().each ->
         expect($(@).is ':visible').toBeTruthy()
+
+  describe 'when going to the previous slide', ->
+    beforeEach ->
+      rambling_slider.ramblingSlider 'effect', 'sliceUpDown'
+      result = rambling_slider.ramblingSlider 'previousSlide'
+
+    it 'should return the jQuery Array for method chaining', ->
+      expect(result).toEqualJquery rambling_slider
+
+    it 'should change the current slide element to the previous one', ->
+      expect(rambling_slider.find '.currentSlideElement').toEqualJquery rambling_slider.find('img[alt=image3]')
+
+  describe 'when going to the next slide', ->
+    beforeEach ->
+      rambling_slider.ramblingSlider 'effect', 'sliceUpDown'
+      result = rambling_slider.ramblingSlider 'nextSlide'
+
+    it 'should return the jQuery Array for method chaining', ->
+      expect(result).toEqualJquery rambling_slider
+
+    it 'should change the current slide element to the next one', ->
+      expect(rambling_slider.find '.currentSlideElement').toEqualJquery rambling_slider.find('img[alt=image2]')
+
+  describe 'when going to a specific slide', ->
+    beforeEach ->
+      rambling_slider.ramblingSlider 'effect', 'sliceUpDown'
+      result = rambling_slider.ramblingSlider 'slide', 1
+
+    it 'should return the jQuery Array for method chaining', ->
+      expect(result).toEqualJquery rambling_slider
+
+    it 'should change the current slide element to the next one', ->
+      expect(rambling_slider.find '.currentSlideElement').toEqualJquery rambling_slider.find('img[alt=image2]')
+
+  describe 'when getting the current slide index', ->
+    beforeEach ->
+      result = rambling_slider.ramblingSlider 'slide'
+
+    it 'should return the expected index', ->
+      expect(result).toEqual 0
 
   describe 'when trying to call a non existent method', ->
     beforeEach ->
