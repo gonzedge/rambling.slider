@@ -1,19 +1,43 @@
+formatJqueryElement = (jQueryArray) ->
+  return 'undefined' unless jQueryArray.length
+
+  element = jQueryArray.get 0
+  tag_name = element.tagName.toLowerCase()
+  id = element.id
+  classes = element.className
+  format = "<#{tag_name}"
+  for attribute in element.attributes then do (attribute) ->
+    format = "#{format} #{attribute.name}='#{attribute.value}'"
+  format = "#{format}>#{jQueryArray.html()}</#{tag_name}>"
+
 beforeEach ->
   matchers =
     toEqualJquery: (jQueryArray) ->
-      result = true
+      @message = ->
+        "Expected <#{formatJqueryElement(@actual)}> to equal #{formatJqueryElement(jQueryArray)}"
+
+      result = @actual.length > 0
       @actual.each (index, element) ->
         result = result and @ is jQueryArray.get(index)
 
-      result
+      return result
 
     toContainElementWithClass: (class_name) ->
+      @message = ->
+        "Expected <#{formatJqueryElement(@actual)}> to include an element with class '#{class_name}'"
+
       @actual.find(".#{class_name}").length
 
     toContainElementWithId: (id) ->
+      @message = ->
+        "Expected #{formatJqueryElement(@actual)} to include an element with id '#{id}'"
+
       @actual.find("##{id}").length
 
     toHaveClass: (class_name) ->
+      @message = ->
+        "Expected #{formatJqueryElement(@actual)} to have class '#{class_name}'"
+
       @actual.hasClass class_name
 
     toHaveAttribute: (attribute) ->
