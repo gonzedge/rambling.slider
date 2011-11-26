@@ -213,7 +213,7 @@
     prepareAdaptiveSlider = -> slider.addClass 'adaptingSlider'
 
     prepareSliderChildren = ->
-      ramblingAnimationContainer = $ '#rambling-animation'
+      ramblingAnimationContainer = slider.find '#rambling-animation'
       children.each ->
         child = $(@)
         child.css display: 'none'
@@ -288,8 +288,7 @@
           return false if $(@).hasClass 'active'
           resetTimer()
           setSliderBackground()
-          vars.currentSlide = $(@).attr('rel') - 1
-          ramblingRun slider, children, settings, 'control'
+          slide $(@).attr('rel') - 1
 
     addKeyboardNavigation = ->
       if settings.keyboardNav
@@ -303,7 +302,7 @@
 
         children.filter('a').css display: 'none'
 
-        child = $(children[vars.currentSlide])
+        child = $ children.get(vars.currentSlide)
         child.css(display: 'block') if child.is 'a'
 
         run() if timer is '' and not vars.paused
@@ -356,7 +355,7 @@
       else ramblingCaption.fadeOut settings.speed
 
     setCurrentSlideElement = (children) ->
-      child = $ children[vars.currentSlide]
+      child = $ children.get(vars.currentSlide)
       vars.previousSlideElement = vars.currentSlideElement
       vars.currentSlideElement = child
       vars.currentSlideElement = child.find('img:first') if child.is('a') and not child.containsFlash()
