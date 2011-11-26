@@ -181,7 +181,7 @@
       setSliderInitialState()
 
       vars.currentSlide = settings.startSlide = settings.startSlide % vars.totalSlides
-
+      setCurrentSlideElement children
       setSliderBackground()
 
       addCaption()
@@ -288,7 +288,7 @@
           return false if $(@).hasClass 'active'
           resetTimer()
           setSliderBackground()
-          slide $(@).attr('rel') - 1
+          slide $(@).attr('rel')
 
     addKeyboardNavigation = ->
       if settings.keyboardNav

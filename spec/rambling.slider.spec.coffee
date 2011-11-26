@@ -61,23 +61,67 @@ describe 'Rambling Slider', ->
     expect(rambling_slider).toHaveData 'rambling:slider'
     expect(rambling_slider).toHaveData 'rambling:vars'
 
-  #describe 'when the startSlide is not the default', ->
-  #  other_slider = null
-  #  slide = 1
+  it 'should show the direction nav on hover', ->
+    expect(rambling_slider.find('.rambling-directionNav').is(':visible')).toBeFalsy()
 
-  #  beforeEach ->
-  #    other_slider = $ '<div id="#slider2"><img src="image1.jpg" alt="image1" /><img src="image2.jpg" alt="image2" /></div>'
-  #    other_slider.ramblingSlider startSlide: slide
+    rambling_slider.trigger 'mouseenter'
+    expect(rambling_slider.find('.rambling-directionNav').is(':visible')).toBeTruthy()
 
-  #  it 'should set the corresponding image as the current image', ->
-  #    expect(other_slider.css 'background').toContain($(other_slider.find('img').get slide).attr 'src')
+  it 'should add the expected amount of navigation controls', ->
+    expect(rambling_slider.find('.rambling-controlNav a').length).toEqual rambling_slider.find('.slideElement').length
 
-  #it 'should show the direction nav on hover', ->
-  #  expect(rambling_slider.find('rambling-directionNav').is(':visible')).toBeFalsy()
+  describe 'when the slider has only one slide', ->
+    other_slider = null
 
-  #  rambling_slider.trigger 'mouseenter', {type: 'mouseenter'}
-  #  expect(rambling_slider.find('rambling-directionNav').is(':visible')).toBeTruthy()
+    beforeEach ->
+      other_slider = $ '<div><img src="image1.jpg" alt="image1"/></div>'
+      other_slider.ramblingSlider()
 
+    it 'should never show the direction nav', ->
+      expect(other_slider.find('rambling-directionNav').is(':visible')).toBeFalsy()
+
+      other_slider.trigger 'mouseenter', type: 'mouseenter'
+      expect(other_slider.find('rambling-directionNav').is(':visible')).toBeFalsy()
+
+  describe 'when the slider is adaptive', ->
+    beforeEach ->
+      create_slider adaptImages: true
+
+    it 'should add the "adaptingSlider" class', ->
+      expect(rambling_slider).toHaveClass 'adaptingSlider'
+
+    describe 'and the slider is destroyed', ->
+      beforeEach ->
+        rambling_slider.ramblingSlider 'destroy'
+
+      it 'should remove the "adaptingSlider" class', ->
+        expect(rambling_slider).not.toHaveClass 'adaptingSlider'
+
+  describe 'when the startSlide is not the default', ->
+    slide = 1
+
+    beforeEach ->
+      create_slider startSlide: slide
+
+    it 'should set the current slide index', ->
+      expect(rambling_slider.data('rambling:vars').currentSlide).toEqual slide
+
+    it 'should set the corresponding image as the current slide element', ->
+      expect(rambling_slider.find '.currentSlideElement').toEqualJquery rambling_slider.find('img[alt=image2]')
+
+  describe 'when clicking any navigation control', ->
+    beforeEach ->
+      create_slider effect: 'sliceUpDown'
+      timeout_spy.andCallFake -> rambling_slider.trigger 'rambling:finished'
+      rambling_slider.find('.rambling-controlNav a').last().click()
+
+    it 'should set the current slide index', ->
+      expect(rambling_slider.data('rambling:vars').currentSlide).toEqual rambling_slider.find('.slideElement').length - 1
+
+    it 'should set the corresponding current slide element', ->
+      expect(rambling_slider.find('.currentSlideElement')).toEqualJquery rambling_slider.find('.slideElement').last()
+
+  # Methods
   describe 'when getting the effect', ->
     it 'should return the default one', ->
       expect(rambling_slider.ramblingSlider 'effect').toEqual $.fn.ramblingSlider.defaults.effect
@@ -280,30 +324,3 @@ describe 'Rambling Slider', ->
     it 'should throw an error', ->
       expect(error).not.toBeNull()
       expect(error).toEqual "Tried to call method 'start' on element without slider."
-
-  describe 'when the slider has only one slide', ->
-    other_slider = null
-
-    beforeEach ->
-      other_slider = $ '<div><img src="image1.jpg" alt="image1"/></div>'
-      other_slider.ramblingSlider()
-
-    it 'should never show the direction nav', ->
-      expect(other_slider.find('rambling-directionNav').is(':visible')).toBeFalsy()
-
-      other_slider.trigger 'mouseenter', type: 'mouseenter'
-      expect(other_slider.find('rambling-directionNav').is(':visible')).toBeFalsy()
-
-  describe 'when the slider is adaptive', ->
-    beforeEach ->
-      create_slider adaptImages: true
-
-    it 'should add the "adaptingSlider" class', ->
-      expect(rambling_slider).toHaveClass 'adaptingSlider'
-
-    describe 'and the slider is destroyed', ->
-      beforeEach ->
-        rambling_slider.ramblingSlider 'destroy'
-
-      it 'should remove the "adaptingSlider" class', ->
-        expect(rambling_slider).not.toHaveClass 'adaptingSlider'
