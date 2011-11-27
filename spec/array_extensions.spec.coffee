@@ -105,3 +105,19 @@ describe 'Array Extensions', ->
     describe 'and the array is empty', ->
       it 'should return null', ->
         expect([].random()).toBeUndefined()
+
+  describe 'when sorting an array from outer to inner elements', ->
+    new_array = null
+
+    beforeEach ->
+      new_array = array.sortOutIn()
+
+    it 'should return an array with the same length', ->
+      expect(new_array.length).toEqual array.length
+
+    it 'should return the elements in the expected order', ->
+      for i in [0...(Math.floor(array.length / 2))] then do (i) ->
+        expect(new_array[2 * i]).toEqual array[i]
+        expect(new_array[2 * i + 1]).toEqual array[array.length - i - 1]
+
+      expect(new_array[new_array.length - 1]).toEqual array[Math.floor(array.length / 2)]

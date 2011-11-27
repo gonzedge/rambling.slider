@@ -53,3 +53,17 @@ Array::fromObject = (object, valueSelector) ->
     self.push valueSelector(key, value)
 
   self
+
+Array::sortOutIn = ->
+  newArray = []
+  self = @
+
+  length = self.length
+  halfLength = Math.floor(length / 2)
+  for i in [0...halfLength] then do (i) ->
+    newArray.push self[i]
+    newArray.push self[length - i - 1]
+
+  newArray.push(self[halfLength]) if length % 2
+
+  newArray

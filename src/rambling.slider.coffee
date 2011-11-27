@@ -328,7 +328,7 @@
         defaultTransition = imageTransitions.fade
 
       transitions = [].fromObject sourceTransitions, (key, value) -> key
-      transitions = (transitions.where (animationName) -> settings.effect.contains animationName) unless settings.effect is 'random'
+      transitions = (transitions.where (animationName) -> settings.effect.split(',').contains animationName) unless settings.effect is 'random'
       transitions = transitions.map (animationName) -> imageTransitions[animationName]
       transitions.default = defaultTransition
 
@@ -686,14 +686,20 @@
       sliceDown: slideDownSlices
       sliceDownRight: slideDownSlices
       sliceDownLeft: -> slideDownSlices $.fn.reverse
+      sliceDownOutIn: -> slideDownSlices $.fn.sortOutIn
+      sliceDownInOut: -> slideDownSlices -> @sortOutIn().reverse()
       sliceDownRandom: -> slideDownSlices $.fn.shuffle
       sliceUp: slideUpSlices
       sliceUpRight: slideUpSlices
       sliceUpLeft: -> slideUpSlices $.fn.reverse
+      sliceUpOutIn: -> slideUpSlices $.fn.sortOutIn
+      sliceUpInOut: -> slideUpSlices -> @sortOutIn().reverse()
       sliceUpRandom: -> slideUpSlices $.fn.shuffle
       sliceUpDown: slideUpDownSlices
       sliceUpDownRight: slideUpDownSlices
       sliceUpDownLeft: -> slideUpDownSlices $.fn.reverse
+      sliceUpDownOutIn: -> slideUpDownSlices $.fn.sortOutIn
+      sliceUpDownInOut: -> slideUpDownSlices -> @sortOutIn().reverse()
       sliceUpDownRandom: -> slideUpDownSlices $.fn.shuffle
       fold: foldSlices
       foldRight: foldSlices

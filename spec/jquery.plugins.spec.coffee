@@ -51,7 +51,7 @@ describe 'jQuery Plugins', ->
         for j in [0...2]
           expect(array[i][j].get(0)).toEqual list_items.get(i * 2 + j)
 
-  describe 'when find out if an element contains a flash element', ->
+  describe 'when finding out if an element contains a flash element', ->
     describe 'and there is an object element', ->
       beforeEach ->
         html_box.append '<object></object>'
@@ -69,3 +69,21 @@ describe 'jQuery Plugins', ->
     describe 'and there is no flash', ->
       it 'should return false', ->
         expect(html_box.containsFlash()).toBeFalsy()
+
+  describe 'when sorting a jQuery array from outer to inner elements', ->
+    array = null
+    new_array = null
+
+    beforeEach ->
+      array = html_box.find 'li'
+      new_array = array.sortOutIn()
+
+    it 'should return an array with the same length', ->
+      expect(new_array.length).toEqual array.length
+
+    it 'should return the elements in the expected order', ->
+      for i in [0...(Math.floor(array.length / 2))] then do (i) ->
+        expect(new_array[2 * i]).toEqual array[i]
+        expect(new_array[2 * i + 1]).toEqual array[array.length - i - 1]
+
+      expect(new_array[new_array.length - 1]).toEqual array[Math.floor(array.length / 2)]
