@@ -485,11 +485,11 @@
       sourceTransitions = []
       if vars.currentSlideElement.containsFlash()
         if vars.previousSlideElement.containsFlash()
-          sourceTransitions = [flashTransitions.slideInRight, flashTransitions.slideInLeft]
+          sourceTransitions = flashTransitions
           defaultTransition = flashTransitions.slideInRight
         else
-          sourceTransitions = [flashTransitions.fadeOut, flashTransitions.slideInRight, flashTransitions.slideInLeft]
-          defaultTransition = flashTransitions.fadeOut
+          sourceTransitions = imageFlashTransitions
+          defaultTransition = imageFlashTransitions.fadeOut
 
       else
         sourceTransitions = imageTransitions
@@ -498,7 +498,7 @@
       availableTransitions = getAvailableTransitions()
       transitions = [].fromObject sourceTransitions, (key, value) -> key
       transitions = (transitions.where (animationName) -> availableTransitions.contains animationName) unless settings.effect is 'random'
-      transitions = transitions.map (animationName) -> imageTransitions[animationName]
+      transitions = transitions.map (animationName) -> sourceTransitions[animationName]
       transitions.default = defaultTransition
 
       transitions
@@ -731,7 +731,7 @@
       boxRainGrowOutIn: -> rainBoxes $.fn.sortOutIn, true
       boxRainGrowInOut: -> rainBoxes (-> @sortOutIn().reverse()), true
 
-    flashTransitions =
+    imageFlashTransitions =
       fadeOut: ->
         slice = getOneSlice vars.previousSlideElement
         slice.css transitionOptions.fadeOut.style
@@ -741,6 +741,8 @@
           settings.afterChange.apply(slice) if settings.afterChange
           slice.css display: 'none'
           slider.trigger 'rambling:finished'
+
+    flashTransitions =
       slideInRight: ->
         vars.currentSlideElement.css top: '0', left: "#{-slider.width()}px", position: 'absolute', display: 'block'
         window.setTimeout (-> vars.currentSlideElement.animate {left: '0'}, settings.speed * 2, ->
@@ -751,6 +753,8 @@
         window.setTimeout (-> vars.currentSlideElement.animate {left: '0'}, settings.speed * 2, ->
             vars.currentSlideElement.css top: 'auto', left: 'auto', position: 'relative'
           ), settings.speed * 1.5
+
+    $.extend imageFlashTransitions, flashTransitions
 
     ramblingRun = (slider, children, settings, nudge) ->
       settings.lastSlide.call(@) if vars.currentSlide is vars.totalSlides - 1
