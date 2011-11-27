@@ -14,6 +14,7 @@ describe 'Rambling Slider', ->
   result = null
   error = null
   interval_spy = null
+  interval_callback = null
   timeout_spy = null
   fake_timer = {}
 
@@ -32,7 +33,10 @@ describe 'Rambling Slider', ->
   beforeEach ->
     timeout_spy = spyOn window, 'setTimeout'
     interval_spy = spyOn window, 'setInterval'
-    interval_spy.andReturn fake_timer
+    interval_spy.andCallFake (callback, timeout) ->
+      interval_callback = callback
+      fake_timer
+
     spyOn window, 'clearInterval'
 
     result = create_slider()
@@ -61,14 +65,14 @@ describe 'Rambling Slider', ->
     expect(rambling_slider).toHaveData 'rambling:slider'
     expect(rambling_slider).toHaveData 'rambling:vars'
 
-  it 'should show the direction nav on hover', ->
+  it 'should not show the direction nav', ->
     expect(rambling_slider.find('.rambling-directionNav').is(':visible')).toBeFalsy()
-
-    rambling_slider.trigger 'mouseenter'
-    expect(rambling_slider.find('.rambling-directionNav').is(':visible')).toBeTruthy()
 
   it 'should add the expected amount of navigation controls', ->
     expect(rambling_slider.find('.rambling-controlNav a').length).toEqual rambling_slider.find('.slideElement').length
+
+  it 'should not pause the slider', ->
+    expect(rambling_slider.data('rambling:vars').paused).toBeFalsy()
 
   describe 'when the slider has only one slide', ->
     other_slider = null
@@ -120,6 +124,88 @@ describe 'Rambling Slider', ->
 
     it 'should set the corresponding current slide element', ->
       expect(rambling_slider.find('.currentSlideElement')).toEqualJquery rambling_slider.find('.slideElement').last()
+
+  describe 'when hovering into the slider', ->
+    beforeEach ->
+      rambling_slider.trigger 'mouseenter'
+
+    it 'should show the direction nav', ->
+      expect(rambling_slider.find('.rambling-directionNav').is(':visible')).toBeTruthy()
+
+    it 'should pause the slider', ->
+      expect(rambling_slider.data('rambling:vars').paused).toBeTruthy()
+
+    describe 'and hovering out', ->
+      beforeEach ->
+        rambling_slider.trigger 'mouseleave'
+
+      it 'should hide the direction nav', ->
+        expect(rambling_slider.find('.rambling-directionNav').is(':visible')).toBeFalsy()
+
+      it 'should unpause the slider', ->
+        expect(rambling_slider.data('rambling:vars').paused).toBeFalsy()
+
+    describe 'and the pauseOnHover option is false', ->
+      beforeEach ->
+        rambling_slider.trigger 'mouseleave'
+        create_slider pauseOnHover: false
+        rambling_slider.trigger 'mouseenter'
+
+      it 'should not pause the slider', ->
+        expect(rambling_slider.data('rambling:vars').paused).toBeFalsy()
+
+  describe 'when passing the slider callbacks', ->
+    settings = null
+
+    beforeEach ->
+      settings =
+        effect: 'sliceUpDown'
+        beforeChange: ->
+        afterChange: ->
+        slideshowEnd: ->
+        lastSlide: ->
+        afterLoad: ->
+      spyOn settings, 'beforeChange'
+      spyOn settings, 'afterChange'
+      spyOn settings, 'slideshowEnd'
+      spyOn settings, 'lastSlide'
+      spyOn settings, 'afterLoad'
+
+      create_slider settings
+
+    it 'should call the afterLoad immediately after creation', ->
+      expect(settings.afterLoad).toHaveBeenCalled()
+
+    describe 'and the animation is finished', ->
+      beforeEach ->
+        rambling_slider.trigger 'rambling:finished'
+
+      it 'should call afterChange callback', ->
+        expect(settings.afterChange).toHaveBeenCalled()
+
+    describe 'and the first slide is run', ->
+      beforeEach ->
+        interval_callback()
+
+      it 'should call the beforeChange callback', ->
+        expect(settings.beforeChange).toHaveBeenCalled()
+
+    describe 'and the last slide is run', ->
+      beforeEach ->
+        rambling_slider.ramblingSlider 'slide', rambling_slider.find('.slideElement').length - 1
+        interval_callback()
+
+      it 'should call the lastSlide callback', ->
+        expect(settings.lastSlide).toHaveBeenCalled()
+
+    describe 'and the slideshow is going to begin again', ->
+      beforeEach ->
+        rambling_slider.ramblingSlider 'slide', rambling_slider.find('.slideElement').length - 1
+        interval_callback()
+        interval_callback()
+
+      it 'should call the slideshowEnd callback', ->
+        expect(settings.slideshowEnd).toHaveBeenCalled()
 
   # Methods
   describe 'when getting the effect', ->
