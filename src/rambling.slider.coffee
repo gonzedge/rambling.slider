@@ -312,32 +312,6 @@
 
         settings.afterChange.call @
 
-    getAnimationsForCurrentSlideElement = ->
-      transitions = []
-      sourceTransitions = []
-      if vars.currentSlideElement.containsFlash()
-        if vars.previousSlideElement.containsFlash()
-          sourceTransitions = [flashTransitions.slideIn, flashTransitions.slideInLeft]
-          defaultTransition = flashTransitions.slideIn
-        else
-          sourceTransitions = [flashTransitions.fadeOut]
-          defaultTransition = flashTransitions.fadeOut
-
-      else
-        sourceTransitions = imageTransitions
-        defaultTransition = imageTransitions.fade
-
-      transitions = [].fromObject sourceTransitions, (key, value) -> key
-      transitions = (transitions.where (animationName) -> settings.effect.split(',').contains animationName) unless settings.effect is 'random'
-      transitions = transitions.map (animationName) -> imageTransitions[animationName]
-      transitions.default = defaultTransition
-
-      transitions
-
-    getRandomAnimation = ->
-      transitions = getAnimationsForCurrentSlideElement()
-      transitions.random() or transitions.default
-
     processCaption = (settings) ->
       ramblingCaption = slider.find '.rambling-caption'
       title = vars.currentSlideElement.attr 'title'
@@ -496,6 +470,43 @@
 
       ramblingBox
 
+    transitionGroups = ['sliceUp', 'sliceDown', 'sliceUpDown', 'fold', 'fade', 'rollover', 'slideIn']
+    getAvailableTransitions = ->
+      effects = settings.effect.split ','
+      $.each transitionGroups, (index, element) ->
+        if effects.contains element
+
+          effects.splice effects.indexOf(element), 1, "#{element}Right", "#{element}Left", "#{element}OutIn", "#{element}InOut", "#{element}Random", "#{element}In", "#{element}Out"
+
+      effects
+
+    getAnimationsForCurrentSlideElement = ->
+      transitions = []
+      sourceTransitions = []
+      if vars.currentSlideElement.containsFlash()
+        if vars.previousSlideElement.containsFlash()
+          sourceTransitions = [flashTransitions.slideInRight, flashTransitions.slideInLeft]
+          defaultTransition = flashTransitions.slideInRight
+        else
+          sourceTransitions = [flashTransitions.fadeOut, flashTransitions.slideInRight, flashTransitions.slideInLeft]
+          defaultTransition = flashTransitions.fadeOut
+
+      else
+        sourceTransitions = imageTransitions
+        defaultTransition = imageTransitions.fade
+
+      availableTransitions = getAvailableTransitions()
+      transitions = [].fromObject sourceTransitions, (key, value) -> key
+      transitions = (transitions.where (animationName) -> availableTransitions.contains animationName) unless settings.effect is 'random'
+      transitions = transitions.map (animationName) -> imageTransitions[animationName]
+      transitions.default = defaultTransition
+
+      transitions
+
+    getRandomAnimation = ->
+      transitions = getAnimationsForCurrentSlideElement()
+      transitions.random() or transitions.default
+
     animateFullImage = (options) ->
       slice = getOneSlice()
 
@@ -622,7 +633,10 @@
                 animationTimeBuffer += 20
 
               prevCol--
-        , reorderCallback
+        , ->
+          boxes = @
+          boxes = reorderCallback.call(@) if reorderCallback
+          boxes.as2dArray settings.boxCols
 
     transitionOptions =
       fadeIn:
@@ -683,42 +697,39 @@
         afterChange: -> @css left: '0px', right: ''
 
     imageTransitions =
-      sliceDown: slideDownSlices
       sliceDownRight: slideDownSlices
       sliceDownLeft: -> slideDownSlices $.fn.reverse
       sliceDownOutIn: -> slideDownSlices $.fn.sortOutIn
       sliceDownInOut: -> slideDownSlices -> @sortOutIn().reverse()
       sliceDownRandom: -> slideDownSlices $.fn.shuffle
-      sliceUp: slideUpSlices
       sliceUpRight: slideUpSlices
       sliceUpLeft: -> slideUpSlices $.fn.reverse
       sliceUpOutIn: -> slideUpSlices $.fn.sortOutIn
       sliceUpInOut: -> slideUpSlices -> @sortOutIn().reverse()
       sliceUpRandom: -> slideUpSlices $.fn.shuffle
-      sliceUpDown: slideUpDownSlices
       sliceUpDownRight: slideUpDownSlices
       sliceUpDownLeft: -> slideUpDownSlices $.fn.reverse
       sliceUpDownOutIn: -> slideUpDownSlices $.fn.sortOutIn
       sliceUpDownInOut: -> slideUpDownSlices -> @sortOutIn().reverse()
       sliceUpDownRandom: -> slideUpDownSlices $.fn.shuffle
-      fold: foldSlices
       foldRight: foldSlices
       foldLeft: -> foldSlices $.fn.reverse
       foldRandom: -> foldSlices $.fn.shuffle
-      fade: -> imageTransitions.fadeIn
       fadeIn: -> animateFullImage transitionOptions.fadeIn
-      fadeOut: -> imageTransitions.fadeIn
-      slideIn: -> animateFullImage transitionOptions.slideInRight
+      fadeOut: -> animateFullImage transitionOptions.fadeIn
       slideInRight: -> animateFullImage transitionOptions.slideInRight
       slideInLeft: -> animateFullImage transitionOptions.slideInLeft
-      rollover: -> animateFullImage transitionOptions.rolloverRight
       rolloverRight: -> animateFullImage transitionOptions.rolloverRight
       rolloverLeft: -> animateFullImage transitionOptions.rolloverLeft
       boxRandom: randomBoxes
-      boxRain: -> rainBoxes -> $(@).as2dArray settings.boxCols
-      boxRainReverse: -> rainBoxes -> $(@).reverse().as2dArray settings.boxCols
-      boxRainGrow: -> rainBoxes (-> $(@).as2dArray settings.boxCols), true
-      boxRainGrowReverse: -> rainBoxes (-> $(@).reverse().as2dArray settings.boxCols), true
+      boxRain: rainBoxes
+      boxRainReverse: -> rainBoxes $.fn.reverse
+      boxRainOutIn: -> rainBoxes $.fn.sortOutIn
+      boxRainInOut: -> rainBoxes -> @sortOutIn().reverse()
+      boxRainGrow: -> rainBoxes undefined, true
+      boxRainGrowReverse: -> rainBoxes $.fn.reverse, true
+      boxRainGrowOutIn: -> rainBoxes $.fn.sortOutIn, true
+      boxRainGrowInOut: -> rainBoxes (-> @sortOutIn().reverse()), true
 
     flashTransitions =
       fadeOut: ->
@@ -730,7 +741,7 @@
           settings.afterChange.apply(slice) if settings.afterChange
           slice.css display: 'none'
           slider.trigger 'rambling:finished'
-      slideIn: ->
+      slideInRight: ->
         vars.currentSlideElement.css top: '0', left: "#{-slider.width()}px", position: 'absolute', display: 'block'
         window.setTimeout (-> vars.currentSlideElement.animate {left: '0'}, settings.speed * 2, ->
             vars.currentSlideElement.css top: 'auto', left: 'auto', position: 'relative'
