@@ -705,8 +705,9 @@
       foldRight: foldSlices
       foldLeft: -> foldSlices $.fn.reverse
       foldRandom: -> foldSlices $.fn.shuffle
-      fade: -> animateFullImage transitionOptions.fadeIn
+      fade: -> imageTransitions.fadeIn
       fadeIn: -> animateFullImage transitionOptions.fadeIn
+      fadeOut: -> imageTransitions.fadeIn
       slideIn: -> animateFullImage transitionOptions.slideInRight
       slideInRight: -> animateFullImage transitionOptions.slideInRight
       slideInLeft: -> animateFullImage transitionOptions.slideInLeft
