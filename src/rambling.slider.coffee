@@ -51,7 +51,7 @@
     boxCols: 8
     boxRows: 4
     speed: 500
-    pauseTime: 3000
+    pauseTime: 4500
     manualAdvance: false
     captionOpacity: 0.8
     startSlide: 0
@@ -308,9 +308,9 @@
       slider.bind 'rambling:finished', ->
         vars.running = false
 
-        children.filter('a').css display: 'none'
 
         child = $ children.get(vars.currentSlide)
+        child.siblings().css display: 'none'
         child.css(display: 'block') if child.is 'a'
 
         run() if timer is '' and not vars.paused
@@ -418,9 +418,14 @@
       $('<div class="rambling-box"></div>').css boxCss
 
     setSliderBackground = ->
-      slider.find('.currentSlideElement').removeClass('currentSlideElement alignTop alignBottom').css display: 'none', 'z-index': '0'
+      slideElement = slider.find '.currentSlideElement'
+
+      return if slideElement.equals vars.currentSlideElement
+
+      slideElement.removeClass('currentSlideElement alignTop alignBottom').css display: 'none', 'z-index': '0'
       vars.currentSlideElement.siblings('.slideElement').css display: 'none'
       slideElement = vars.currentSlideElement.addClass 'currentSlideElement'
+
       alignment = 'alignTop'
       alignment = 'alignBottom' if settings.alignBottom
 
@@ -728,17 +733,18 @@
           slice.css display: 'none'
           raiseAnimationFinished()
 
+    flashSlideIn = (beforeAnimation, animateStyle, afterAnimation) ->
+      vars.currentSlideElement.css beforeAnimation
+      window.setTimeout (-> vars.currentSlideElement.animate animateStyle, settings.speed * 2, ->
+          raiseAnimationFinished()
+        ), settings.speed * 2
+
+    flashHorizontalSlideIn = (initialLeft) ->
+      flashSlideIn {top: '0', left: initialLeft, position: 'absolute', display: 'block'}, {left: '0'}, {top: 'auto', left: 'auto', position: 'relative'}
+
     flashTransitions =
-      slideInRight: ->
-        vars.currentSlideElement.css top: '0', left: "#{-slider.width()}px", position: 'absolute', display: 'block'
-        window.setTimeout (-> vars.currentSlideElement.animate {left: '0'}, settings.speed * 2, ->
-            vars.currentSlideElement.css top: 'auto', left: 'auto', position: 'relative'
-          ), settings.speed * 1.5
-      slideInLeft: ->
-        vars.currentSlideElement.css top: '0', left: "#{slider.width()}px", position: 'absolute', display: 'block'
-        window.setTimeout (-> vars.currentSlideElement.animate {left: '0'}, settings.speed * 2, ->
-            vars.currentSlideElement.css top: 'auto', left: 'auto', position: 'relative'
-          ), settings.speed * 1.5
+      slideInRight: -> flashHorizontalSlideIn "#{-slider.width()}px"
+      slideInLeft: -> flashHorizontalSlideIn "#{slider.width()}px"
 
     $.extend imageFlashTransitions, flashTransitions
 
