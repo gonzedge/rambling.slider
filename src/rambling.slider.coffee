@@ -94,7 +94,11 @@
    'keyboardNav',
    'pauseOnHover',
    'prevText',
-   'nextText'
+   'nextText',
+   'imageTransitions',
+   'flashTransitions',
+   'imageFlashTransitions',
+   'afterLoad'
   ]
 
   RamblingSlider = (element, options) ->
