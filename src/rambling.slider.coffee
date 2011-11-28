@@ -70,6 +70,9 @@
     pauseOnHover: true
     prevText: 'Prev'
     nextText: 'Next'
+    imageTransitions: null
+    flashTransitions: null
+    imageFlashTransitions: null
     beforeChange: ->
     afterChange: ->
     slideshowEnd: ->
@@ -190,6 +193,7 @@
       addKeyboardNavigation()
       slider.hover(pauseSlider, unpauseSlider) if settings.pauseOnHover
       setAnimationFinishedActions()
+      extendAvailableTransitions()
 
     run = ->
       if not settings.manualAdvance and vars.totalSlides > 1
@@ -312,6 +316,11 @@
 
         settings.afterChange.call @
 
+    extendAvailableTransitions = ->
+      $.extend imageTransitions, settings.imageTransitions if settings.imageTransitions
+      $.extend imageFlashTransitions, settings.imageFlashTransitions if settings.imageFlashTransitions
+      $.extend flashTransitions, settings.flashTransitions if settings.flashTransitions
+
     processCaption = (settings) ->
       ramblingCaption = slider.find '.rambling-caption'
       title = vars.currentSlideElement.attr 'title'
@@ -377,29 +386,22 @@
 
     getSlice = (sliceWidth, position, total, vars, slideElement) ->
       imageSrc = slideElement.attr('src') or slideElement.find('img').attr('src')
-      background = "url(#{imageSrc}) no-repeat -#{((sliceWidth + (position * sliceWidth)) - sliceWidth)}px 0%"
       width = sliceWidth
-      if position is (total - 1)
-          background = "url(#{imageSrc}) no-repeat -#{((sliceWidth + (position * sliceWidth)) - sliceWidth)}px 0%"
-          width = slider.width() - (sliceWidth * position)
+      width = slider.width() - (sliceWidth * position) if position is (total - 1)
 
       sliceCss =
         left: "#{sliceWidth * position}px"
         width: "#{width}px"
         height: '0px'
         opacity: '0'
-        background: background
         overflow: 'hidden'
 
       $('<div class="rambling-slice"></div>').css sliceCss
 
     getBox = (boxWidth, boxHeight, row, column, settings, vars) ->
       imageSrc = vars.currentSlideElement.attr('src') or vars.currentSlideElement.find('img').attr('src')
-      background = "url(#{imageSrc}) no-repeat -#{((boxWidth + (column * boxWidth)) - boxWidth)}px -#{((boxHeight + (row * boxHeight)) - boxHeight)}px"
       width = boxWidth
-      if column is (settings.boxCols - 1)
-          background = "url(#{imageSrc}) no-repeat -#{((boxWidth + (column * boxWidth)) - boxWidth)}px -#{((boxHeight + (row * boxHeight)) - boxHeight)}px"
-          width = (slider.width() - (boxWidth * column))
+      width = (slider.width() - (boxWidth * column)) if column is (settings.boxCols - 1)
 
       boxCss =
         opacity: 0
@@ -407,7 +409,6 @@
         top: "#{boxHeight * row}px"
         width: "#{width}px"
         height: "#{boxHeight}px"
-        background: background
         overflow: 'hidden'
 
       $('<div class="rambling-box"></div>').css boxCss
@@ -506,6 +507,8 @@
     getRandomAnimation = ->
       transitions = getAnimationsForCurrentSlideElement()
       transitions.random() or transitions.default
+
+    raiseAnimationFinished = -> slider.trigger 'rambling:finished'
 
     animateFullImage = (options) ->
       slice = getOneSlice()
@@ -714,6 +717,8 @@
       sliceUpDownRandom: -> slideUpDownSlices $.fn.shuffle
       foldRight: foldSlices
       foldLeft: -> foldSlices $.fn.reverse
+      foldOutIn: -> foldSlices $.fn.sortOutIn
+      foldInOut: -> foldSlices -> @sortOutIn().reverse()
       foldRandom: -> foldSlices $.fn.shuffle
       fadeIn: -> animateFullImage transitionOptions.fadeIn
       fadeOut: -> animateFullImage transitionOptions.fadeIn
@@ -777,7 +782,18 @@
       processCaption settings
 
       vars.running = true
-      getRandomAnimation().apply @
+
+      animationHelpers =
+        animateFullImage: animateFullImage
+        animateSlices: animateSlices
+        animateBoxes: animateBoxes
+        slideUpSlices: slideUpSlices
+        slideDownSlices: slideDownSlices
+        slideUpDownSlices: slideUpDownSlices
+        foldSlices: foldSlices
+        rainBoxes: rainBoxes
+
+      getRandomAnimation().apply animationHelpers
 
     settings.afterLoad.call @
 

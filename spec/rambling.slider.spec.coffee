@@ -207,6 +207,21 @@ describe 'Rambling Slider', ->
       it 'should call the slideshowEnd callback', ->
         expect(settings.slideshowEnd).toHaveBeenCalled()
 
+  describe 'when extending the available transitions', ->
+    options = null
+
+    beforeEach ->
+      options =
+        effect: 'newTransition'
+        imageTransitions:
+          newTransition: ->
+      spyOn options.imageTransitions, 'newTransition'
+      create_slider options
+      interval_callback()
+
+    it 'should be able to execute the new transition', ->
+      expect(options.imageTransitions.newTransition).toHaveBeenCalled()
+
   # Methods
   describe 'when getting the effect', ->
     it 'should return the default one', ->
