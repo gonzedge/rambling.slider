@@ -13,7 +13,7 @@
 
 (($) ->
 
-  publicMethods = ['stop', 'start', 'option', 'effect', 'destroy', 'previousSlide', 'nextSlide', 'slide']
+  publicMethods = ['stop', 'start', 'option', 'effect', 'destroy', 'previousSlide', 'nextSlide', 'slide', 'theme']
 
   $.fn.ramblingSlider = (options, others...) ->
     methodExists = options in publicMethods
@@ -54,6 +54,7 @@
     pauseTime: 4500
     manualAdvance: false
     captionOpacity: 0.8
+    theme: 'default'
     startSlide: 0
     effect: 'random'
     directionNav: true
@@ -167,6 +168,9 @@
       if option is 'effect'
         return if value then effect(value) else effect()
 
+      if option is 'theme'
+        return if value then theme(value) else theme()
+
       return if optionIsObject
         $.extend settings, option
       else
@@ -183,8 +187,16 @@
 
       settings.effect = effects[0]
 
+    theme = (themes...) ->
+      return settings.theme unless themes.length
+
+      slider.removeClass "theme-#{settings.theme}"
+      settings.theme = themes[0]
+      slider.addClass "theme-#{settings.theme}"
+
     initialize = ->
       effect settings.effect
+      theme settings.theme
       setSliderInitialState()
 
       vars.currentSlide = settings.startSlide = settings.startSlide % vars.totalSlides
@@ -205,7 +217,7 @@
 
     setSliderInitialState = ->
       slider.css position: 'relative'
-      slider.addClass 'ramblingSlider'
+      slider.addClass "ramblingSlider"
 
       vars.totalSlides = children.length
 
@@ -793,6 +805,7 @@
     @nextSlide = nextSlide
     @slide = slide
     @effect = effect
+    @theme = theme
     @option = option
     @destroy = destroy
     @initialize = initialize

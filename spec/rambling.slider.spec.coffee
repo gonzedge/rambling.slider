@@ -74,6 +74,9 @@ describe 'Rambling Slider', ->
   it 'should not pause the slider', ->
     expect(rambling_slider.data('rambling:vars').paused).toBeFalsy()
 
+  it 'should set the default theme', ->
+    expect(rambling_slider).toHaveClass "theme-#{$.fn.ramblingSlider.defaults.theme}"
+
   describe 'when the slider has only one slide', ->
     other_slider = null
 
@@ -402,6 +405,26 @@ describe 'Rambling Slider', ->
 
     it 'should return the expected index', ->
       expect(result).toEqual 0
+
+  describe 'when getting the slider theme', ->
+    it 'should return the default theme', ->
+      expect(rambling_slider.ramblingSlider 'theme').toEqual $.fn.ramblingSlider.defaults.theme
+
+  describe 'when setting the slider theme', ->
+    theme = null
+
+    beforeEach ->
+      theme = 'another'
+      create_slider theme: theme
+
+    it 'should remove the previous theme class', ->
+      expect(rambling_slider).not.toHaveClass "theme-#{$.fn.ramblingSlider.defaults.theme}"
+
+    it 'should add the new theme class', ->
+      expect(rambling_slider).toHaveClass "theme-#{theme}"
+
+    it 'should return the new theme when asked', ->
+      expect(rambling_slider.ramblingSlider 'theme').toEqual theme
 
   describe 'when trying to call a non existent method', ->
     beforeEach ->
