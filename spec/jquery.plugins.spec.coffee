@@ -87,3 +87,25 @@ describe 'jQuery Plugins', ->
         expect(new_array[2 * i + 1]).toEqual array[array.length - i - 1]
 
       expect(new_array[new_array.length - 1]).toEqual array[Math.floor(array.length / 2)]
+
+  describe 'when comparing to jquery arrays', ->
+    array = null
+
+    beforeEach ->
+      array = html_box.find 'li'
+
+    describe 'and they are equal', ->
+      it 'should return true', ->
+        expect(array.equals(html_box.find 'li')).toBeTruthy()
+
+    describe 'and they are different', ->
+      it 'should return false', ->
+        expect(array.equals(html_box.find 'ul')).toBeFalsy()
+
+    describe 'and one of them is empty', ->
+      it 'should return false', ->
+        expect(array.equals(html_box.find 'body')).toBeFalsy()
+
+    describe 'and one of them is smaller', ->
+      it 'should return false', ->
+        expect(array.equals(html_box.find('li').first())).toBeFalsy()

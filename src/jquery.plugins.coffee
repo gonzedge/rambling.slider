@@ -23,4 +23,12 @@
 
   $.fn.containsFlash = ->
     @find('object,embed').length
+
+  $.fn.equals = (other) ->
+    result = true
+    result = @length is other.length
+    @each (index, element) ->
+      result = result and element is other.get(index)
+
+    result
 )(jQuery)
