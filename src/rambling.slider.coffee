@@ -430,21 +430,14 @@
 
     getRamblingSlice = (sliceWidth, position, total, vars, slideElement) ->
       ramblingSlice = getSlice sliceWidth, position, total, vars, slideElement
-      ramblingSlice.css background: 'none'
       ramblingSlice.append "<span><img src=\"#{slideElement.attr('src') or slideElement.find('img').attr('src')}\" alt=\"\"/></span>"
-
-      bottom = 0
-      top = 'auto'
-      if settings.alignBottom
-        bottom = 'auto'
-        top = 0
 
       ramblingSliceImageStyle =
         display: 'block'
         width: slider.width()
         left: "-#{(sliceWidth + (position * sliceWidth)) - sliceWidth}px"
-        bottom: bottom
-        top: top
+        bottom: if settings.alignBottom then '0' else 'auto'
+        top: if settings.alignBottom then 'auto' else '0'
 
       ramblingSlice.find('img').css ramblingSliceImageStyle
 
@@ -469,7 +462,7 @@
       ramblingBoxImageStyle.top = "-#{top}" if top
       ramblingBoxImageStyle.bottom = "-#{bottom}" if bottom
 
-      ramblingBox.css background: 'none', top: top or 'auto', bottom: bottom or 'auto'
+      ramblingBox.css top: top or 'auto', bottom: bottom or 'auto'
       ramblingBox.append("<span><img src='#{vars.currentSlideElement.attr('src') or vars.currentSlideElement.find('img').attr('src')}' alt=''/></span>")
       ramblingBox.find('img').css ramblingBoxImageStyle
 
