@@ -491,7 +491,7 @@
 
       else
         sourceTransitions = imageTransitions
-        defaultTransition = imageTransitions.fade
+        defaultTransition = imageTransitions.fadeIn
 
       availableTransitions = getAvailableTransitions()
       transitions = [].fromObject sourceTransitions, (key, value) -> key
