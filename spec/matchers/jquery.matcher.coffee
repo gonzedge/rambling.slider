@@ -1,30 +1,31 @@
+require '../../src/jquery.plugins'
+
 formatJqueryElement = (jQueryArray) ->
   return 'undefined' unless jQueryArray.length
 
   element = jQueryArray.get 0
+  formatElement element
+
+formatElement = (element) ->
   tag_name = element.tagName.toLowerCase()
   id = element.id
   classes = element.className
   format = "<#{tag_name}"
   for attribute in element.attributes then do (attribute) ->
     format = "#{format} #{attribute.name}='#{attribute.value}'"
-  format = "#{format}>#{jQueryArray.html()}</#{tag_name}>"
+  format = "#{format}>#{element.innerHTML}</#{tag_name}>"
 
 beforeEach ->
   matchers =
     toEqualJquery: (jQueryArray) ->
       @message = ->
-        "Expected <#{formatJqueryElement(@actual)}> to equal #{formatJqueryElement(jQueryArray)}"
+        "Expected #{formatJqueryElement(@actual)} to equal #{formatJqueryElement(jQueryArray)}"
 
-      result = @actual.length > 0
-      @actual.each (index, element) ->
-        result = result and @ is jQueryArray.get(index)
-
-      return result
+      @actual.equals jQueryArray
 
     toContainElementWithClass: (class_name) ->
       @message = ->
-        "Expected <#{formatJqueryElement(@actual)}> to include an element with class '#{class_name}'"
+        "Expected #{formatJqueryElement(@actual)} to include an element with class '#{class_name}'"
 
       @actual.find(".#{class_name}").length
 

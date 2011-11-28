@@ -111,7 +111,7 @@ describe 'Rambling Slider', ->
       expect(rambling_slider.data('rambling:vars').currentSlide).toEqual slide
 
     it 'should set the corresponding image as the current slide element', ->
-      expect(rambling_slider.find '.currentSlideElement').toEqualJquery rambling_slider.find('img[alt=image2]')
+      expect(rambling_slider.find '.currentSlideElement').toEqualJquery rambling_slider.find('img.slideElement[alt=image2]')
 
   describe 'when clicking any navigation control', ->
     beforeEach ->
@@ -284,11 +284,10 @@ describe 'Rambling Slider', ->
       expect(rambling_slider.ramblingSlider('option', 'slices')).toEqual $.fn.ramblingSlider.defaults.slices
 
     it 'should return the one set at initialization', ->
-      other_slider = $ '<div id="#slider2"><img src="image1.jpg" alt="image1" /><img src="image2.jpg" alt="image2" /></div>'
       slices = 20
 
-      other_slider.ramblingSlider slices: slices
-      expect(other_slider.ramblingSlider('option', 'slices')).toEqual slices
+      create_slider slices: slices
+      expect(rambling_slider.ramblingSlider('option', 'slices')).toEqual slices
 
   describe 'when setting a writable option', ->
     slices = null
@@ -366,7 +365,7 @@ describe 'Rambling Slider', ->
         expect(rambling_slider.data('rambling:vars').currentSlide).toEqual 2
 
       it 'should change the current slide element to the previous one', ->
-        expect(rambling_slider.find '.currentSlideElement').toEqualJquery rambling_slider.find('img[alt=image3]')
+        expect(rambling_slider.find '.currentSlideElement').toEqualJquery rambling_slider.find('img.slideElement[alt=image3]')
 
     describe 'when going to the next slide', ->
       beforeEach ->
@@ -379,7 +378,7 @@ describe 'Rambling Slider', ->
         expect(rambling_slider.data('rambling:vars').currentSlide).toEqual 1
 
       it 'should change the current slide element to the next one', ->
-        expect(rambling_slider.find '.currentSlideElement').toEqualJquery rambling_slider.find('img[alt=image2]')
+        expect(rambling_slider.find '.currentSlideElement').toEqualJquery rambling_slider.find('img.slideElement[alt=image2]')
 
     describe 'when going to a specific slide', ->
       slide_index = null
@@ -395,7 +394,7 @@ describe 'Rambling Slider', ->
         expect(rambling_slider.data('rambling:vars').currentSlide).toEqual slide_index
 
       it 'should change the current slide element to the next one', ->
-        expect(rambling_slider.find '.currentSlideElement').toEqualJquery rambling_slider.find('img[alt=image2]')
+        expect(rambling_slider.find '.currentSlideElement').toEqualJquery rambling_slider.find('img.slideElement[alt=image2]')
 
   describe 'when getting the current slide index', ->
     beforeEach ->
