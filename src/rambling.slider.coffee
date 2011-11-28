@@ -740,7 +740,7 @@
         ), settings.speed * 2
 
     flashHorizontalSlideIn = (initialLeft) ->
-      flashSlideIn {top: '0', left: initialLeft, position: 'absolute', display: 'block'}, {left: '0'}, {top: 'auto', left: 'auto', position: 'relative'}
+      flashSlideIn {top: (if settings.alignBottom then 'auto' else '0'), bottom: (if settings.alignBottom then '-7px' else 'auto'), left: initialLeft, position: 'absolute', display: 'block'}, {left: '0'}, {top: 'auto', left: 'auto', position: 'relative'}
 
     flashTransitions =
       slideInRight: -> flashHorizontalSlideIn "#{-slider.width()}px"
