@@ -186,6 +186,7 @@
       return settings.effect unless effects.length
 
       settings.effect = effects[0]
+      slider
 
     theme = (themes...) ->
       return settings.theme unless themes.length
