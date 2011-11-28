@@ -526,27 +526,28 @@
       image.animate(options.imageAnimate, settings.speed * 2) if options.imageAnimate
       slice.animate (options.animate or width: "#{slider.width()}px"), settings.speed * 2, '', ->
         settings.afterChange.apply(slice) if settings.afterChange
-        slider.trigger 'rambling:finished'
+        raiseAnimationFinished()
 
     animateSlices = (animationCallback, reorderCallback) ->
       slices = createSlices()
       animationTimeBuffer = 0
       slices = reorderCallback.apply(slices) if reorderCallback
-      slices.each animationCallback
+      slices.each (index, element) ->
+        animationCallback.apply @, [index, element, raiseAnimationFinished]
 
     animateBoxes = (animationCallback, reorderCallback) ->
       boxes = createBoxes()
       animationTimeBuffer = 0
       boxes = reorderCallback.apply(boxes) if reorderCallback
-      animationCallback.apply boxes
+      animationCallback.apply boxes, [raiseAnimationFinished]
 
     slideDownSlices = (reorderCallback) ->
-      animateSlices (index) ->
-          slice = $ @
+      animateSlices (index, element, finishedCallback) ->
+          slice = $ element
           slice.css top: '0px'
           if index is settings.slices - 1
             window.setTimeout ->
-              slice.animate { height: "#{slider.height()}px", opacity:'1.0' }, settings.speed, '', -> slider.trigger 'rambling:finished'
+              slice.animate { height: "#{slider.height()}px", opacity:'1.0' }, settings.speed, '', finishedCallback
             , 100 + animationTimeBuffer
           else
             window.setTimeout (-> slice.animate { height: "#{slider.height()}px", opacity:'1.0' }, settings.speed), 100 + animationTimeBuffer
@@ -555,11 +556,11 @@
         , reorderCallback
 
     slideUpSlices = (reorderCallback) ->
-      animateSlices (index) ->
-          slice = $ @
+      animateSlices (index, element, finishedCallback) ->
+          slice = $ element
           slice.css bottom: '0px'
           if index is settings.slices - 1
-            window.setTimeout (-> slice.animate { height: "#{slider.height()}px", opacity:'1.0' }, settings.speed, '', -> slider.trigger 'rambling:finished'), 100 + animationTimeBuffer
+            window.setTimeout (-> slice.animate { height: "#{slider.height()}px", opacity:'1.0' }, settings.speed, '', finishedCallback), 100 + animationTimeBuffer
           else
             window.setTimeout (-> slice.animate { height: "#{slider.height()}px", opacity:'1.0' }, settings.speed), 100 + animationTimeBuffer
 
@@ -567,12 +568,12 @@
         , reorderCallback
 
     slideUpDownSlices = (reorderCallback) ->
-      animateSlices (index) ->
-          slice = $ @
+      animateSlices (index, element, finishedCallback) ->
+          slice = $ element
           slice.css (if index % 2 then bottom: '0px' else top: '0px')
 
           if index is settings.slices - 1
-            window.setTimeout (-> slice.animate { height: "#{slider.height()}px", opacity:'1.0' }, settings.speed, '', -> slider.trigger 'rambling:finished'),
+            window.setTimeout (-> slice.animate { height: "#{slider.height()}px", opacity:'1.0' }, settings.speed, '', finishedCallback),
               100 + animationTimeBuffer
           else
             window.setTimeout (-> slice.animate { height: "#{slider.height()}px", opacity:'1.0' }, settings.speed), 100 + animationTimeBuffer
@@ -581,12 +582,12 @@
         , reorderCallback
 
     foldSlices = (reorderCallback) ->
-      animateSlices (index) ->
-          slice = $ @
+      animateSlices (index, element, finishedCallback) ->
+          slice = $ element
           origWidth = slice.width()
           slice.css top: '0px', height: '100%', width: '0px'
           if index is settings.slices - 1
-            window.setTimeout (-> slice.animate { width: origWidth, opacity:'1.0' }, settings.speed, '', -> slider.trigger 'rambling:finished'),
+            window.setTimeout (-> slice.animate { width: origWidth, opacity:'1.0' }, settings.speed, '', finishedCallback),
               100 + animationTimeBuffer
           else
             window.setTimeout (-> slice.animate { width: origWidth, opacity:'1.0' }, settings.speed), 100 + animationTimeBuffer
@@ -595,11 +596,11 @@
         , reorderCallback
 
     fadeSlices = (reorderCallback) ->
-      animateSlices (index) ->
-          slice = $ @
-          slice.height(slider.height())
+      animateSlices (index, element, finishedCallback) ->
+          slice = $ element
+          slice.height slider.height()
           if index is settings.slices - 1
-            window.setTimeout (-> slice.animate { opacity:'1.0' }, settings.speed, '', -> slider.trigger 'rambling:finished'), 100 + animationTimeBuffer
+            window.setTimeout (-> slice.animate { opacity:'1.0' }, settings.speed, '', finishedCallback), 100 + animationTimeBuffer
           else
             window.setTimeout (-> slice.animate { opacity:'1.0' }, settings.speed), 100 + animationTimeBuffer
 
@@ -607,12 +608,12 @@
         , reorderCallback
 
     randomBoxes = ->
-      animateBoxes ->
+      animateBoxes (finishedCallback) ->
           totalBoxes = @length
           @each (index) ->
             box = $ @
             if index is totalBoxes - 1
-              window.setTimeout (-> box.animate { opacity:'1' }, settings.speed, '', -> slider.trigger 'rambling:finished'),
+              window.setTimeout (-> box.animate { opacity:'1' }, settings.speed, '', finishedCallback),
                100 + animationTimeBuffer
             else
               window.setTimeout (-> box.animate { opacity:'1' }, settings.speed), 100 + animationTimeBuffer
@@ -621,7 +622,7 @@
         , $.fn.shuffle
 
     rainBoxes = (reorderCallback, grow) ->
-      animateBoxes ->
+      animateBoxes (finishedCallback) ->
           boxes = @
           totalBoxes = settings.boxCols * settings.boxRows
           index = 0
@@ -639,7 +640,7 @@
                 box.css(width: 0, height: 0) if grow
 
                 if index is totalBoxes - 1
-                  window.setTimeout (-> box.animate { opacity:'1', width: w, height: h }, settings.speed / 1.3, '', -> slider.trigger 'rambling:finished'),
+                  window.setTimeout (-> box.animate { opacity:'1', width: w, height: h }, settings.speed / 1.3, '', finishedCallback),
                     100 + animationTimeBuffer
                 else
                   window.setTimeout (-> box.animate { opacity:'1', width: w, height: h }, settings.speed / 1.3), 100 + animationTimeBuffer
@@ -759,7 +760,7 @@
         slice.animate transitionOptions.fadeOut.animate, settings.speed * 2, '', ->
           settings.afterChange.apply(slice) if settings.afterChange
           slice.css display: 'none'
-          slider.trigger 'rambling:finished'
+          raiseAnimationFinished()
 
     flashTransitions =
       slideInRight: ->
