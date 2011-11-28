@@ -594,6 +594,18 @@
           animationTimeBuffer += 50
         , reorderCallback
 
+    fadeSlices = (reorderCallback) ->
+      animateSlices (index) ->
+          slice = $ @
+          slice.height(slider.height())
+          if index is settings.slices - 1
+            window.setTimeout (-> slice.animate { opacity:'1.0' }, settings.speed, '', -> slider.trigger 'rambling:finished'), 100 + animationTimeBuffer
+          else
+            window.setTimeout (-> slice.animate { opacity:'1.0' }, settings.speed), 100 + animationTimeBuffer
+
+          animationTimeBuffer += 50
+        , reorderCallback
+
     randomBoxes = ->
       animateBoxes ->
           totalBoxes = @length
@@ -715,6 +727,8 @@
       sliceUpDownOutIn: -> slideUpDownSlices $.fn.sortOutIn
       sliceUpDownInOut: -> slideUpDownSlices -> @sortOutIn().reverse()
       sliceUpDownRandom: -> slideUpDownSlices $.fn.shuffle
+      sliceFadeOutIn: -> fadeSlices $.fn.sortOutIn
+      sliceFadeInOut: -> fadeSlices -> @sortOutIn().reverse()
       foldRight: foldSlices
       foldLeft: -> foldSlices $.fn.reverse
       foldOutIn: -> foldSlices $.fn.sortOutIn
