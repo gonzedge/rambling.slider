@@ -1,7 +1,7 @@
 # jQuery Rambling Slider
 
 The jQuery Rambling Slider is a CoffeeScript improved modified version of the [jQuery Nivo Slider](http://github.com/gilbitron/Nivo-Slider) by Gilbert Pellegrom, which is "The Most Awesome jQuery Image Slider".
-It includes some new options to give the slider the ability to adapt different image sizes.
+It includes some new options and methods to give the slider the ability to adapt different image sizes, flash support and transitions extensions.
 
 You can find more about it on [my blog](http://ramblinglabs.com) or on [this repository's wiki](http://github.com/egonzalez0787/rambling.slider/wiki).
 
@@ -46,16 +46,17 @@ Among others, the new features added on top of the Nivo Slider include:
 * Methods `option` and `effect` were added. Allow method chaining when calling the setters.
 * Method `destroy` was added and allows method chaining.
 * Methods `previousSlide`, `nextSlide` and `slide` were added and allow method chaining.
-* Some new transitions as `foldLeft`, `rolloverLeft`, `rolloverRight`, `slideInRight`, `sliceUpRandom`, `sliceDownRandom`, `sliceUpDownRandom` and `foldRandom`.
+* Method `theme` was added and allows method chaining.
+* Some new transitions: `foldLeft`, `rolloverLeft`, `rolloverRight`, `slideInRight`, `sliceUpRandom`, `sliceDownRandom`, `sliceUpDownRandom`, `foldRandom`, `sliceUpOutIn`, `sliceUpInOut`, `sliceDownOutIn`, `sliceDownInOut`, `sliceUpDownOutIn`, `sliceUpDownInOut`, `sliceFadeOutIn`, `sliceFadeInOut`, `foldOutIn`, `foldInOut`, `boxRainOutIn`, `boxRainInOut`, `boxRainGrowOutIn`, `boxRainGrowInOut`.
 * Support for flash elements.
-* `fadeOut` transition from image to flash object.
-* `slideIn` transition from flash object to another flash object.
+* `fadeOut`, `slideInRight` and `slideInLeft` transitions from image to flash object.
+* `slideInRight` and `slideInLeft` transitions from one flash object to another one.
 
 ## Supported jQuery versions
 
 The jQuery Rambling Slider has been tested with the following jQuery Releases:
 
-* 1.7
+* 1.7.x
 * 1.6.x
 * 1.5.x
 * 1.4.x
