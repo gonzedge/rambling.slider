@@ -212,18 +212,122 @@ describe 'Rambling Slider', ->
 
   describe 'when extending the available transitions', ->
     options = null
+    helper = null
 
     beforeEach ->
       options =
         effect: 'newTransition'
         imageTransitions:
           newTransition: ->
-      spyOn options.imageTransitions, 'newTransition'
+            helper = @
+            called = true
+      spyOn(options.imageTransitions, 'newTransition').andCallThrough()
       create_slider options
       interval_callback()
 
     it 'should be able to execute the new transition', ->
       expect(options.imageTransitions.newTransition).toHaveBeenCalled()
+
+    it 'should return a helper with all the expected functions', ->
+      expect(helper.createSlices).not.toBeNull()
+      expect(helper.createBoxes).not.toBeNull()
+      expect(helper.getOneSlice).not.toBeNull()
+      expect(helper.animateFullImage).not.toBeNull()
+      expect(helper.animateSlices).not.toBeNull()
+      expect(helper.animateBoxes).not.toBeNull()
+      expect(helper.slideUpSlices).not.toBeNull()
+      expect(helper.slideDownSlices).not.toBeNull()
+      expect(helper.slideUpDownSlices).not.toBeNull()
+      expect(helper.foldSlices).not.toBeNull()
+      expect(helper.fadeSlices).not.toBeNull()
+      expect(helper.rainBoxes).not.toBeNull()
+
+    describe 'and calling the create slices helper function', ->
+      describe 'with no arguments', ->
+        beforeEach ->
+          result = helper.createSlices()
+
+        it 'should create the expected number of slices', ->
+          expect(result.length).toEqual $.fn.ramblingSlider.defaults.slices
+
+        it 'should append all the slices to the animation container', ->
+          expect(rambling_slider.find('#rambling-animation .rambling-slice')).toEqualJquery result
+
+        it 'should set the expected slice images', ->
+          result.find('img').each (index, element) ->
+            expect($(element).attr 'src').toEqual rambling_slider.find('img.currentSlideElement').next().attr('src')
+
+      describe 'with specific number of slices', ->
+        slices = null
+
+        beforeEach ->
+          slices = 10
+          result = helper.createSlices slices
+
+        it 'should create the expected number of slices', ->
+          expect(result.length).toEqual slices
+
+      describe 'with specific slide element', ->
+        slide_element = null
+
+        beforeEach ->
+          slide_element = rambling_slider.find '.slideElement:last'
+          result = helper.createSlices $.fn.ramblingSlider.defaults.slices, slide_element
+
+        it 'should set the expected slice images', ->
+          result.find('img').each (index, element) ->
+            expect($(element).attr 'src').toEqual slide_element.attr('src')
+
+    describe 'and calling the create boxes helper function', ->
+      describe 'with no arguments', ->
+        beforeEach ->
+          result = helper.createBoxes()
+
+        it 'should create the expected number of boxes', ->
+          expect(result.length).toEqual $.fn.ramblingSlider.defaults.boxRows * $.fn.ramblingSlider.defaults.boxCols
+
+        it 'should append all the boxes to the animation container', ->
+          expect(rambling_slider.find('#rambling-animation .rambling-box')).toEqualJquery result
+
+        it 'should set the expected box images', ->
+          result.find('img').each (index, element) ->
+            expect($(element).attr 'src').toEqual rambling_slider.find('img.currentSlideElement').next().attr('src')
+
+      describe 'with specific rows and columns', ->
+        rows = null
+        columns = null
+
+        beforeEach ->
+          rows = 2
+          columns = 2
+          result = helper.createBoxes rows, columns
+
+        it 'should create the expected number of boxes', ->
+          expect(result.length).toEqual rows * columns
+
+    describe 'and calling the get one slice helper function', ->
+      describe 'with no arguments', ->
+        beforeEach ->
+          result = helper.getOneSlice()
+
+        it 'should only return one slice', ->
+          expect(result.length).toEqual 1
+
+        it 'should append the slice to the animation container', ->
+          expect(rambling_slider.find('#rambling-animation .rambling-slice')).toEqualJquery result
+
+        it 'should set the expected slice image', ->
+          expect(result.find('img').attr 'src').toEqual rambling_slider.find('img.currentSlideElement').next().attr('src')
+
+      describe 'for a specific element', ->
+        slide_element = null
+
+        beforeEach ->
+          slide_element = rambling_slider.find '.slideElement:last'
+          result = helper.getOneSlice slide_element
+
+        it 'should set the expected slice image', ->
+          expect(result.find('img').attr 'src').toEqual slide_element.attr('src')
 
   # Methods
   describe 'when getting the effect', ->
