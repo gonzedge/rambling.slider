@@ -525,21 +525,10 @@
 
     raiseAnimationFinished = -> slider.trigger 'rambling:finished'
 
-    animateFullImage = (options) ->
+    animateFullImage = (animationSetUp) ->
       slice = getOneSlice()
-
-      if settings.alignBottom
-        options.style.bottom = '0'
-        options.style.top = 'auto'
-      else
-        options.style.top = '0'
-        options.style.bottom = 'auto'
-
-      slice.css options.style
-      image = slice.find 'img'
-      image.css options.imageStyle if options.imageStyle
-      image.animate(options.imageAnimate, settings.speed * 2) if options.imageAnimate
-      slice.animate (options.animate or width: "#{slider.width()}px"), settings.speed * 2, '', ->
+      slice.css top: (if settings.alignBottom then 'auto' else '0'), bottom: (if settings.alignBottom then '0' else 'auto')
+      slice.animate (animationSetUp.apply(slice) or width: "#{slider.width()}px"), settings.speed * 2, '', ->
         settings.afterChange.apply(slice) if settings.afterChange
         raiseAnimationFinished()
 
@@ -638,63 +627,32 @@
           boxes = reorderCallback.call(@) if reorderCallback
           boxes.as2dArray settings.boxCols
 
-    transitionOptions =
-      fadeIn:
-        style:
-          height: '100%'
-          width: "#{slider.width()}px"
-          position: 'absolute'
-          top: 0
-          left: 0
-        animate:
-          opacity: '1'
-      fadeOut:
-        style:
-          height: '100%'
-          width: "#{slider.width()}px"
-          position: 'absolute'
-          top: 0
-          left: 0
-          opacity: '1'
-        animate:
-          opacity: '0'
-      rolloverRight:
-        style:
-          height: '100%'
-          width: '0px'
-          opacity: '1'
-      rolloverLeft:
-        imageAnimate:
-          left: '0px'
-        animate:
-          width: "#{slider.width()}"
-        style:
-          height: '100%'
-          width: '0px'
-          opacity: '1'
-          left: ''
-          right: '0px'
-        imageStyle:
-          left: "#{-slider.width()}px"
-      slideInRight:
-        imageAnimate:
-          left: '0px'
-        animate:
-          width: "#{slider.width()}"
-        style:
-          height: '100%'
-          width: '0px'
-          opacity: '1'
-        imageStyle:
-          left: "#{-slider.width()}px"
-      slideInLeft:
-        style:
-          height: '100%'
-          width: '0px'
-          opacity: '1'
-          left: ''
-          right: '0px'
-        afterChange: -> @css left: '0px', right: ''
+    animationSetUp =
+      fadeIn: ->
+        @css height: '100%', width: "#{slider.width()}px", position: 'absolute', top: 0, left: 0
+        {opacity: '1'}
+      fadeOut: ->
+        @css height: '100%', width: "#{slider.width()}px", position: 'absolute', top: 0, left: 0, opacity: '1'
+        {opacity: '0'}
+      rolloverRight: ->
+        @css height: '100%', width: '0px', opacity: '1'
+        return
+      rolloverLeft: ->
+        @css height: '100%', width: '0px', opacity: '1', left: 'auto', right: '0px'
+        @find('img').css(left: "#{-slider.width()}px").animate {left: '0px'}, settings.speed * 2
+        {width: "#{slider.width()}"}
+      slideInRight: ->
+        @css height: '100%', width: '0px', opacity: '1'
+        @find('img').css(left: "#{-slider.width()}px").animate {left: '0px'}, settings.speed * 2
+        {width: "#{slider.width()}"}
+      slideInLeft: ->
+        self = @
+        self.css height: '100%', width: '0px', opacity: '1', left: 'auto', right: '0px'
+        finishedHandler = ->
+          self.css left: '0px', right: 'auto'
+          slider.unbind 'rambling:finished', finishedHandler
+        slider.bind 'rambling:finished', finishedHandler
+        return
 
     imageTransitions =
       sliceDownRight: slideDownSlices
@@ -719,12 +677,12 @@
       foldOutIn: -> foldSlices $.fn.sortOutIn
       foldInOut: -> foldSlices -> @sortOutIn().reverse()
       foldRandom: -> foldSlices $.fn.shuffle
-      fadeIn: -> animateFullImage transitionOptions.fadeIn
-      fadeOut: -> animateFullImage transitionOptions.fadeIn
-      slideInRight: -> animateFullImage transitionOptions.slideInRight
-      slideInLeft: -> animateFullImage transitionOptions.slideInLeft
-      rolloverRight: -> animateFullImage transitionOptions.rolloverRight
-      rolloverLeft: -> animateFullImage transitionOptions.rolloverLeft
+      fadeIn: -> animateFullImage animationSetUp.fadeIn
+      fadeOut: -> animateFullImage animationSetUp.fadeIn
+      slideInRight: -> animateFullImage animationSetUp.slideInRight
+      slideInLeft: -> animateFullImage animationSetUp.slideInLeft
+      rolloverRight: -> animateFullImage animationSetUp.rolloverRight
+      rolloverLeft: -> animateFullImage animationSetUp.rolloverLeft
       boxRandom: randomBoxes
       boxRain: rainBoxes
       boxRainReverse: -> rainBoxes $.fn.reverse
@@ -738,10 +696,10 @@
     imageFlashTransitions =
       fadeOut: ->
         slice = getOneSlice vars.previousSlideElement
-        slice.css transitionOptions.fadeOut.style
+        animate = animationSetUp.fadeOut.apply slice
 
         setSliderBackground()
-        slice.animate transitionOptions.fadeOut.animate, settings.speed * 2, '', ->
+        slice.animate animate, settings.speed * 2, '', ->
           settings.afterChange.apply(slice) if settings.afterChange
           slice.css display: 'none'
           raiseAnimationFinished()
