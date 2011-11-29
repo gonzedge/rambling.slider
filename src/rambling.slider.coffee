@@ -752,9 +752,10 @@
         slideDownSlices: slideDownSlices
         slideUpDownSlices: slideUpDownSlices
         foldSlices: foldSlices
+        fadeSlices: fadeSlices
         rainBoxes: rainBoxes
 
-      getRandomAnimation().apply animationHelpers
+      getRandomAnimation().call animationHelpers
 
     settings.afterLoad.call @
 
