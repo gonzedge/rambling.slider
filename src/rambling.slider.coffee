@@ -55,8 +55,9 @@
     manualAdvance: false
     captionOpacity: 0.8
     theme: 'default'
-    startSlide: 0
+    alignBottom: false
     effect: 'random'
+    startSlide: 0
     directionNav: true
     directionNavHide: true
     controlNav: true
@@ -66,7 +67,6 @@
     controlNavThumbsReplace: '_thumb.jpg'
     adaptImages: false
     useLargerImage: true
-    alignBottom: false
     keyboardNav: true
     pauseOnHover: true
     prevText: 'Prev'
@@ -91,7 +91,6 @@
    'controlNavThumbsReplace',
    'adaptImages',
    'useLargerImage',
-   'alignBottom',
    'keyboardNav',
    'pauseOnHover',
    'prevText',
