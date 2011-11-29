@@ -217,11 +217,14 @@ describe 'Rambling Slider', ->
     beforeEach ->
       options =
         effect: 'newTransition'
+        afterChange: ->
         imageTransitions:
           newTransition: ->
             helper = @
             called = true
       spyOn(options.imageTransitions, 'newTransition').andCallThrough()
+      spyOn($.fn, 'trigger').andCallThrough()
+      spyOn(options, 'afterChange')
       create_slider options
       interval_callback()
 
@@ -328,6 +331,54 @@ describe 'Rambling Slider', ->
 
         it 'should set the expected slice image', ->
           expect(result.find('img').attr 'src').toEqual slide_element.attr('src')
+
+    describe 'and calling the animate full image helper function', ->
+      beforeEach ->
+        spyOn($.fn, 'css').andCallThrough()
+        spyOn($.fn, 'animate').andCallFake (options, speed, easing, callback) -> callback() if callback
+
+      describe 'as is', ->
+        beforeEach ->
+          result = helper.animateFullImage ->
+
+        it 'should call the after change callback', ->
+          expect(options.afterChange).toHaveBeenCalled()
+
+        it 'should raise the rambling:finished event', ->
+          expect($.fn.trigger).toHaveBeenCalledWith 'rambling:finished'
+
+      describe 'and it is aligned to the top', ->
+        beforeEach ->
+          rambling_slider.ramblingSlider 'option', 'alignBottom', false
+          result = helper.animateFullImage ->
+
+        it 'should set the top to 0 and the bottom to auto', ->
+          expect($.fn.css).toHaveBeenCalledWith top: '0', bottom: 'auto'
+
+      describe 'and it is aligned to the bottom', ->
+        beforeEach ->
+          rambling_slider.ramblingSlider 'option', 'alignBottom', true
+          result = helper.animateFullImage ->
+
+        it 'should set the top to auto and the bottom to 0', ->
+          expect($.fn.css).toHaveBeenCalledWith top: 'auto', bottom: '0'
+
+      describe 'and nothing is returned by the animation set up callback', ->
+        beforeEach ->
+          result = helper.animateFullImage ->
+
+        it 'should animate the slice width to the width of the slider', ->
+          expect($.fn.animate).toHaveBeenCalledWith {width: "#{rambling_slider.width()}px"}, $.fn.ramblingSlider.defaults.speed * 2, '', jasmine.any(Function)
+
+      describe 'and something is returned by the animation set up callback', ->
+        animate = null
+
+        beforeEach ->
+          animate = height: '500px'
+          result = helper.animateFullImage -> animate
+
+        it 'should animate the slice width to the width of the slider', ->
+          expect($.fn.animate).toHaveBeenCalledWith animate, $.fn.ramblingSlider.defaults.speed * 2, '', jasmine.any(Function)
 
   # Methods
   describe 'when getting the effect', ->
