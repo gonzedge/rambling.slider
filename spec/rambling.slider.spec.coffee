@@ -385,7 +385,7 @@ describe 'Rambling Slider', ->
         spyOn($.fn, 'animate').andCallFake (options, speed, easing, callback) -> callback() if callback
         timeout_spy.andCallFake (callback, timeout) -> callback()
 
-      describe 'and a sort callback is passed', ->
+      describe 'and a sort callback is given', ->
         sort_callback = null
 
         beforeEach ->
@@ -396,7 +396,7 @@ describe 'Rambling Slider', ->
         it 'should call the sort callback', ->
           expect(sort_callback).toHaveBeenCalled()
 
-      describe 'and an animate set up callback is passed', ->
+      describe 'and an animate set up callback is given', ->
         animation_callback = null
 
         beforeEach ->
@@ -429,6 +429,33 @@ describe 'Rambling Slider', ->
 
           it 'should call the jQuery animate method with the returned object', ->
             expect($.fn.animate).toHaveBeenCalledWith animate, $.fn.ramblingSlider.defaults.speed, '', null
+
+    describe 'and calling the animate boxes helper function', ->
+      describe 'and a sort callback is given', ->
+        sort_callback = null
+
+        beforeEach ->
+          sort_callback = jasmine.createSpy()
+          result = helper.animateBoxes (->), sort_callback
+
+        it 'should call the sort callback', ->
+          expect(sort_callback).toHaveBeenCalled()
+
+      describe 'and an animation callback is given', ->
+        animation_callback = null
+        finished_callback = null
+
+        beforeEach ->
+          animation_callback = jasmine.createSpy()
+          animation_callback.andCallFake (callback) -> finished_callback = callback
+          result = helper.animateBoxes animation_callback
+
+        it 'should call the animation callback', ->
+          expect(animation_callback).toHaveBeenCalledWith jasmine.any(Function)
+
+        it 'should raise the rambling:finished event with the finished callback', ->
+          finished_callback()
+          expect($.fn.trigger).toHaveBeenCalledWith 'rambling:finished'
 
   # Methods
   describe 'when getting the effect', ->
