@@ -74,6 +74,8 @@
     imageTransitions: null
     flashTransitions: null
     imageFlashTransitions: null
+    transitionGroups: []
+    transitionGroupSuffixes: []
     beforeChange: ->
     afterChange: ->
     slideshowEnd: ->
@@ -98,6 +100,8 @@
    'imageTransitions',
    'flashTransitions',
    'imageFlashTransitions',
+   'transitionGroups',
+   'transitionGroupSuffixes',
    'afterLoad'
   ]
 
@@ -110,6 +114,8 @@
     imageTransitions = null
     imageFlashTransitions = null
     flashTransitions = null
+    transitionGroups = []
+    transitionGroupSuffixes = []
     vars =
       currentSlide: 0
       currentSlideElement: ''
@@ -198,11 +204,6 @@
       slider.addClass "theme-#{settings.theme}"
 
     initialize = ->
-      imageTransitions = $.extend {}, $.fn.ramblingSlider.defaults.imageTransitions, settings.imageTransitions
-      imageFlashTransitions = $.extend {}, $.fn.ramblingSlider.defaults.imageTransitions, settings.imageTransitions
-      flashTransitions = $.extend {}, $.fn.ramblingSlider.defaults.flashTransitions, settings.flashTransitions
-      effect settings.effect
-      theme settings.theme
       setSliderInitialState()
 
       vars.currentSlide = settings.startSlide = settings.startSlide % vars.totalSlides
@@ -221,7 +222,25 @@
       if not settings.manualAdvance and vars.totalSlides > 1
         timer = window.setInterval (-> ramblingRun slider, children, settings, false), settings.pauseTime
 
+    setUpTransitions = ->
+      imageTransitions = $.extend {}, $.fn.ramblingSlider.defaults.imageTransitions, settings.imageTransitions
+      imageFlashTransitions = $.extend {}, $.fn.ramblingSlider.defaults.imageTransitions, settings.imageTransitions
+      flashTransitions = $.extend {}, $.fn.ramblingSlider.defaults.flashTransitions, settings.flashTransitions
+
+      transitionGroups = getSettingsArrayFor 'transitionGroups'
+      transitionGroupSuffixes = getSettingsArrayFor 'transitionGroupSuffixes'
+
+    getSettingsArrayFor = (key) ->
+      array = []
+      $.each $.fn.ramblingSlider.defaults[key], (index, element) -> array.push element
+      $.each settings[key], (index, element) -> array.push element
+      array
+
     setSliderInitialState = ->
+      effect settings.effect
+      theme settings.theme
+      setUpTransitions()
+
       slider.css position: 'relative'
       slider.addClass "ramblingSlider"
 
@@ -491,13 +510,13 @@
 
       ramblingBox
 
-    transitionGroups = ['sliceUp', 'sliceDown', 'sliceUpDown', 'fold', 'fade', 'rollover', 'slideIn', 'sliceFade']
     getAvailableTransitions = ->
       effects = settings.effect.split ','
-      $.each transitionGroups, (index, element) ->
-        if effects.contains element
-
-          effects.splice effects.indexOf(element), 1, "#{element}Right", "#{element}Left", "#{element}OutIn", "#{element}InOut", "#{element}Random", "#{element}In", "#{element}Out"
+      $.each transitionGroups, (index, group) ->
+        if effects.contains group
+          parameters = [effects.indexOf(group), 1]
+          $.each transitionGroupSuffixes, (index, suffix) -> parameters.push "#{group}#{suffix}"
+          effects.splice.apply effects, parameters
 
       effects
 
