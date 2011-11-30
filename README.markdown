@@ -48,7 +48,7 @@ Among others, the new features added on top of the Nivo Slider include:
 * Methods `previousSlide`, `nextSlide` and `slide` were added and allow method chaining.
 * Method `theme` was added and allows method chaining.
 * Some new transitions: `foldLeft`, `rolloverLeft`, `rolloverRight`, `slideInRight`, `sliceUpRandom`, `sliceDownRandom`, `sliceUpDownRandom`, `foldRandom`, `sliceUpOutIn`, `sliceUpInOut`, `sliceDownOutIn`, `sliceDownInOut`, `sliceUpDownOutIn`, `sliceUpDownInOut`, `sliceFadeOutIn`, `sliceFadeInOut`, `foldOutIn`, `foldInOut`, `boxRainOutIn`, `boxRainInOut`, `boxRainGrowOutIn`, `boxRainGrowInOut`.
-* Support for transitions extensibility.
+* Support for transitions extensibility. See [Adding and Overriding Transitions](http://github.com/egonzalez0787/rambling.slider/wiki/Adding-and-Overriding-Transitions)
 * Support for flash elements.
 * `fadeOut`, `slideInRight` and `slideInLeft` transitions from image to flash object.
 * `slideInRight` and `slideInLeft` transitions from one flash object to another one.
