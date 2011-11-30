@@ -5,6 +5,8 @@ require '../src/string_extensions'
 require '../src/array_extensions'
 
 class BuildUtils
+  slider_file: 'jquery.rambling.slider.coffee'
+
   log: (string) ->
     console.log string.as_console_message()
 
@@ -15,15 +17,14 @@ class BuildUtils
 
   process: (content, callback) ->
     self = @
-    sliderFile = 'jquery.rambling.slider.coffee'
-    fs.writeFile "lib/#{sliderFile}", content.join("\n\n"), 'utf8', (err) ->
+    fs.writeFile "lib/#{self.slider_file}", content.join("\n\n"), 'utf8', (err) ->
       self.error_handler err
-      self.log 'Building scripts from src/ to lib/'
-      exec "coffee -c lib/#{sliderFile}", (err, stdout, stderr) ->
+      self.log "Building `src/#{self.slider_file}`"
+      exec "coffee -c lib/#{self.slider_file}", (err, stdout, stderr) ->
         self.error_handler err, stdout, stderr
-        fs.unlink "lib/#{sliderFile}", (err) ->
+        fs.unlink "lib/#{self.slider_file}", (err) ->
           self.error_handler err
-          self.log 'Done'
+          self.log "Done. Output in `lib/#{self.slider_file.replace(/coffee/, 'js')}`"
           callback()
 
   compile: (callback) ->
@@ -34,6 +35,10 @@ class BuildUtils
   file_sorter: (first, second) ->
     return -1 if first is 'comments.coffee'
     return 1 if second is 'comments.coffee'
+    return -1 if second is 'rambling.slider.transitions.coffee'
+    return 1 if first is 'rambling.slider.transitions.coffee'
+    return -1 if second is 'rambling.slider.coffee'
+    return 1 if first is 'rambling.slider.coffee'
     return -1 if first < second
     return 1 if first > second
     0
@@ -48,6 +53,7 @@ class BuildUtils
       files = files.where (file) -> not file.startsWith '.'
       files = files.sort self.file_sorter
 
+      self.log "Combining following files into `src/#{self.slider_file}`:\n  #{files.join('\n  ')}"
       for file, index in files then do (file, index) ->
         fs.readFile "./src/#{file}", 'utf8', (err, fileContent) ->
           self.error_handler err

@@ -12,7 +12,7 @@ task 'build', 'Build the jquery.rambling.slider files', (options) ->
       invoke 'minify'
 
 task 'minify', 'Minify the generate jquery.rambling.slider files', ->
-  utils.log 'Minifying the generated js files'
+  utils.log 'Minifying files in `lib/`'
   exec 'java -jar "build/yuicompressor/yuicompressor-2.4.6.jar" lib/jquery.rambling.slider.js -o lib/jquery.rambling.slider.min.js',
     (err, stdout, stderr) ->
       utils.error_handler err, stdout, stderr
