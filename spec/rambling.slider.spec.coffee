@@ -380,6 +380,56 @@ describe 'Rambling Slider', ->
         it 'should animate the slice width to the width of the slider', ->
           expect($.fn.animate).toHaveBeenCalledWith animate, $.fn.ramblingSlider.defaults.speed * 2, '', jasmine.any(Function)
 
+    describe 'and calling the animate slices helper function', ->
+      beforeEach ->
+        spyOn($.fn, 'animate').andCallFake (options, speed, easing, callback) -> callback() if callback
+        timeout_spy.andCallFake (callback, timeout) -> callback()
+
+      describe 'and a sort callback is passed', ->
+        sort_callback = null
+
+        beforeEach ->
+          sort_callback = jasmine.createSpy()
+          sort_callback.andCallFake -> @
+          result = helper.animateSlices sort_callback, ->
+
+        it 'should call the sort callback', ->
+          expect(sort_callback).toHaveBeenCalled()
+
+      describe 'and an animate set up callback is passed', ->
+        animation_callback = null
+
+        beforeEach ->
+          animation_callback = jasmine.createSpy()
+
+        describe 'which returns nothing', ->
+          finished_callback = null
+
+          beforeEach ->
+            animation_callback.andReturn null
+            result = helper.animateSlices undefined, animation_callback
+
+          it 'should call the jQuery animate method with an empty object', ->
+            expect($.fn.animate).toHaveBeenCalledWith {}, $.fn.ramblingSlider.defaults.speed, '', null
+
+          it 'should trigger the rambling:finished event for the last slice', ->
+            expect($.fn.animate).toHaveBeenCalledWith {}, $.fn.ramblingSlider.defaults.speed, '', jasmine.any(Function)
+            expect($.fn.trigger).toHaveBeenCalledWith 'rambling:finished'
+
+          it 'should call the jQuery animate method to be called for each slice', ->
+            expect($.fn.animate.callCount).toEqual $.fn.ramblingSlider.defaults.slices
+
+        describe 'which returns an object', ->
+          animate = null
+
+          beforeEach ->
+            animate = width: 5000
+            animation_callback.andReturn animate
+            result = helper.animateSlices undefined, animation_callback
+
+          it 'should call the jQuery animate method with the returned object', ->
+            expect($.fn.animate).toHaveBeenCalledWith animate, $.fn.ramblingSlider.defaults.speed, '', null
+
   # Methods
   describe 'when getting the effect', ->
     it 'should return the default one', ->

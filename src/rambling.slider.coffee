@@ -531,41 +531,41 @@
         settings.afterChange.apply(slice) if settings.afterChange
         raiseAnimationFinished()
 
-    animateSlices = (reorderCallback, animationSetUp) ->
+    animateSlices = (sortCallback, animationSetUp) ->
       slices = createSlices()
       animationTimeBuffer = 0
-      slices = reorderCallback.apply(slices) if reorderCallback
+      slices = sortCallback.apply(slices) if sortCallback
       slices.each (index, element) ->
         slice = $ element
         finishedCallback = null
         finishedCallback = raiseAnimationFinished if index is settings.slices - 1
 
-        window.setTimeout (-> slice.animate animationSetUp.apply(slice, [index, element]), settings.speed, '', finishedCallback), 100 + animationTimeBuffer
+        window.setTimeout (-> slice.animate animationSetUp.apply(slice, [index, element]) or {}, settings.speed, '', finishedCallback), 100 + animationTimeBuffer
         animationTimeBuffer += 50
 
-    animateBoxes = (animationCallback, reorderCallback) ->
+    animateBoxes = (animationCallback, sortCallback) ->
       boxes = createBoxes()
       animationTimeBuffer = 0
-      boxes = reorderCallback.apply(boxes) if reorderCallback
+      boxes = sortCallback.apply(boxes) if sortCallback
       animationCallback.apply boxes, [raiseAnimationFinished]
 
-    slideDownSlices = (reorderCallback) ->
-      animateSlices reorderCallback, (index, element) ->
+    slideDownSlices = (sortCallback) ->
+      animateSlices sortCallback, (index, element) ->
         @css top: '0px'
         { height: "#{slider.height()}px", opacity:'1.0' }
 
-    slideUpSlices = (reorderCallback) ->
-      animateSlices reorderCallback, (index, element) ->
+    slideUpSlices = (sortCallback) ->
+      animateSlices sortCallback, (index, element) ->
         @css bottom: '0px'
         { height: "#{slider.height()}px", opacity:'1.0' }
 
-    slideUpDownSlices = (reorderCallback) ->
-      animateSlices reorderCallback, (index, element) ->
+    slideUpDownSlices = (sortCallback) ->
+      animateSlices sortCallback, (index, element) ->
         @css (if index % 2 then bottom: '0px' else top: '0px')
         { height: "#{slider.height()}px", opacity:'1.0' }
 
-    foldSlices = (reorderCallback) ->
-      animateSlices reorderCallback, (index, element) ->
+    foldSlices = (sortCallback) ->
+      animateSlices sortCallback, (index, element) ->
         slice = $ element
         animateStyle =
           width: "#{slice.width()}px"
@@ -574,8 +574,8 @@
         slice.css top: '0px', height: '100%', width: '0px'
         animateStyle
 
-    fadeSlices = (reorderCallback) ->
-      animateSlices reorderCallback, (index, element) ->
+    fadeSlices = (sortCallback) ->
+      animateSlices sortCallback, (index, element) ->
         @css height: "#{slider.height()}px"
         { opacity:'1.0' }
 
@@ -593,7 +593,7 @@
             animationTimeBuffer += 20
         , $.fn.shuffle
 
-    rainBoxes = (reorderCallback, grow) ->
+    rainBoxes = (sortCallback, grow) ->
       animateBoxes (finishedCallback) ->
           boxes = @
           totalBoxes = settings.boxCols * settings.boxRows
@@ -623,7 +623,7 @@
               prevCol--
         , ->
           boxes = @
-          boxes = reorderCallback.call(@) if reorderCallback
+          boxes = sortCallback.call(@) if sortCallback
           boxes.as2dArray settings.boxCols
 
     animationSetUp =
