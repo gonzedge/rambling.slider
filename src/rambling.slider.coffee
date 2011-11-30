@@ -531,7 +531,7 @@
         settings.afterChange.apply(slice) if settings.afterChange
         raiseAnimationFinished()
 
-    animateSlices = (sortCallback, animationSetUp) ->
+    animateSlices = (animationSetUp, sortCallback) ->
       slices = createSlices()
       animationTimeBuffer = 0
       slices = sortCallback.apply(slices) if sortCallback
@@ -550,34 +550,39 @@
       animationCallback.apply boxes, [raiseAnimationFinished]
 
     slideDownSlices = (sortCallback) ->
-      animateSlices sortCallback, (index, element) ->
-        @css top: '0px'
-        { height: "#{slider.height()}px", opacity:'1.0' }
+      animateSlices ((index, element) ->
+          @css top: '0px'
+          { height: "#{slider.height()}px", opacity:'1.0' }
+        ), sortCallback
 
     slideUpSlices = (sortCallback) ->
-      animateSlices sortCallback, (index, element) ->
-        @css bottom: '0px'
-        { height: "#{slider.height()}px", opacity:'1.0' }
+      animateSlices ((index, element) ->
+          @css bottom: '0px'
+          { height: "#{slider.height()}px", opacity:'1.0' }
+        ), sortCallback
 
     slideUpDownSlices = (sortCallback) ->
-      animateSlices sortCallback, (index, element) ->
-        @css (if index % 2 then bottom: '0px' else top: '0px')
-        { height: "#{slider.height()}px", opacity:'1.0' }
+      animateSlices ((index, element) ->
+          @css (if index % 2 then bottom: '0px' else top: '0px')
+          { height: "#{slider.height()}px", opacity:'1.0' }
+        ), sortCallback
 
     foldSlices = (sortCallback) ->
-      animateSlices sortCallback, (index, element) ->
-        slice = $ element
-        animateStyle =
-          width: "#{slice.width()}px"
-          opacity: '1.0'
+      animateSlices ((index, element) ->
+          slice = $ element
+          animateStyle =
+            width: "#{slice.width()}px"
+            opacity: '1.0'
 
-        slice.css top: '0px', height: '100%', width: '0px'
-        animateStyle
+          slice.css top: '0px', height: '100%', width: '0px'
+          animateStyle
+        ), sortCallback
 
     fadeSlices = (sortCallback) ->
-      animateSlices sortCallback, (index, element) ->
-        @css height: "#{slider.height()}px"
-        { opacity:'1.0' }
+      animateSlices ((index, element) ->
+          @css height: "#{slider.height()}px"
+          { opacity:'1.0' }
+        ), sortCallback
 
     randomBoxes = ->
       animateBoxes (finishedCallback) ->

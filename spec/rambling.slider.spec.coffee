@@ -391,7 +391,7 @@ describe 'Rambling Slider', ->
         beforeEach ->
           sort_callback = jasmine.createSpy()
           sort_callback.andCallFake -> @
-          result = helper.animateSlices sort_callback, ->
+          result = helper.animateSlices (->), sort_callback
 
         it 'should call the sort callback', ->
           expect(sort_callback).toHaveBeenCalled()
@@ -407,7 +407,7 @@ describe 'Rambling Slider', ->
 
           beforeEach ->
             animation_callback.andReturn null
-            result = helper.animateSlices undefined, animation_callback
+            result = helper.animateSlices animation_callback
 
           it 'should call the jQuery animate method with an empty object', ->
             expect($.fn.animate).toHaveBeenCalledWith {}, $.fn.ramblingSlider.defaults.speed, '', null
@@ -425,7 +425,7 @@ describe 'Rambling Slider', ->
           beforeEach ->
             animate = width: 5000
             animation_callback.andReturn animate
-            result = helper.animateSlices undefined, animation_callback
+            result = helper.animateSlices animation_callback
 
           it 'should call the jQuery animate method with the returned object', ->
             expect($.fn.animate).toHaveBeenCalledWith animate, $.fn.ramblingSlider.defaults.speed, '', null
