@@ -676,6 +676,7 @@
         slideUpDownSlices: slideUpDownSlices
         foldSlices: foldSlices
         fadeSlices: fadeSlices
+        fadeBoxes: fadeBoxes
         rainBoxes: rainBoxes
 
       getRandomAnimation().call animationHelpers
