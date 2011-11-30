@@ -107,6 +107,9 @@
     settings = $.extend {}, $.fn.ramblingSlider.defaults, options
     timer = 0
     animationTimeBuffer = 0
+    imageTransitions = null
+    imageFlashTransitions = null
+    flashTransitions = null
     vars =
       currentSlide: 0
       currentSlideElement: ''
@@ -195,6 +198,9 @@
       slider.addClass "theme-#{settings.theme}"
 
     initialize = ->
+      imageTransitions = $.extend {}, $.fn.ramblingSlider.defaults.imageTransitions, settings.imageTransitions
+      imageFlashTransitions = $.extend {}, $.fn.ramblingSlider.defaults.imageTransitions, settings.imageTransitions
+      flashTransitions = $.extend {}, $.fn.ramblingSlider.defaults.flashTransitions, settings.flashTransitions
       effect settings.effect
       theme settings.theme
       setSliderInitialState()
@@ -584,7 +590,7 @@
           { opacity:'1' }
         ), sortCallback
 
-    randomBoxes = ->
+    fadeBoxes = (sortCallback) ->
       animateBoxes (finishedCallback) ->
           totalBoxes = @length
           @each (index) ->
@@ -596,7 +602,7 @@
               window.setTimeout (-> box.animate { opacity:'1' }, settings.speed), 100 + animationTimeBuffer
 
             animationTimeBuffer += 20
-        , $.fn.shuffle
+        , sortCallback
 
     rainBoxes = (sortCallback, grow) ->
       animateBoxes (finishedCallback) ->
@@ -631,98 +637,6 @@
           boxes = sortCallback.call(@) if sortCallback
           boxes.as2dArray settings.boxCols
 
-    animationSetUp =
-      fadeIn: ->
-        @css height: '100%', width: "#{slider.width()}px", position: 'absolute', top: 0, left: 0
-        {opacity: '1'}
-      fadeOut: ->
-        @css height: '100%', width: "#{slider.width()}px", position: 'absolute', top: 0, left: 0, opacity: '1'
-        {opacity: '0'}
-      rolloverRight: ->
-        @css height: '100%', width: '0px', opacity: '1'
-        return
-      rolloverLeft: ->
-        @css height: '100%', width: '0px', opacity: '1', left: 'auto', right: '0px'
-        @find('img').css(left: "#{-slider.width()}px").animate {left: '0px'}, settings.speed * 2
-        {width: "#{slider.width()}"}
-      slideInRight: ->
-        @css height: '100%', width: '0px', opacity: '1'
-        @find('img').css(left: "#{-slider.width()}px").animate {left: '0px'}, settings.speed * 2
-        {width: "#{slider.width()}"}
-      slideInLeft: ->
-        self = @
-        self.css height: '100%', width: '0px', opacity: '1', left: 'auto', right: '0px'
-        finishedHandler = ->
-          self.css left: '0px', right: 'auto'
-          slider.unbind 'rambling:finished', finishedHandler
-        slider.bind 'rambling:finished', finishedHandler
-        return
-
-    imageTransitions =
-      sliceDownRight: slideDownSlices
-      sliceDownLeft: -> slideDownSlices $.fn.reverse
-      sliceDownOutIn: -> slideDownSlices $.fn.sortOutIn
-      sliceDownInOut: -> slideDownSlices -> @sortOutIn().reverse()
-      sliceDownRandom: -> slideDownSlices $.fn.shuffle
-      sliceUpRight: slideUpSlices
-      sliceUpLeft: -> slideUpSlices $.fn.reverse
-      sliceUpOutIn: -> slideUpSlices $.fn.sortOutIn
-      sliceUpInOut: -> slideUpSlices -> @sortOutIn().reverse()
-      sliceUpRandom: -> slideUpSlices $.fn.shuffle
-      sliceUpDownRight: slideUpDownSlices
-      sliceUpDownLeft: -> slideUpDownSlices $.fn.reverse
-      sliceUpDownOutIn: -> slideUpDownSlices $.fn.sortOutIn
-      sliceUpDownInOut: -> slideUpDownSlices -> @sortOutIn().reverse()
-      sliceUpDownRandom: -> slideUpDownSlices $.fn.shuffle
-      sliceFadeOutIn: -> fadeSlices $.fn.sortOutIn
-      sliceFadeInOut: -> fadeSlices -> @sortOutIn().reverse()
-      foldRight: foldSlices
-      foldLeft: -> foldSlices $.fn.reverse
-      foldOutIn: -> foldSlices $.fn.sortOutIn
-      foldInOut: -> foldSlices -> @sortOutIn().reverse()
-      foldRandom: -> foldSlices $.fn.shuffle
-      fadeIn: -> animateFullImage animationSetUp.fadeIn
-      fadeOut: -> animateFullImage animationSetUp.fadeIn
-      slideInRight: -> animateFullImage animationSetUp.slideInRight
-      slideInLeft: -> animateFullImage animationSetUp.slideInLeft
-      rolloverRight: -> animateFullImage animationSetUp.rolloverRight
-      rolloverLeft: -> animateFullImage animationSetUp.rolloverLeft
-      boxRandom: randomBoxes
-      boxRain: rainBoxes
-      boxRainReverse: -> rainBoxes $.fn.reverse
-      boxRainOutIn: -> rainBoxes $.fn.sortOutIn
-      boxRainInOut: -> rainBoxes -> @sortOutIn().reverse()
-      boxRainGrow: -> rainBoxes undefined, true
-      boxRainGrowReverse: -> rainBoxes $.fn.reverse, true
-      boxRainGrowOutIn: -> rainBoxes $.fn.sortOutIn, true
-      boxRainGrowInOut: -> rainBoxes (-> @sortOutIn().reverse()), true
-
-    imageFlashTransitions =
-      fadeOut: ->
-        slice = getOneSlice vars.previousSlideElement
-        animate = animationSetUp.fadeOut.apply slice
-
-        setSliderBackground()
-        slice.animate animate, settings.speed * 2, '', ->
-          settings.afterChange.apply(slice) if settings.afterChange
-          slice.css display: 'none'
-          raiseAnimationFinished()
-
-    flashSlideIn = (beforeAnimation, animateStyle, afterAnimation) ->
-      vars.currentSlideElement.css beforeAnimation
-      window.setTimeout (-> vars.currentSlideElement.animate animateStyle, settings.speed * 2, ->
-          raiseAnimationFinished()
-        ), settings.speed * 2
-
-    flashHorizontalSlideIn = (initialLeft) ->
-      flashSlideIn {top: (if settings.alignBottom then 'auto' else '0'), bottom: (if settings.alignBottom then '-7px' else 'auto'), left: initialLeft, position: 'absolute', display: 'block'}, {left: '0'}, {top: 'auto', left: 'auto', position: 'relative'}
-
-    flashTransitions =
-      slideInRight: -> flashHorizontalSlideIn "#{-slider.width()}px"
-      slideInLeft: -> flashHorizontalSlideIn "#{slider.width()}px"
-
-    $.extend imageFlashTransitions, flashTransitions
-
     ramblingRun = (slider, children, settings, nudge) ->
       settings.lastSlide.call(@) if vars.currentSlide is vars.totalSlides - 1
 
@@ -746,6 +660,11 @@
       vars.running = true
 
       animationHelpers =
+        setSliderBackground: setSliderBackground
+        currentSlideElement: vars.currentSlideElement
+        previousSlideElement: vars.previousSlideElement
+        raiseAnimationFinished: raiseAnimationFinished
+        settings: $.extend {}, settings
         createSlices: createSlices
         createBoxes: createBoxes
         getOneSlice: getOneSlice
