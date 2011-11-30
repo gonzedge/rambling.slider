@@ -485,7 +485,7 @@
 
       ramblingBox
 
-    transitionGroups = ['sliceUp', 'sliceDown', 'sliceUpDown', 'fold', 'fade', 'rollover', 'slideIn']
+    transitionGroups = ['sliceUp', 'sliceDown', 'sliceUpDown', 'fold', 'fade', 'rollover', 'slideIn', 'sliceFade']
     getAvailableTransitions = ->
       effects = settings.effect.split ','
       $.each transitionGroups, (index, element) ->
