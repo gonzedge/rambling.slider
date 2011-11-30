@@ -95,6 +95,15 @@
     left: 0;
 }
 
+.ramblingSlider object {
+  display: none;
+}
+
+.ramblingSlider .slideElement,
+.ramblingSlider .slideElement object {
+  display: block;
+}
+
 .adaptingSlider .currentSlideElement img,
 .adaptingSlider img.currentSlideElement {
     display: block;
