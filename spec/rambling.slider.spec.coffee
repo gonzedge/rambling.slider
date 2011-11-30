@@ -224,6 +224,8 @@ describe 'Rambling Slider', ->
             called = true
       spyOn(options.imageTransitions, 'newTransition').andCallThrough()
       spyOn($.fn, 'trigger').andCallThrough()
+      spyOn($.fn, 'css').andCallThrough()
+      spyOn($.fn, 'animate').andCallFake (options, speed, easing, callback) -> callback() if callback
       spyOn(options, 'afterChange')
       create_slider options
       interval_callback()
@@ -334,8 +336,6 @@ describe 'Rambling Slider', ->
 
     describe 'and calling the animate full image helper function', ->
       beforeEach ->
-        spyOn($.fn, 'css').andCallThrough()
-        spyOn($.fn, 'animate').andCallFake (options, speed, easing, callback) -> callback() if callback
 
       describe 'as is', ->
         beforeEach ->
@@ -382,7 +382,6 @@ describe 'Rambling Slider', ->
 
     describe 'and calling the animate slices helper function', ->
       beforeEach ->
-        spyOn($.fn, 'animate').andCallFake (options, speed, easing, callback) -> callback() if callback
         timeout_spy.andCallFake (callback, timeout) -> callback()
 
       describe 'and a sort callback is given', ->
@@ -407,6 +406,7 @@ describe 'Rambling Slider', ->
 
           beforeEach ->
             animation_callback.andReturn null
+            $.fn.animate.reset()
             result = helper.animateSlices animation_callback
 
           it 'should call the jQuery animate method with an empty object', ->
@@ -456,6 +456,50 @@ describe 'Rambling Slider', ->
         it 'should raise the rambling:finished event with the finished callback', ->
           finished_callback()
           expect($.fn.trigger).toHaveBeenCalledWith 'rambling:finished'
+
+    describe 'and calling the slide down slices helper function', ->
+      sort_callback = null
+      timeout_callback = null
+
+      beforeEach ->
+        timeout_spy.andCallFake (callback) -> timeout_callback = callback
+        sort_callback = jasmine.createSpy()
+        sort_callback.andCallFake -> @
+
+        result = helper.slideDownSlices sort_callback
+
+      it 'should align the slices to the top', ->
+        timeout_callback()
+        expect($.fn.css).toHaveBeenCalledWith top: '0px'
+
+      it 'should sort the slices', ->
+        expect(sort_callback).toHaveBeenCalled()
+
+      it 'should set the height to the slider height and the opacity to 1', ->
+        timeout_callback()
+        expect($.fn.animate).toHaveBeenCalledWith {height: "#{rambling_slider.height()}px", opacity: '1'}, $.fn.ramblingSlider.defaults.speed, '', jasmine.any(Function)
+
+    describe 'and calling the slide up slices helper function', ->
+      sort_callback = null
+      timeout_callback = null
+
+      beforeEach ->
+        timeout_spy.andCallFake (callback) -> timeout_callback = callback
+        sort_callback = jasmine.createSpy()
+        sort_callback.andCallFake -> @
+
+        result = helper.slideUpSlices sort_callback
+
+      it 'should align the slices to the bottom', ->
+        timeout_callback()
+        expect($.fn.css).toHaveBeenCalledWith bottom: '0px'
+
+      it 'should sort the slices', ->
+        expect(sort_callback).toHaveBeenCalled()
+
+      it 'should set the height to the slider height and the opacity to 1', ->
+        timeout_callback()
+        expect($.fn.animate).toHaveBeenCalledWith {height: "#{rambling_slider.height()}px", opacity: '1'}, $.fn.ramblingSlider.defaults.speed, '', jasmine.any(Function)
 
   # Methods
   describe 'when getting the effect', ->

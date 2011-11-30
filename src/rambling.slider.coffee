@@ -552,19 +552,19 @@
     slideDownSlices = (sortCallback) ->
       animateSlices ((index, element) ->
           @css top: '0px'
-          { height: "#{slider.height()}px", opacity:'1.0' }
+          { height: "#{slider.height()}px", opacity:'1' }
         ), sortCallback
 
     slideUpSlices = (sortCallback) ->
       animateSlices ((index, element) ->
           @css bottom: '0px'
-          { height: "#{slider.height()}px", opacity:'1.0' }
+          { height: "#{slider.height()}px", opacity:'1' }
         ), sortCallback
 
     slideUpDownSlices = (sortCallback) ->
       animateSlices ((index, element) ->
           @css (if index % 2 then bottom: '0px' else top: '0px')
-          { height: "#{slider.height()}px", opacity:'1.0' }
+          { height: "#{slider.height()}px", opacity:'1' }
         ), sortCallback
 
     foldSlices = (sortCallback) ->
@@ -572,7 +572,7 @@
           slice = $ element
           animateStyle =
             width: "#{slice.width()}px"
-            opacity: '1.0'
+            opacity: '1'
 
           slice.css top: '0px', height: '100%', width: '0px'
           animateStyle
@@ -581,7 +581,7 @@
     fadeSlices = (sortCallback) ->
       animateSlices ((index, element) ->
           @css height: "#{slider.height()}px"
-          { opacity:'1.0' }
+          { opacity:'1' }
         ), sortCallback
 
     randomBoxes = ->
