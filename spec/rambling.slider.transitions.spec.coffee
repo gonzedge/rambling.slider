@@ -396,3 +396,61 @@ describe 'Rambling Slider transitions', ->
       it 'should set the opacity to 1', ->
         timeout_callback()
         expect($.fn.animate).toHaveBeenCalledWith {opacity: '1'}, $.fn.ramblingSlider.defaults.speed, '', jasmine.any(Function)
+
+  describe 'when running the transitions', ->
+    animation_helpers = null
+    sort_callback = null
+    image_transitions = null
+    all_around_transitions = [
+      { name: 'sliceDown', short_name: 'down', helper: 'slideDownSlices', helper_name: 'slide down' },
+      { name: 'sliceUp', short_name: 'up', helper: 'slideUpSlices', helper_name: 'slide up' },
+      { name: 'sliceUpDown', short_name: 'up down', helper: 'slideUpDownSlices', helper_name: 'slide up down' },
+      { name: 'sliceFade', short_name: 'fade', helper: 'fadeSlices', helper_name: 'fading' },
+      { name: 'fold', short_name: 'fold', helper: 'foldSlices', helper_name: 'folding' },
+    ]
+
+    beforeEach ->
+      sort_callback_setter = (callback) -> sort_callback = callback
+      animation_helpers = {}
+      $.each all_around_transitions, (index, element) ->
+        animation_helpers[element.helper] = ->
+        spyOn(animation_helpers, element.helper).andCallFake sort_callback_setter
+
+      image_transitions = $.fn.ramblingSlider.defaults.imageTransitions
+
+    $.each all_around_transitions, (index, element) ->
+      describe "and executing a #{element.helper_name} of slices", ->
+        describe 'from left to right', ->
+          beforeEach ->
+            image_transitions["#{element.name}Right"].apply animation_helpers
+
+          it "should call the #{element.helper_name} slices helper", ->
+            expect(animation_helpers[element.helper]).toHaveBeenCalled()
+
+        describe 'from right to left', ->
+          beforeEach ->
+            image_transitions["#{element.name}Left"].apply animation_helpers
+
+          it "should call the #{element.helper_name} slices helper with the reverse callback", ->
+            expect(animation_helpers[element.helper]).toHaveBeenCalledWith $.fn.reverse
+
+        describe 'from outer to inner', ->
+          beforeEach ->
+            image_transitions["#{element.name}OutIn"].apply animation_helpers
+
+          it "should call the #{element.helper_name} slices helper with the sort out in callback", ->
+            expect(animation_helpers[element.helper]).toHaveBeenCalledWith $.fn.sortOutIn
+
+        describe 'from inner to outer', ->
+          beforeEach ->
+            image_transitions["#{element.name}InOut"].apply animation_helpers
+
+          it "should call the #{element.helper_name} slices helper", ->
+            expect(animation_helpers[element.helper]).toHaveBeenCalledWith $.fn.sortInOut
+
+        describe 'randomly', ->
+          beforeEach ->
+            image_transitions["#{element.name}Random"].apply animation_helpers
+
+          it "should call the #{element.helper_name} slices helper with the shuffle callback", ->
+            expect(animation_helpers[element.helper]).toHaveBeenCalledWith $.fn.shuffle

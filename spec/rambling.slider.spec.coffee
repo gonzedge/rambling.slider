@@ -119,7 +119,7 @@ describe 'Rambling Slider', ->
 
   describe 'when clicking any navigation control', ->
     beforeEach ->
-      create_slider effect: 'sliceUpDown'
+      create_slider effect: 'sliceUpRight'
       timeout_spy.andCallFake -> rambling_slider.trigger 'rambling:finished'
       rambling_slider.find('.rambling-controlNav a').last().click()
 
@@ -163,7 +163,7 @@ describe 'Rambling Slider', ->
 
     beforeEach ->
       settings =
-        effect: 'sliceUpDown'
+        effect: 'sliceUpRight'
         beforeChange: ->
         afterChange: ->
         slideshowEnd: ->
@@ -340,7 +340,7 @@ describe 'Rambling Slider', ->
 
   describe 'when calling the slide changing methods', ->
     beforeEach ->
-      rambling_slider.ramblingSlider 'effect', 'sliceUpDown'
+      rambling_slider.ramblingSlider 'effect', 'sliceUpRight'
       timeout_spy.andCallFake -> rambling_slider.trigger 'rambling:finished'
 
     describe 'when going to the previous slide', ->
