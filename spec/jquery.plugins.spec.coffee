@@ -88,6 +88,24 @@ describe 'jQuery Plugins', ->
 
       expect(new_array[new_array.length - 1]).toEqual array[Math.floor(array.length / 2)]
 
+  describe 'when sorting a jQuery array from inner to outer elements', ->
+    array = null
+    new_array = null
+
+    beforeEach ->
+      array = html_box.find 'li'
+      new_array = array.sortInOut()
+
+    it 'should return an array with the same length', ->
+      expect(new_array.length).toEqual array.length
+
+    it 'should return the elements in the expected order', ->
+      for i in [0...(Math.floor(array.length / 2))] then do (i) ->
+        expect(new_array[new_array.length - 2 * i - 1]).toEqual array[i]
+        expect(new_array[new_array.length - 2 * i - 2]).toEqual array[array.length - i - 1]
+
+      expect(new_array[0]).toEqual array[Math.floor(array.length / 2)]
+
   describe 'when comparing to jquery arrays', ->
     array = null
 

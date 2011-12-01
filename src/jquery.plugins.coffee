@@ -5,6 +5,8 @@
     self = Array.prototype.sortOutIn.apply(@)
     $ self
 
+  $.fn.sortInOut = -> @sortOutIn().reverse()
+
   $.fn.as2dArray = (totalColumns) ->
     rowIndex = 0
     colIndex = 0
