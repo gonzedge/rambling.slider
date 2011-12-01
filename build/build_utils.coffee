@@ -57,10 +57,9 @@ class BuildUtils
       for file, index in files then do (file, index) ->
         fs.readFile "./src/#{file}", 'utf8', (err, fileContent) ->
           self.error_handler err
-          content[content.length] = fileContent
+          content[index] = fileContent
           contentAdded++
 
-          if contentAdded is files.length
-            callback content
+          callback(content) if contentAdded is files.length
 
 global.BuildUtils = BuildUtils
