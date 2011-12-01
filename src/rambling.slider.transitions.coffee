@@ -2,6 +2,22 @@
   slider = null
   settings = null
 
+  allAroundTransitions = [
+    { name: 'sliceUp', helper: 'slideUpSlices' },
+    { name: 'sliceDown', helper: 'slideDownSlices' },
+    { name: 'sliceUpDown', helper: 'slideUpDownSlices' },
+    { name: 'sliceFade', helper: 'fadeSlices' },
+    { name: 'fold', helper: 'foldSlices' },
+  ]
+
+  allAroundTransitions.suffixes = [
+    { name: 'Right', sorter: undefined },
+    { name: 'Left', sorter: $.fn.reverse },
+    { name: 'OutIn', sorter: $.fn.sortOutIn },
+    { name: 'InOut', sorter: $.fn.sortInOut },
+    { name: 'Random', sorter: $.fn.shuffle },
+  ]
+
   animationSetUp =
     fadeIn: ->
       @css height: '100%', width: "#{slider.width()}px", position: 'absolute', top: 0, left: 0
@@ -52,28 +68,6 @@
     flashSlideIn.apply @ [beforeAnimation, {left: '0'}, afterAnimation]
 
   $.fn.ramblingSlider.defaults.imageTransitions =
-    sliceDownRight: -> @slideDownSlices()
-    sliceDownLeft: -> @slideDownSlices $.fn.reverse
-    sliceDownOutIn: -> @slideDownSlices $.fn.sortOutIn
-    sliceDownInOut: -> @slideDownSlices -> @sortOutIn().reverse()
-    sliceDownRandom: -> @slideDownSlices $.fn.shuffle
-    sliceUpRight: -> @slideUpSlices()
-    sliceUpLeft: -> @slideUpSlices $.fn.reverse
-    sliceUpOutIn: -> @slideUpSlices $.fn.sortOutIn
-    sliceUpInOut: -> @slideUpSlices -> @sortOutIn().reverse()
-    sliceUpRandom: -> @slideUpSlices $.fn.shuffle
-    sliceUpDownRight: -> @slideUpDownSlices()
-    sliceUpDownLeft: -> @slideUpDownSlices $.fn.reverse
-    sliceUpDownOutIn: -> @slideUpDownSlices $.fn.sortOutIn
-    sliceUpDownInOut: -> @slideUpDownSlices -> @sortOutIn().reverse()
-    sliceUpDownRandom: -> @slideUpDownSlices $.fn.shuffle
-    sliceFadeOutIn: -> @fadeSlices $.fn.sortOutIn
-    sliceFadeInOut: -> @fadeSlices -> @sortOutIn().reverse()
-    foldRight: -> @foldSlices()
-    foldLeft: -> @foldSlices $.fn.reverse
-    foldOutIn: -> @foldSlices $.fn.sortOutIn
-    foldInOut: -> @foldSlices -> @sortOutIn().reverse()
-    foldRandom: -> @foldSlices $.fn.shuffle
     fadeIn: ->
       slider = @currentSlideElement.parents('.ramblingSlider').first()
       settings = @settings
@@ -102,11 +96,15 @@
     boxRain: -> @rainBoxes()
     boxRainReverse: -> @rainBoxes $.fn.reverse
     boxRainOutIn: -> @rainBoxes $.fn.sortOutIn
-    boxRainInOut: -> @rainBoxes -> @sortOutIn().reverse()
+    boxRainInOut: -> @rainBoxes $.fn.sortInOut
     boxRainGrow: -> @rainBoxes undefined, true
     boxRainGrowReverse: -> @rainBoxes $.fn.reverse, true
     boxRainGrowOutIn: -> @rainBoxes $.fn.sortOutIn, true
-    boxRainGrowInOut: -> @rainBoxes (-> @sortOutIn().reverse()), true
+    boxRainGrowInOut: -> @rainBoxes $.fn.sortInOut, true
+
+  $.each allAroundTransitions, (index, transition) ->
+    $.each allAroundTransitions.suffixes, (index, suffix) ->
+      $.fn.ramblingSlider.defaults.imageTransitions["#{transition.name}#{suffix.name}"] = -> @[transition.helper] suffix.sorter
 
   $.fn.ramblingSlider.defaults.imageFlashTransitions =
     fadeOut: ->
@@ -129,6 +127,8 @@
 
   $.extend $.fn.ramblingSlider.defaults.imageFlashTransitions, $.fn.ramblingSlider.defaults.flashTransitions
 
-  $.fn.ramblingSlider.defaults.transitionGroups = ['sliceUp', 'sliceDown', 'sliceUpDown', 'fold', 'fade', 'rollover', 'slideIn', 'sliceFade']
+  $.fn.ramblingSlider.defaults.transitionGroups = ['fade', 'rollover', 'slideIn', 'sliceFade']
+  $.each allAroundTransitions, (index, element) -> $.fn.ramblingSlider.defaults.transitionGroups.push element
+
   $.fn.ramblingSlider.defaults.transitionGroupSuffixes = ['Right', 'Left', 'OutIn', 'InOut', 'Random', 'In', 'Out']
 )(jQuery)
