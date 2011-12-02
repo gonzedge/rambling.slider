@@ -1,16 +1,3 @@
-#
-# jQuery Rambling Slider
-# http://github.com/egonzalez0787/rambling.slider
-#
-# Copyright 2011, Rambling Labs
-# Released under the MIT license.
-# http://www.opensource.org/licenses/mit-license.php
-#
-# October 2011
-#
-# Based on jQuery Nivo Slider by Gilbert Pellegrom
-#
-
 (($) ->
 
   publicMethods = ['stop', 'start', 'option', 'effect', 'destroy', 'previousSlide', 'nextSlide', 'slide', 'theme']
@@ -552,7 +539,7 @@
     animateFullImage = (animationSetUp) ->
       slice = getOneSlice()
       slice.css top: (if settings.alignBottom then 'auto' else '0'), bottom: (if settings.alignBottom then '0' else 'auto')
-      slice.animate (animationSetUp.apply(slice) or width: "#{slider.width()}px"), settings.speed * 2, '', ->
+      slice.animate (animationSetUp.apply(slice, [slider, $.extend({}, settings)]) or width: "#{slider.width()}px"), settings.speed * 2, '', ->
         settings.afterChange.apply(slice) if settings.afterChange
         raiseAnimationFinished()
 
