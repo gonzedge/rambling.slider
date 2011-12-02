@@ -105,7 +105,7 @@
   $.extend $.fn.ramblingSlider.defaults.imageFlashTransitions, $.fn.ramblingSlider.defaults.flashTransitions
 
   $.fn.ramblingSlider.defaults.transitionGroups = ['fade', 'rollover', 'slideIn', 'sliceFade']
-  $.each allAroundTransitions, (index, element) -> $.fn.ramblingSlider.defaults.transitionGroups.push element
+  $.each allAroundTransitions, (index, element) -> $.fn.ramblingSlider.defaults.transitionGroups.push element.name
 
   $.fn.ramblingSlider.defaults.transitionGroupSuffixes = ['Right', 'Left', 'OutIn', 'InOut', 'Random', 'In', 'Out']
 )(jQuery)
