@@ -28,11 +28,11 @@
     rolloverLeft: (slider, settings) ->
       @css height: '100%', width: '0px', opacity: '1', left: 'auto', right: '0px'
       @find('img').css(left: "#{-slider.width()}px").animate {left: '0px'}, settings.speed * 2
-      {width: "#{slider.width()}"}
+      {width: "#{slider.width()}px"}
     slideInRight: (slider, settings) ->
       @css height: '100%', width: '0px', opacity: '1'
       @find('img').css(left: "#{-slider.width()}px").animate {left: '0px'}, settings.speed * 2
-      {width: "#{slider.width()}"}
+      {width: "#{slider.width()}px"}
     slideInLeft: (slider) ->
       self = @
       self.css height: '100%', width: '0px', opacity: '1', left: 'auto', right: '0px'
@@ -45,9 +45,7 @@
   flashSlideIn = (beforeAnimation, animateStyle, afterAnimation) ->
     self = @
     self.currentSlideElement.css beforeAnimation
-    window.setTimeout (-> self.currentSlideElement.animate animateStyle, self.settings.speed * 2, ->
-        self.raiseAnimationFinished()
-      ), self.settings.speed * 2
+    window.setTimeout (-> self.currentSlideElement.animate animateStyle, self.settings.speed * 2, self.raiseAnimationFinished), self.settings.speed * 2
 
   flashHorizontalSlideIn = (initialLeft) ->
     beforeAnimation =

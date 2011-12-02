@@ -400,6 +400,7 @@ describe 'Rambling Slider transitions', ->
   describe 'when running the transitions', ->
     animation_helpers = null
     sort_callback = null
+    animation_set_up_callback = null
     image_transitions = null
     all_around_transitions = [
       { name: 'sliceDown', short_name: 'down', helper: 'slideDownSlices', helper_name: 'slide down' },
@@ -411,7 +412,13 @@ describe 'Rambling Slider transitions', ->
 
     beforeEach ->
       sort_callback_setter = (callback) -> sort_callback = callback
-      animation_helpers = {}
+      animation_helpers =
+        animateFullImage: ->
+
+      spyOn($.fn, 'css').andCallFake -> @
+      spyOn($.fn, 'animate').andCallFake -> @
+      spyOn(animation_helpers, 'animateFullImage').andCallFake (callback) -> animation_set_up_callback = callback
+
       $.each all_around_transitions, (index, element) ->
         animation_helpers[element.helper] = ->
         spyOn(animation_helpers, element.helper).andCallFake sort_callback_setter
@@ -454,3 +461,124 @@ describe 'Rambling Slider transitions', ->
 
           it "should call the #{element.helper_name} slices helper with the shuffle callback", ->
             expect(animation_helpers[element.helper]).toHaveBeenCalledWith $.fn.shuffle
+
+    describe 'and executing a full image fade in', ->
+      beforeEach ->
+        image_transitions.fadeIn.apply animation_helpers
+        result = animation_set_up_callback.apply $('<div></div>'), [rambling_slider]
+
+      it 'should call the animate full image helper', ->
+        expect(animation_helpers.animateFullImage).toHaveBeenCalled()
+
+      it 'should set the style to the slice', ->
+        expect($.fn.css).toHaveBeenCalledWith height: '100%', width: "#{rambling_slider.width()}px", position: 'absolute', top: 0, left: 0
+
+      it 'should return the expected animation', ->
+        expect(result).toEqual { opacity: '1' }
+
+    describe 'and executing a full image fade out', ->
+      beforeEach ->
+        image_transitions.fadeOut.apply animation_helpers
+        result = animation_set_up_callback.apply $('<div></div>'), [rambling_slider]
+
+      it 'should call the animate full image helper', ->
+        expect(animation_helpers.animateFullImage).toHaveBeenCalled()
+
+      it 'should set the style to the slice', ->
+        expect($.fn.css).toHaveBeenCalledWith height: '100%', width: "#{rambling_slider.width()}px", position: 'absolute', top: 0, left: 0
+
+      it 'should return the expected animation', ->
+        expect(result).toEqual { opacity: '1' }
+
+    describe 'and executing a full image rollover right', ->
+      beforeEach ->
+        image_transitions.rolloverRight.apply animation_helpers
+        result = animation_set_up_callback.apply $('<div></div>'), [rambling_slider]
+
+      it 'should call the animate full image helper', ->
+        expect(animation_helpers.animateFullImage).toHaveBeenCalled()
+
+      it 'should set the style to the slice', ->
+        expect($.fn.css).toHaveBeenCalledWith height: '100%', width: '0px', opacity: '1'
+
+      it 'should return the expected animation', ->
+        expect(result).toBeUndefined()
+
+    describe 'and executing a full image rollover left', ->
+      settings = null
+
+      beforeEach ->
+        settings =
+          speed: 500
+
+        image_transitions.rolloverLeft.apply animation_helpers
+        result = animation_set_up_callback.apply $('<div><img src="" alt="" /></div>'), [rambling_slider, settings]
+
+      it 'should call the animate full image helper', ->
+        expect(animation_helpers.animateFullImage).toHaveBeenCalled()
+
+      it 'should set the style to the slice', ->
+        expect($.fn.css).toHaveBeenCalledWith height: '100%', width: '0px', opacity: '1', left: 'auto', right: '0px'
+
+      it 'should set the style to the image', ->
+        expect($.fn.css).toHaveBeenCalledWith left: "#{-rambling_slider.width()}px"
+
+      it 'should animate the image', ->
+        expect($.fn.animate).toHaveBeenCalledWith {left: '0px'}, settings.speed * 2
+
+      it 'should return the expected animation', ->
+        expect(result).toEqual {width: "#{rambling_slider.width()}px"}
+
+    describe 'and executing a full image slide in right', ->
+      settings = null
+
+      beforeEach ->
+        settings =
+          speed: 500
+
+        image_transitions.slideInRight.apply animation_helpers
+        result = animation_set_up_callback.apply $('<div><img src="" alt="" /></div>'), [rambling_slider, settings]
+
+      it 'should call the animate full image helper', ->
+        expect(animation_helpers.animateFullImage).toHaveBeenCalled()
+
+      it 'should set the style to the slice', ->
+        expect($.fn.css).toHaveBeenCalledWith height: '100%', width: '0px', opacity: '1'
+
+      it 'should set the style to the image', ->
+        expect($.fn.css).toHaveBeenCalledWith left: "#{-rambling_slider.width()}px"
+
+      it 'should animate the image', ->
+        expect($.fn.animate).toHaveBeenCalledWith {left: '0px'}, settings.speed * 2
+
+      it 'should return the expected animation', ->
+        expect(result).toEqual {width: "#{rambling_slider.width()}px"}
+
+    describe 'and executing a full image slide in right', ->
+      finished_callback = null
+
+      beforeEach ->
+        spyOn($.fn, 'bind').andCallFake (event, callback) -> finished_callback = callback
+        spyOn $.fn, 'unbind'
+
+        image_transitions.slideInLeft.apply animation_helpers
+        result = animation_set_up_callback.apply $('<div></div>'), [rambling_slider]
+
+      it 'should call the animate full image helper', ->
+        expect(animation_helpers.animateFullImage).toHaveBeenCalled()
+
+      it 'should set the style to the slice', ->
+        expect($.fn.css).toHaveBeenCalledWith height: '100%', width: '0px', opacity: '1', left: 'auto', right: '0px'
+
+      it 'should bind to the rambling:finished event', ->
+        expect($.fn.bind).toHaveBeenCalledWith 'rambling:finished', jasmine.any(Function)
+
+      describe 'and executing the finished callback', ->
+        beforeEach ->
+          finished_callback()
+
+        it 'should set the finished style to the slice', ->
+          expect($.fn.css).toHaveBeenCalledWith left: '0px', right: 'auto'
+
+        it 'should unbind from the rambling:finished event', ->
+          expect($.fn.unbind).toHaveBeenCalledWith 'rambling:finished', finished_callback
