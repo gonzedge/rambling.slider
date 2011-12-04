@@ -419,8 +419,8 @@
 
       sliceCss =
         left: "#{sliceWidth * position}px"
-        width: "#{width}px"
-        height: '0px'
+        width: width
+        height: 0
         opacity: '0'
         overflow: 'hidden'
 
@@ -435,8 +435,8 @@
         opacity: 0
         left: "#{boxWidth * column}px"
         top: "#{boxHeight * row}px"
-        width: "#{width}px"
-        height: "#{boxHeight}px"
+        width: width
+        height: boxHeight
         overflow: 'hidden'
 
       $('<div class="rambling-box"></div>').css boxCss
@@ -539,7 +539,7 @@
     animateFullImage = (animationSetUp) ->
       slice = getOneSlice()
       slice.css top: (if settings.alignBottom then 'auto' else '0'), bottom: (if settings.alignBottom then '0' else 'auto')
-      slice.animate (animationSetUp.apply(slice, [slider, $.extend({}, settings)]) or width: "#{slider.width()}px"), settings.speed * 2, '', ->
+      slice.animate (animationSetUp.apply(slice, [slider, $.extend({}, settings)]) or width: slider.width()), settings.speed * 2, '', ->
         settings.afterChange.apply(slice) if settings.afterChange
         raiseAnimationFinished()
 
@@ -564,35 +564,35 @@
     slideDownSlices = (sortCallback) ->
       animateSlices ((index, element) ->
           @css top: '0px'
-          { height: "#{slider.height()}px", opacity:'1' }
+          { height: slider.height(), opacity:'1' }
         ), sortCallback
 
     slideUpSlices = (sortCallback) ->
       animateSlices ((index, element) ->
           @css bottom: '0px'
-          { height: "#{slider.height()}px", opacity:'1' }
+          { height: slider.height(), opacity:'1' }
         ), sortCallback
 
     slideUpDownSlices = (sortCallback) ->
       animateSlices ((index, element) ->
           @css (if index % 2 then bottom: '0px' else top: '0px')
-          { height: "#{slider.height()}px", opacity:'1' }
+          { height: slider.height(), opacity:'1' }
         ), sortCallback
 
     foldSlices = (sortCallback) ->
       animateSlices ((index, element) ->
           slice = $ element
           animateStyle =
-            width: "#{slice.width()}px"
+            width: slice.width()
             opacity: '1'
 
-          slice.css top: '0px', height: '100%', width: '0px'
+          slice.css top: '0px', height: '100%', width: 0
           animateStyle
         ), sortCallback
 
     fadeSlices = (sortCallback) ->
       animateSlices ((index, element) ->
-          @css height: "#{slider.height()}px"
+          @css height: slider.height()
           { opacity:'1' }
         ), sortCallback
 
@@ -610,38 +610,36 @@
             animationTimeBuffer += 20
         , sortCallback
 
-    rainBoxes = (sortCallback, grow) ->
+    animateBoxesIn2d = (animationSetUp, sortCallback) ->
       animateBoxes (finishedCallback) ->
           boxes = @
           totalBoxes = settings.boxCols * settings.boxRows
           index = 0
-          for cols in [0...(settings.boxCols * 2)] then do (cols) ->
-            prevCol = cols
-            for rows in [0...settings.boxRows] then do (rows) ->
-              if prevCol >= 0 and prevCol < settings.boxCols
-                row = rows
-                col = prevCol
-                time = animationTimeBuffer
-                box = $ boxes[row][col]
-                w = box.width()
-                h = box.height()
+          for column in [0...(settings.boxCols * 2)] then do (column) ->
+            for row in [0...settings.boxRows] then do (row) ->
+              if column >= 0 and column < settings.boxCols
+                box = $ boxes[row][column]
+                finishedCallback = undefined unless index is totalBoxes - 1
 
-                box.css(width: 0, height: 0) if grow
-
-                if index is totalBoxes - 1
-                  window.setTimeout (-> box.animate { opacity:'1', width: w, height: h }, settings.speed / 1.3, '', finishedCallback),
-                    100 + animationTimeBuffer
-                else
-                  window.setTimeout (-> box.animate { opacity:'1', width: w, height: h }, settings.speed / 1.3), 100 + animationTimeBuffer
+                window.setTimeout (-> box.animate animationSetUp.apply(box), settings.speed / 1.3, '', finishedCallback), 100 + animationTimeBuffer
 
                 index++
                 animationTimeBuffer += 20
 
-              prevCol--
+              column--
         , ->
           boxes = @
           boxes = sortCallback.call(@) if sortCallback
           boxes.as2dArray settings.boxCols
+
+    rainBoxes = (sortCallback) -> animateBoxesIn2d (finishedCallback) -> { opacity: '1' }
+
+    growBoxes = (sortCallback) ->
+      animateBoxesIn2d (finishedCallback) ->
+        width = @width()
+        height = @height()
+        @css width: 0, height: 0
+        { opacity: '1', width: width, height: height }
 
     ramblingRun = (slider, children, settings, nudge) ->
       settings.lastSlide.call(@) if vars.currentSlide is vars.totalSlides - 1
@@ -677,6 +675,7 @@
         animateFullImage: animateFullImage
         animateSlices: animateSlices
         animateBoxes: animateBoxes
+        animateBoxesIn2d: animateBoxesIn2d
         slideUpSlices: slideUpSlices
         slideDownSlices: slideDownSlices
         slideUpDownSlices: slideUpDownSlices
@@ -684,6 +683,7 @@
         fadeSlices: fadeSlices
         fadeBoxes: fadeBoxes
         rainBoxes: rainBoxes
+        growBoxes: growBoxes
 
       getRandomAnimation().call animationHelpers
 

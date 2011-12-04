@@ -15,27 +15,42 @@
     { name: 'Random', sorter: $.fn.shuffle },
   ]
 
-  animationSetUp =
+  boxTransitions = [
+    { name: 'boxRain', helper: 'rainBoxes' },
+    { name: 'boxGrow', helper: 'growBoxes' },
+  ]
+
+  boxTransitions.suffixes = [
+    { name: '', sorter: undefined },
+    { name: 'Reverse', sorter: $.fn.reverse },
+    { name: 'OutIn', sorter: $.fn.sortOutIn },
+    { name: 'InOut', sorter: $.fn.sortInOut },
+    { name: 'Random', sorter: $.fn.shuffle },
+  ]
+
+  transitions = [allAroundTransitions, boxTransitions]
+
+  animationFullImageOptions =
     fadeIn: (slider) ->
-      @css height: '100%', width: "#{slider.width()}px", position: 'absolute', top: 0, left: 0
+      @css height: '100%', width: slider.width(), position: 'absolute', top: 0, left: 0
       {opacity: '1'}
     fadeOut: (slider) ->
-      @css height: '100%', width: "#{slider.width()}px", position: 'absolute', top: 0, left: 0, opacity: '1'
-      {opacity: '0'}
+      @css height: '100%', width: slider.width(), position: 'absolute', top: 0, left: 0
+      {opacity: '1'}
     rolloverRight: ->
-      @css height: '100%', width: '0px', opacity: '1'
+      @css height: '100%', width: 0, opacity: '1'
       return
     rolloverLeft: (slider, settings) ->
-      @css height: '100%', width: '0px', opacity: '1', left: 'auto', right: '0px'
+      @css height: '100%', width: 0, opacity: '1', left: 'auto', right: '0px'
       @find('img').css(left: "#{-slider.width()}px").animate {left: '0px'}, settings.speed * 2
-      {width: "#{slider.width()}px"}
+      {width: slider.width()}
     slideInRight: (slider, settings) ->
-      @css height: '100%', width: '0px', opacity: '1'
+      @css height: '100%', width: 0, opacity: '1'
       @find('img').css(left: "#{-slider.width()}px").animate {left: '0px'}, settings.speed * 2
-      {width: "#{slider.width()}px"}
+      {width: slider.width()}
     slideInLeft: (slider) ->
       self = @
-      self.css height: '100%', width: '0px', opacity: '1', left: 'auto', right: '0px'
+      self.css height: '100%', width: 0, opacity: '1', left: 'auto', right: '0px'
       finishedHandler = ->
         self.css left: '0px', right: 'auto'
         slider.unbind 'rambling:finished', finishedHandler
@@ -63,49 +78,41 @@
     flashSlideIn.apply @ [beforeAnimation, {left: '0'}, afterAnimation]
 
   $.fn.ramblingSlider.defaults.imageTransitions =
-    fadeIn: -> @animateFullImage animationSetUp.fadeIn
-    fadeOut: -> @animateFullImage animationSetUp.fadeIn
-    slideInRight: -> @animateFullImage animationSetUp.slideInRight
-    slideInLeft: -> @animateFullImage animationSetUp.slideInLeft
-    rolloverRight: -> @animateFullImage animationSetUp.rolloverRight
-    rolloverLeft: -> @animateFullImage animationSetUp.rolloverLeft
     boxRandom: -> @fadeBoxes $.fn.shuffle
-    boxRain: -> @rainBoxes()
-    boxRainReverse: -> @rainBoxes $.fn.reverse
-    boxRainOutIn: -> @rainBoxes $.fn.sortOutIn
-    boxRainInOut: -> @rainBoxes $.fn.sortInOut
-    boxRainGrow: -> @rainBoxes undefined, true
-    boxRainGrowReverse: -> @rainBoxes $.fn.reverse, true
-    boxRainGrowOutIn: -> @rainBoxes $.fn.sortOutIn, true
-    boxRainGrowInOut: -> @rainBoxes $.fn.sortInOut, true
 
-  $.each allAroundTransitions, (index, transition) ->
-    $.each allAroundTransitions.suffixes, (index, suffix) ->
-      $.fn.ramblingSlider.defaults.imageTransitions["#{transition.name}#{suffix.name}"] = -> @[transition.helper] suffix.sorter
+  $.each transitions, (index, group) ->
+    $.each group, (index, transition) ->
+      $.each group.suffixes, (index, suffix) ->
+        $.fn.ramblingSlider.defaults.imageTransitions["#{transition.name}#{suffix.name}"] = -> @[transition.helper] suffix.sorter
+
+  for name, value of animationFullImageOptions then do (name, value) ->
+    $.fn.ramblingSlider.defaults.imageTransitions[name] = -> @animateFullImage value
 
   $.fn.ramblingSlider.defaults.imageFlashTransitions =
     fadeOut: ->
       self = @
       slice = self.getOneSlice self.previousSlideElement
-      animate = animationSetUp.fadeOut.apply slice
+      slice.css height: '100%', width: slice.parents('.ramblingSlider').width(), position: 'absolute', top: 0, left: 0, opacity: '1'
 
       self.setSliderBackground()
-      slice.animate animate, self.settings.speed * 2, '', ->
+      slice.animate {opacity: '0'}, self.settings.speed * 2, '', ->
         slice.css display: 'none'
         self.raiseAnimationFinished()
 
   $.fn.ramblingSlider.defaults.flashTransitions =
     slideInRight: ->
       slider = @currentSlideElement.parents('.ramblingSlider').first()
-      flashHorizontalSlideIn.apply @, ["#{-slider.width()}px"]
+      flashHorizontalSlideIn.apply @, [-slider.width()]
     slideInLeft: ->
       slider = @currentSlideElement.parents('.ramblingSlider').first()
-      flashHorizontalSlideIn.apply @ ["#{slider.width()}px"]
+      flashHorizontalSlideIn.apply @ [slider.width()]
 
   $.extend $.fn.ramblingSlider.defaults.imageFlashTransitions, $.fn.ramblingSlider.defaults.flashTransitions
 
-  $.fn.ramblingSlider.defaults.transitionGroups = ['fade', 'rollover', 'slideIn', 'sliceFade']
-  $.each allAroundTransitions, (index, element) -> $.fn.ramblingSlider.defaults.transitionGroups.push element.name
+  $.fn.ramblingSlider.defaults.transitionGroups = ['fade', 'rollover', 'slideIn']
+  $.each transitions, (index, group) ->
+    $.each group, (index, element) ->
+      $.fn.ramblingSlider.defaults.transitionGroups.push element.name
 
-  $.fn.ramblingSlider.defaults.transitionGroupSuffixes = ['Right', 'Left', 'OutIn', 'InOut', 'Random', 'In', 'Out']
+  $.fn.ramblingSlider.defaults.transitionGroupSuffixes = ['Right', 'Left', 'OutIn', 'InOut', 'Random', 'Reverse', 'In', 'Out']
 )(jQuery)
