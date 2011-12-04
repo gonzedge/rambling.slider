@@ -414,10 +414,14 @@ describe 'Rambling Slider transitions', ->
       sort_callback_setter = (callback) -> sort_callback = callback
       animation_helpers =
         animateFullImage: ->
+        fadeBoxes: ->
+        rainBoxes: ->
 
       spyOn($.fn, 'css').andCallFake -> @
       spyOn($.fn, 'animate').andCallFake -> @
       spyOn(animation_helpers, 'animateFullImage').andCallFake (callback) -> animation_set_up_callback = callback
+      spyOn animation_helpers, 'fadeBoxes'
+      spyOn animation_helpers, 'rainBoxes'
 
       $.each all_around_transitions, (index, element) ->
         animation_helpers[element.helper] = ->
@@ -582,3 +586,65 @@ describe 'Rambling Slider transitions', ->
 
         it 'should unbind from the rambling:finished event', ->
           expect($.fn.unbind).toHaveBeenCalledWith 'rambling:finished', finished_callback
+
+    describe 'and executing box random showing', ->
+      beforeEach ->
+        image_transitions.boxRandom.apply animation_helpers
+
+      it 'should fade in the shuffled boxes', ->
+
+    describe 'and executing a box rain', ->
+      beforeEach ->
+        image_transitions.boxRain.apply animation_helpers
+
+      it 'should rain the boxes with default order', ->
+        expect(animation_helpers.rainBoxes).toHaveBeenCalledWith
+
+    describe 'and executing a reversed box rain', ->
+      beforeEach ->
+        image_transitions.boxRainReverse.apply animation_helpers
+
+      it 'should rain the boxes with reversed order', ->
+        expect(animation_helpers.rainBoxes).toHaveBeenCalledWith $.fn.reverse
+
+    describe 'and executing a outer to inner box rain', ->
+      beforeEach ->
+        image_transitions.boxRainOutIn.apply animation_helpers
+
+      it 'should rain the boxes from outer to inner', ->
+        expect(animation_helpers.rainBoxes).toHaveBeenCalledWith $.fn.sortOutIn
+
+    describe 'and executing a inner to outer box rain', ->
+      beforeEach ->
+        image_transitions.boxRainInOut.apply animation_helpers
+
+      it 'should rain the boxes from inner to outer', ->
+        expect(animation_helpers.rainBoxes).toHaveBeenCalledWith $.fn.sortInOut
+
+    describe 'and executing a box growing rain', ->
+      beforeEach ->
+        image_transitions.boxRainGrow.apply animation_helpers
+
+      it 'should rain the growing boxes with default order', ->
+        expect(animation_helpers.rainBoxes).toHaveBeenCalledWith undefined, true
+
+    describe 'and executing a reversed box growing rain', ->
+      beforeEach ->
+        image_transitions.boxRainGrowReverse.apply animation_helpers
+
+      it 'should rain the growing boxes with reversed order', ->
+        expect(animation_helpers.rainBoxes).toHaveBeenCalledWith $.fn.reverse, true
+
+    describe 'and executing a outer to inner box growing rain', ->
+      beforeEach ->
+        image_transitions.boxRainGrowOutIn.apply animation_helpers
+
+      it 'should rain the growing boxes from outer to inner', ->
+        expect(animation_helpers.rainBoxes).toHaveBeenCalledWith $.fn.sortOutIn, true
+
+    describe 'and executing a inner to outer box growing rain', ->
+      beforeEach ->
+        image_transitions.boxRainGrowInOut.apply animation_helpers
+
+      it 'should rain the growing boxes from inner to outer', ->
+        expect(animation_helpers.rainBoxes).toHaveBeenCalledWith $.fn.sortInOut, true
