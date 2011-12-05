@@ -2,9 +2,18 @@
 require './build/build_utils'
 
 utils = new BuildUtils
+compile = null
+minify = null
 
 option '-e', '--environment [ENVIRONMENT_NAME]', 'set the environment for `build`'
-task 'build', 'Build the jquery.rambling.slider files', (options) ->
+option '-v', '--verbose', 'give more information about the tests is being run'
+option '-t', '--teamcity', 'format the tests output for teamcity'
+
+task 'build', 'Run the complete build', (options) ->
+  compile = -> invoke 'compile'
+  invoke 'spec'
+
+task 'compile', 'Compile the jquery.rambling.slider files', (options) ->
   options.environment or= 'development'
   utils.compile ->
     if options.environment is 'production'
@@ -18,10 +27,11 @@ task 'minify', 'Minify the generate jquery.rambling.slider files', ->
       utils.error_handler err, stdout, stderr
       utils.log 'Done'
 
-option '-v', '--verbose', 'give more information for each test'
 task 'spec', 'Run all specs', (options) ->
   utils.log 'Running specs...'
-  exec "jasmine-node --coffee #{'--verbose' if options.verbose} spec/", (err, stdout, stderr) ->
-    utils.log stdout
+  exec "jasmine-node --coffee #{'--verbose ' if options.verbose}#{'--teamcity ' if options.teamcity} spec/", (err, stdout, stderr) ->
+    utils.log_raw stdout
     utils.log "Error: #{stderr}" if stderr
-    utils.log 'Done' unless err
+    unless err
+      utils.log 'Done'
+      compile() if compile

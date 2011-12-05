@@ -10,6 +10,9 @@ class BuildUtils
   log: (string) ->
     console.log string.as_console_message()
 
+  log_raw: (string) ->
+    console.log string
+
   error_handler: (err, stdout, stderr) ->
     console.log stdout if stdout
     console.log stderr if stderr
