@@ -60,7 +60,7 @@ describe 'Rambling Slider transitions', ->
       spyOn($.fn, 'trigger').andCallThrough()
       spyOn($.fn, 'css').andCallThrough()
       spyOn($.fn, 'animate').andCallFake (options, speed, easing, callback) -> callback() if callback
-      spyOn(options, 'afterChange')
+      spyOn options, 'afterChange'
       create_slider options
       interval_callback()
 
@@ -74,12 +74,15 @@ describe 'Rambling Slider transitions', ->
       expect(helper.animateFullImage).not.toBeNull()
       expect(helper.animateSlices).not.toBeNull()
       expect(helper.animateBoxes).not.toBeNull()
+      expect(helper.animateBoxesIn2d).not.toBeNull()
       expect(helper.slideUpSlices).not.toBeNull()
       expect(helper.slideDownSlices).not.toBeNull()
       expect(helper.slideUpDownSlices).not.toBeNull()
       expect(helper.foldSlices).not.toBeNull()
       expect(helper.fadeSlices).not.toBeNull()
+      expect(helper.fadeBoxes).not.toBeNull()
       expect(helper.rainBoxes).not.toBeNull()
+      expect(helper.growBoxes).not.toBeNull()
 
     describe 'and calling the create slices helper function', ->
       describe 'with no arguments', ->
@@ -290,6 +293,52 @@ describe 'Rambling Slider transitions', ->
         it 'should raise the rambling:finished event with the finished callback', ->
           finished_callback()
           expect($.fn.trigger).toHaveBeenCalledWith 'rambling:finished'
+
+    describe 'and calling the animate boxes in 2d helper function', ->
+      beforeEach ->
+        spyOn($.fn, 'as2dArray').andCallFake -> @
+
+      describe 'and an animation set up callback is given', ->
+        set_up_callback = null
+        set_up_options = null
+
+        beforeEach ->
+          set_up_options = {opacity: 5000}
+          set_up_callback = jasmine.createSpy()
+          set_up_callback.andReturn set_up_options
+          timeout_spy.andCallFake (callback) -> callback()
+
+          result = helper.animateBoxesIn2d set_up_callback
+
+        it 'should execute the set up callback the expected amount of times', ->
+          expect(set_up_callback.callCount).toEqual $.fn.ramblingSlider.defaults.boxRows * $.fn.ramblingSlider.defaults.boxCols
+
+        it 'should not pass a finished callback to the jQuery animate for the first boxes', ->
+          expect($.fn.animate).toHaveBeenCalledWith set_up_options, $.fn.ramblingSlider.defaults.speed / 1.3, '', undefined
+
+        it 'should pass a finished callback to the jQuery animate for the last box', ->
+          expect($.fn.animate).toHaveBeenCalledWith set_up_options, $.fn.ramblingSlider.defaults.speed / 1.3, '', jasmine.any(Function)
+
+      describe 'and a sort callback is given', ->
+        custom_sort_callback = null
+
+        beforeEach ->
+          custom_sort_callback = jasmine.createSpy()
+          custom_sort_callback.andCallFake -> @
+          result = helper.animateBoxesIn2d (->), custom_sort_callback
+
+        it 'should call the sort callback', ->
+          expect(custom_sort_callback).toHaveBeenCalled()
+
+        it 'should divide the boxes into a bidimensional array', ->
+          expect($.fn.as2dArray).toHaveBeenCalled()
+
+      describe 'and no sort callback is given', ->
+        beforeEach ->
+          result = helper.animateBoxesIn2d (->)
+
+        it 'should divide the boxes into a bidimensional array', ->
+          expect($.fn.as2dArray).toHaveBeenCalled()
 
     describe 'and calling the slide down slices helper function', ->
       sort_callback = null

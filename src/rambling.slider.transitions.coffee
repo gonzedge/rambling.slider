@@ -99,12 +99,8 @@
         self.raiseAnimationFinished()
 
   $.fn.ramblingSlider.defaults.flashTransitions =
-    slideInRight: ->
-      slider = @currentSlideElement.parents('.ramblingSlider').first()
-      flashHorizontalSlideIn.apply @, [-slider.width()]
-    slideInLeft: ->
-      slider = @currentSlideElement.parents('.ramblingSlider').first()
-      flashHorizontalSlideIn.apply @ [slider.width()]
+    slideInRight: -> flashHorizontalSlideIn.apply @, [-@currentSlideElement.parents('.ramblingSlider').width()]
+    slideInLeft: -> flashHorizontalSlideIn.apply @ [@currentSlideElement.parents('.ramblingSlider').width()]
 
   $.extend $.fn.ramblingSlider.defaults.imageFlashTransitions, $.fn.ramblingSlider.defaults.flashTransitions
 
