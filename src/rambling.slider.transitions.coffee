@@ -21,7 +21,7 @@
   ]
 
   boxTransitions.suffixes = [
-    { name: '', sorter: undefined },
+    { name: 'Forward', sorter: undefined },
     { name: 'Reverse', sorter: $.fn.reverse },
     { name: 'OutIn', sorter: $.fn.sortOutIn },
     { name: 'InOut', sorter: $.fn.sortInOut },
@@ -114,5 +114,5 @@
     $.each group, (index, element) ->
       $.fn.ramblingSlider.defaults.transitionGroups.push element.name
 
-  $.fn.ramblingSlider.defaults.transitionGroupSuffixes = ['Right', 'Left', 'OutIn', 'InOut', 'Random', 'Reverse', 'In', 'Out']
+  $.fn.ramblingSlider.defaults.transitionGroupSuffixes = ['Right', 'Left', 'OutIn', 'InOut', 'Random', 'Forward', 'Reverse', 'In', 'Out']
 )(jQuery)

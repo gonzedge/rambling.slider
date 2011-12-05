@@ -244,7 +244,7 @@ describe 'Rambling Slider transitions', ->
             result = helper.animateSlices animation_callback
 
           it 'should call the jQuery animate method with an empty object', ->
-            expect($.fn.animate).toHaveBeenCalledWith {}, $.fn.ramblingSlider.defaults.speed, '', null
+            expect($.fn.animate).toHaveBeenCalledWith {}, $.fn.ramblingSlider.defaults.speed, '', undefined
 
           it 'should trigger the rambling:finished event for the last slice', ->
             expect($.fn.animate).toHaveBeenCalledWith {}, $.fn.ramblingSlider.defaults.speed, '', jasmine.any(Function)
@@ -262,7 +262,7 @@ describe 'Rambling Slider transitions', ->
             result = helper.animateSlices animation_callback
 
           it 'should call the jQuery animate method with the returned object', ->
-            expect($.fn.animate).toHaveBeenCalledWith animate, $.fn.ramblingSlider.defaults.speed, '', null
+            expect($.fn.animate).toHaveBeenCalledWith animate, $.fn.ramblingSlider.defaults.speed, '', undefined
 
     describe 'and calling the animate boxes helper function', ->
       describe 'and a sort callback is given', ->
@@ -602,7 +602,7 @@ describe 'Rambling Slider transitions', ->
     $.each box_transitions, (index, element) ->
       describe "and executing a box #{element.short_name}", ->
         beforeEach ->
-          image_transitions[element.name].apply animation_helpers
+          image_transitions["#{element.name}Forward"].apply animation_helpers
 
         it "should #{element.short_name} the boxes with default order", ->
           expect(animation_helpers[element.helper]).toHaveBeenCalledWith

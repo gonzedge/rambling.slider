@@ -332,7 +332,6 @@
       slider.bind 'rambling:finished', ->
         vars.running = false
 
-
         child = $ children.get(vars.currentSlide)
         child.siblings().css display: 'none'
         child.css(display: 'block') if child.is 'a'
@@ -549,7 +548,6 @@
       slices = sortCallback.apply(slices) if sortCallback
       slices.each (index, element) ->
         slice = $ element
-        finishedCallback = null
         finishedCallback = raiseAnimationFinished if index is settings.slices - 1
 
         window.setTimeout (-> slice.animate animationSetUp.apply(slice, [index, element]) or {}, settings.speed, '', finishedCallback), 100 + animationTimeBuffer
@@ -560,6 +558,28 @@
       animationTimeBuffer = 0
       boxes = sortCallback.apply(boxes) if sortCallback
       animationCallback.apply boxes, [raiseAnimationFinished]
+
+    animateBoxesIn2d = (animationSetUp, sortCallback) ->
+      animateBoxes (finishedCallback) ->
+          boxes = @
+          totalBoxes = settings.boxCols * settings.boxRows
+          index = 0
+          for column in [0...(settings.boxCols * 2)] then do (column) ->
+            for row in [0...settings.boxRows] then do (row) ->
+              if column >= 0 and column < settings.boxCols
+                box = $ boxes[row][column]
+                finished = finishedCallback if index is totalBoxes - 1
+
+                window.setTimeout (-> box.animate animationSetUp.apply(box), settings.speed / 1.3, '', finished), 100 + animationTimeBuffer
+
+                index++
+                animationTimeBuffer += 20
+
+              column--
+        , ->
+          boxes = @
+          boxes = sortCallback.call(@) if sortCallback
+          boxes.as2dArray settings.boxCols
 
     slideDownSlices = (sortCallback) ->
       animateSlices ((index, element) ->
@@ -599,47 +619,24 @@
     fadeBoxes = (sortCallback) ->
       animateBoxes (finishedCallback) ->
           totalBoxes = @length
+          animationTimeBuffer = 0
           @each (index) ->
             box = $ @
-            if index is totalBoxes - 1
-              window.setTimeout (-> box.animate { opacity:'1' }, settings.speed, '', finishedCallback),
-               100 + animationTimeBuffer
-            else
-              window.setTimeout (-> box.animate { opacity:'1' }, settings.speed), 100 + animationTimeBuffer
+            finished = finishedCallback if index is totalBoxes - 1
 
+            window.setTimeout (-> box.animate { opacity:'1' }, settings.speed, '', finished), 100 + animationTimeBuffer
             animationTimeBuffer += 20
         , sortCallback
 
-    animateBoxesIn2d = (animationSetUp, sortCallback) ->
-      animateBoxes (finishedCallback) ->
-          boxes = @
-          totalBoxes = settings.boxCols * settings.boxRows
-          index = 0
-          for column in [0...(settings.boxCols * 2)] then do (column) ->
-            for row in [0...settings.boxRows] then do (row) ->
-              if column >= 0 and column < settings.boxCols
-                box = $ boxes[row][column]
-                finishedCallback = undefined unless index is totalBoxes - 1
-
-                window.setTimeout (-> box.animate animationSetUp.apply(box), settings.speed / 1.3, '', finishedCallback), 100 + animationTimeBuffer
-
-                index++
-                animationTimeBuffer += 20
-
-              column--
-        , ->
-          boxes = @
-          boxes = sortCallback.call(@) if sortCallback
-          boxes.as2dArray settings.boxCols
-
-    rainBoxes = (sortCallback) -> animateBoxesIn2d (finishedCallback) -> { opacity: '1' }
+    rainBoxes = (sortCallback) -> animateBoxesIn2d (-> { opacity: '1' }), sortCallback
 
     growBoxes = (sortCallback) ->
-      animateBoxesIn2d (finishedCallback) ->
-        width = @width()
-        height = @height()
-        @css width: 0, height: 0
-        { opacity: '1', width: width, height: height }
+      animateBoxesIn2d (->
+          width = @width()
+          height = @height()
+          @css width: 0, height: 0
+          { opacity: '1', width: width, height: height }
+        ), sortCallback
 
     ramblingRun = (slider, children, settings, nudge) ->
       settings.lastSlide.call(@) if vars.currentSlide is vars.totalSlides - 1
