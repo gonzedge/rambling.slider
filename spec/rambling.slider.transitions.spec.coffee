@@ -593,12 +593,6 @@ describe 'Rambling Slider transitions', ->
         it 'should unbind from the rambling:finished event', ->
           expect($.fn.unbind).toHaveBeenCalledWith 'rambling:finished', finished_callback
 
-    describe 'and executing box random showing', ->
-      beforeEach ->
-        image_transitions.boxRandom.apply animation_helpers
-
-      it 'should fade in the shuffled boxes', ->
-
     $.each box_transitions, (index, element) ->
       describe "and executing a box #{element.short_name}", ->
         beforeEach ->

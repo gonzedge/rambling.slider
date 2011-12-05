@@ -77,8 +77,7 @@
 
     flashSlideIn.apply @ [beforeAnimation, {left: '0'}, afterAnimation]
 
-  $.fn.ramblingSlider.defaults.imageTransitions =
-    boxRandom: -> @fadeBoxes $.fn.shuffle
+  $.fn.ramblingSlider.defaults.imageTransitions = []
 
   $.each transitions, (index, group) ->
     $.each group, (index, transition) ->
