@@ -1,10 +1,7 @@
 (($) ->
   $.fn.reverse = [].reverse
   $.fn.shuffle = [].shuffle
-  $.fn.sortOutIn = ->
-    self = Array.prototype.sortOutIn.apply(@)
-    $ self
-
+  $.fn.sortOutIn = -> $ Array.prototype.sortOutIn.apply(@)
   $.fn.sortInOut = -> @sortOutIn().reverse()
 
   $.fn.as2dArray = (totalColumns) ->

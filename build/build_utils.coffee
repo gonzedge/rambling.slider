@@ -19,21 +19,19 @@ class BuildUtils
     throw err if err
 
   process: (content, callback) ->
-    self = @
-    fs.writeFile "lib/#{self.slider_file}", content.join("\n\n"), 'utf8', (err) ->
-      self.error_handler err
-      self.log "Building `src/#{self.slider_file}`"
-      exec "coffee -c lib/#{self.slider_file}", (err, stdout, stderr) ->
-        self.error_handler err, stdout, stderr
-        fs.unlink "lib/#{self.slider_file}", (err) ->
-          self.error_handler err
-          self.log "Done. Output in `lib/#{self.slider_file.replace(/coffee/, 'js')}`"
+    fs.writeFile "lib/#{@slider_file}", content.join("\n\n"), 'utf8', (err) =>
+      @error_handler err
+      @log "Building `src/#{@slider_file}`"
+      exec "coffee -c lib/#{@slider_file}", (err, stdout, stderr) =>
+        @error_handler err, stdout, stderr
+        fs.unlink "lib/#{@slider_file}", (err) =>
+          @error_handler err
+          @log "Done. Output in `lib/#{@slider_file.replace(/coffee/, 'js')}`"
           callback()
 
   compile: (callback) ->
-    self = @
-    @combine_source_files (content) ->
-      self.process content, callback
+    @combine_source_files (content) =>
+      @process content, callback
 
   file_sorter: (first, second) ->
     return -1 if first is 'comments.coffee'
@@ -47,19 +45,18 @@ class BuildUtils
     0
 
   combine_source_files: (callback) ->
-    self = @
-    fs.readdir './src', (err, files) ->
-      self.error_handler err
+    fs.readdir './src', (err, files) =>
+      @error_handler err
       content = []
       contentAdded = 0
 
       files = files.where (file) -> not file.startsWith '.'
-      files = files.sort self.file_sorter
+      files = files.sort @file_sorter
 
-      self.log "Combining following files into `src/#{self.slider_file}`:\n  #{files.join('\n  ')}"
-      for file, index in files then do (file, index) ->
-        fs.readFile "./src/#{file}", 'utf8', (err, fileContent) ->
-          self.error_handler err
+      @log "Combining following files into `src/#{@slider_file}`:\n  #{files.join('\n  ')}"
+      for file, index in files then do (file, index) =>
+        fs.readFile "./src/#{file}", 'utf8', (err, fileContent) =>
+          @error_handler err
           content[index] = fileContent
           contentAdded++
 

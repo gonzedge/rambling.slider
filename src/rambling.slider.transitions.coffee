@@ -49,23 +49,21 @@
       @find('img').css(left: "#{-slider.width()}px").animate {left: '0px'}, settings.speed * 2
       {width: slider.width()}
     slideInLeft: (slider) ->
-      self = @
-      self.css height: '100%', width: 0, opacity: '1', left: 'auto', right: '0px'
-      finishedHandler = ->
-        self.css left: '0px', right: 'auto'
+      @css height: '100%', width: 0, opacity: '1', left: 'auto', right: '0px'
+      finishedHandler = =>
+        @css left: '0px', right: 'auto'
         slider.unbind 'rambling:finished', finishedHandler
       slider.bind 'rambling:finished', finishedHandler
       return
 
   flashSlideIn = (beforeAnimation, animateStyle, afterAnimation) ->
-    self = @
-    self.currentSlideElement.css beforeAnimation
-    window.setTimeout (-> self.currentSlideElement.animate animateStyle, self.settings.speed * 2, self.raiseAnimationFinished), self.settings.speed * 2
+    @currentSlideElement.css beforeAnimation
+    window.setTimeout (=> @currentSlideElement.animate animateStyle, @settings.speed * 2, @raiseAnimationFinished), @settings.speed * 2
 
   flashHorizontalSlideIn = (initialLeft) ->
     beforeAnimation =
       top: (if @settings.alignBottom then 'auto' else '0')
-      bottom: (if @settings.alignBottom then '-7px' else 'auto')
+      bottom: (if @settings.alignBottom then '0' else 'auto')
       left: initialLeft
       position: 'absolute'
       display: 'block'
@@ -89,14 +87,13 @@
 
   $.fn.ramblingSlider.defaults.imageFlashTransitions =
     fadeOut: ->
-      self = @
-      slice = self.getOneSlice self.previousSlideElement
+      slice = @getOneSlice @previousSlideElement
       slice.css height: '100%', width: slice.parents('.ramblingSlider').width(), position: 'absolute', top: 0, left: 0, opacity: '1'
 
-      self.setSliderBackground()
-      slice.animate {opacity: '0'}, self.settings.speed * 2, '', ->
+      @setSliderBackground()
+      slice.animate {opacity: '0'}, @settings.speed * 2, '', =>
         slice.css display: 'none'
-        self.raiseAnimationFinished()
+        @raiseAnimationFinished()
 
   $.fn.ramblingSlider.defaults.flashTransitions =
     slideInRight: -> flashHorizontalSlideIn.apply @, [-@currentSlideElement.parents('.ramblingSlider').width()]

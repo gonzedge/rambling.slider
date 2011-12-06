@@ -55,11 +55,11 @@ describe 'Array Extensions', ->
         expect(array.first predicate).toEqual array[2]
 
       describe 'but the array is empty', ->
-        expect([].first predicate).toBeNull()
+        expect([].first predicate).toBeUndefined()
 
     describe 'and the array is empty', ->
-      it 'should return null', ->
-        expect([].first()).toBeNull()
+      it 'should return undefined', ->
+        expect([].first()).toBeUndefined()
 
   describe 'when mapping the array to another value', ->
     it 'should map the values correctly', ->

@@ -1,69 +1,44 @@
 Array::shuffle = ->
-  length = @length
-
-  for i in [length..1]
-    @[i] = @[i]
-    j = parseInt(Math.random() * i)
-    x = @[--i]
-    @[i] = @[j]
-    @[j] = x
+  for i in [@length..1]
+    j = parseInt Math.random() * i
+    [@[i], @[j]] = [@[j], @[--i]]
 
   @
 
 Array::contains = (value) ->
-  length = @length
-
-  for i in [0...length]
-    return true if value is @[i]
-
-  false
+  @indexOf(value) isnt -1
 
 Array::where = (predicate) ->
-  newArray = []
-
-  for element in @ when predicate(element) then do (element) ->
-    newArray.push element
-
-  newArray
+  element for element in @ when predicate(element)
 
 Array::first = (predicate) ->
   predicate = ((element) -> true) unless predicate
-  for element in @ when predicate(element)
-    return element
-
-  null
+  (element for element in @ when predicate(element))[0]
 
 Array::map = (map) ->
-  newArray = []
-
   map = ((element) -> element) unless map
-  for element in @ then do (element) ->
-    newArray.push map(element)
-
-  newArray
+  map(element) for element in @
 
 Array::random = ->
   @[Math.floor Math.random() * @length]
 
 Array::fromObject = (object, valueSelector) ->
-  self = @
   valueSelector = ((key, value) -> value) unless valueSelector
 
-  for key, value of object then do (key, value) ->
-    self.push valueSelector(key, value)
+  for key, value of object then do (key, value) =>
+    @push valueSelector(key, value)
 
-  self
+  @
 
 Array::sortOutIn = ->
   newArray = []
-  self = @
 
-  length = self.length
+  length = @length
   halfLength = Math.floor(length / 2)
-  for i in [0...halfLength] then do (i) ->
-    newArray.push self[i]
-    newArray.push self[length - i - 1]
+  for i in [0...halfLength] then do (i) =>
+    newArray.push @[i]
+    newArray.push @[length - i - 1]
 
-  newArray.push(self[halfLength]) if length % 2
+  newArray.push(@[halfLength]) if length % 2
 
   newArray

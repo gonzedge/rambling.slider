@@ -4,7 +4,7 @@
 
   $.fn.ramblingSlider = (options, others...) ->
     methodExists = options in publicMethods
-    optionsIsString = (typeof options) is 'string'
+    optionsIsString = typeof(options) is 'string'
     ramblingSlider = @data 'rambling:slider'
     isCallingGetter = (options, others) -> not others.length or (options is 'option' and others.length is 1 and typeof(others[0]) is 'string')
 
@@ -19,7 +19,7 @@
         if optionsIsString
           $.error "Method '#{options}' not found."
         else
-          $.error "Slider already initialized." if options
+          $.error "Slider already initialized."
     else
       $.error "Tried to call method '#{options}' on element without slider." if methodExists or optionsIsString
 
@@ -114,23 +114,23 @@
 
     slider.data 'rambling:vars', vars
 
-    stop = ->
+    @stop = ->
       vars.stopped = true
       slider
 
-    start = ->
+    @start = ->
       vars.stopped = false
       slider
 
-    previousSlide = ->
+    @previousSlide = ->
       slideTo 'prev'
       slider
 
-    nextSlide = ->
+    @nextSlide = ->
       slideTo 'next'
       slider
 
-    slide = (slideNumbers...) ->
+    @slide = (slideNumbers...) ->
       return vars.currentSlide unless slideNumbers.length
 
       slideNumber = slideNumbers[0] % vars.totalSlides
@@ -141,7 +141,7 @@
 
       slider
 
-    destroy = ->
+    @destroy = ->
       slider.find('#rambling-animation,.rambling-slice,.rambling-box,.rambling-caption,.rambling-directionNav,.rambling-controlNav').remove()
       slider.removeClass 'ramblingSlider adaptingSlider'
       slider.removeAttr 'style'
@@ -153,18 +153,14 @@
       slider.children().show().children().show()
       slider
 
-    option = (options...) ->
+    @option = (options...) =>
       return settings unless options.length
 
-      option = options[0]
-      value = options[1]
+      [option, value] = options
       optionIsObject =  typeof(option) is 'object'
 
-      if option is 'effect'
-        return if value then effect(value) else effect()
-
-      if option is 'theme'
-        return if value then theme(value) else theme()
+      return @effect.apply(@, [value] if value) if option is 'effect'
+      return @theme.apply(@, [value] if value) if option is 'theme'
 
       return if optionIsObject
         $.extend settings, option
@@ -177,20 +173,20 @@
         else
           settings[option]
 
-    effect = (effects...) ->
+    @effect = (effects...) ->
       return settings.effect unless effects.length
 
       settings.effect = effects[0]
       slider
 
-    theme = (themes...) ->
+    @theme = (themes...) ->
       return settings.theme unless themes.length
 
       slider.removeClass "theme-#{settings.theme}"
       settings.theme = themes[0]
       slider.addClass "theme-#{settings.theme}"
 
-    initialize = ->
+    @initialize = ->
       setSliderInitialState()
 
       vars.currentSlide = settings.startSlide = settings.startSlide % vars.totalSlides
@@ -205,7 +201,7 @@
       setAnimationFinishedActions()
       extendAvailableTransitions()
 
-    run = ->
+    @run = ->
       if not settings.manualAdvance and vars.totalSlides > 1
         timer = window.setInterval (-> ramblingRun slider, children, settings, false), settings.pauseTime
 
@@ -223,9 +219,9 @@
       $.each settings[key], (index, element) -> array.push element
       array
 
-    setSliderInitialState = ->
-      effect settings.effect
-      theme settings.theme
+    setSliderInitialState = =>
+      @effect settings.effect
+      @theme settings.theme
       setUpTransitions()
 
       slider.css position: 'relative'
@@ -238,9 +234,7 @@
       prepareSliderChildren()
 
     prepareAnimationContainer = ->
-      ramblingAnimationContainer = $ '<div id="rambling-animation"></div>'
-      ramblingAnimationContainer.css width: slider.width(), height: slider.height(), overflow: 'hidden'
-      slider.prepend ramblingAnimationContainer
+      slider.prepend $('<div id="rambling-animation"></div>').css(width: slider.width(), height: slider.height(), overflow: 'hidden')
 
     prepareAdaptiveSlider = -> slider.addClass 'adaptingSlider'
 
@@ -269,9 +263,9 @@
         slider.width(childWidth) if childWidth > slider.width() and settings.useLargerImage
         slider.height(childHeight) if childHeight > slider.height() and (settings.useLargerImage or not settings.adaptImages)
 
-        iFrame = child.find 'object,embed'
-        iFrame.height slider.height()
-        iFrame.width slider.width()
+        object = child.find 'object,embed'
+        object.height slider.height()
+        object.width slider.width()
 
         link.css(display: 'none') if link
         child.css display: 'none'
@@ -280,9 +274,7 @@
       child.css(display: 'block') if child.is 'a'
 
     addCaption = ->
-      caption = $('<div class="rambling-caption"><p></p></div>').css display:'none', opacity: settings.captionOpacity
-      slider.append caption
-
+      slider.append $('<div class="rambling-caption"><p></p></div>').css(display:'none', opacity: settings.captionOpacity)
       processCaption settings
 
     addDirectionNavigation = ->
@@ -297,7 +289,8 @@
         slider.find('a.rambling-prevNav').live 'click', -> slideTo 'prev'
         slider.find('a.rambling-nextNav').live 'click', -> slideTo 'next'
 
-    addControlNavigation = ->
+    addControlNavigation = =>
+      self = @
       if settings.controlNav
         ramblingControl = $ '<div class="rambling-controlNav"></div>'
         slider.append ramblingControl
@@ -320,7 +313,7 @@
           return false if $(@).hasClass 'active'
           resetTimer()
           setSliderBackground()
-          slide $(@).attr('rel')
+          self.slide $(@).attr('rel')
 
     addKeyboardNavigation = ->
       if settings.keyboardNav
@@ -328,7 +321,8 @@
           slideTo('prev') if event.keyCode is 37
           slideTo('next') if event.keyCode is 39
 
-    setAnimationFinishedActions = ->
+    setAnimationFinishedActions = =>
+      self = @
       slider.bind 'rambling:finished', ->
         vars.running = false
 
@@ -336,7 +330,7 @@
         child.siblings().css display: 'none'
         child.css(display: 'block') if child.is 'a'
 
-        run() if timer is '' and not vars.paused
+        self.run() if timer is '' and not vars.paused
 
         setSliderBackground()
         slider.find('.rambling-slice,.rambling-box').remove()
@@ -379,9 +373,9 @@
       vars.paused = true
       resetTimer()
 
-    unpauseSlider = ->
+    unpauseSlider = =>
       vars.paused = false
-      run() if timer is ''
+      @run() if timer is ''
 
     slideTo = (direction) ->
       return false if vars.running or vars.totalSlides is 1
@@ -393,9 +387,10 @@
       createSlices 1, slideElement
 
     createSlices = (slices = settings.slices, slideElement = vars.currentSlideElement) ->
+      sliceWidth = Math.round(slider.width() / slices)
+      animationContainer = slider.find '#rambling-animation'
+
       for i in [0...slices] then do (i) ->
-        sliceWidth = Math.round(slider.width() / slices)
-        animationContainer = slider.find '#rambling-animation'
         animationContainer.append getRamblingSlice(sliceWidth, i, slices, vars, slideElement)
 
       slider.find '.rambling-slice'
@@ -403,22 +398,18 @@
     createBoxes = (boxCols = settings.boxCols, boxRows = settings.boxRows) ->
       boxWidth = Math.round(slider.width() / boxCols)
       boxHeight = Math.round(slider.height() / boxRows)
+      animationContainer = slider.find '#rambling-animation'
 
       for rows in [0...boxRows] then do (rows) ->
         for cols in [0...boxCols] then do (cols) ->
-          animationContainer = slider.find '#rambling-animation'
           animationContainer.append getRamblingBox(boxWidth, boxHeight, rows, cols, settings, vars)
 
       slider.find '.rambling-box'
 
     getSlice = (sliceWidth, position, total, vars, slideElement) ->
-      imageSrc = slideElement.attr('src') or slideElement.find('img').attr('src')
-      width = sliceWidth
-      width = slider.width() - (sliceWidth * position) if position is (total - 1)
-
       sliceCss =
         left: "#{sliceWidth * position}px"
-        width: width
+        width: if position is (total - 1) then slider.width() - (sliceWidth * position) else sliceWidth
         height: 0
         opacity: '0'
         overflow: 'hidden'
@@ -426,15 +417,11 @@
       $('<div class="rambling-slice"></div>').css sliceCss
 
     getBox = (boxWidth, boxHeight, row, column, settings, vars) ->
-      imageSrc = vars.currentSlideElement.attr('src') or vars.currentSlideElement.find('img').attr('src')
-      width = boxWidth
-      width = (slider.width() - (boxWidth * column)) if column is (settings.boxCols - 1)
-
       boxCss =
         opacity: 0
         left: "#{boxWidth * column}px"
         top: "#{boxHeight * row}px"
-        width: width
+        width: if column is (settings.boxCols - 1) then (slider.width() - (boxWidth * column)) else boxWidth
         height: boxHeight
         overflow: 'hidden'
 
@@ -446,13 +433,10 @@
       return if slideElement.equals vars.currentSlideElement
 
       slideElement.removeClass('currentSlideElement alignTop alignBottom').css display: 'none', 'z-index': '0'
-      vars.currentSlideElement.siblings('.slideElement').css display: 'none'
-      slideElement = vars.currentSlideElement.addClass 'currentSlideElement'
 
-      alignment = 'alignTop'
-      alignment = 'alignBottom' if settings.alignBottom
-
-      slideElement.addClass alignment
+      slideElement = vars.currentSlideElement
+      slideElement.siblings('.slideElement').css display: 'none'
+      slideElement.addClass('currentSlideElement').addClass if settings.alignBottom then 'alignBottom' else 'alignTop'
       slideElement.css display: 'block', 'z-index': '0'
       slideElement.find('img').css display: 'block'
 
@@ -468,32 +452,24 @@
         top: if settings.alignBottom then 'auto' else '0'
 
       ramblingSlice.find('img').css ramblingSliceImageStyle
-
       ramblingSlice
 
     getRamblingBox = (boxWidth, boxHeight, row, column, settings, vars) ->
       ramblingBox = getBox boxWidth, boxHeight, row, column, settings, vars
 
-      bottom = false
-      top = "#{((boxHeight + (row * boxHeight)) - boxHeight)}px"
-      if settings.alignBottom
-        bottom = "#{(boxHeight * (settings.boxRows - (row + 1)))}px"
-        top = false
+      bottom = if settings.alignBottom then "#{(boxHeight * (settings.boxRows - (row + 1)))}px" else 'auto'
+      top = if settings.alignBottom then 'auto' else "#{((boxHeight + (row * boxHeight)) - boxHeight)}px"
 
       ramblingBoxImageStyle =
         display: 'block'
         width: slider.width()
         left: "-#{(boxWidth + (column * boxWidth)) - boxWidth}px"
-        top: 'auto'
-        bottom: 'auto'
+        top: if settings.alignBottom then 'auto' else "-#{top}"
+        bottom: if settings.alignBottom then "-#{bottom}" else 'auto'
 
-      ramblingBoxImageStyle.top = "-#{top}" if top
-      ramblingBoxImageStyle.bottom = "-#{bottom}" if bottom
-
-      ramblingBox.css top: top or 'auto', bottom: bottom or 'auto'
+      ramblingBox.css top: top, bottom: bottom
       ramblingBox.append("<span><img src='#{vars.currentSlideElement.attr('src') or vars.currentSlideElement.find('img').attr('src')}' alt=''/></span>")
       ramblingBox.find('img').css ramblingBoxImageStyle
-
       ramblingBox
 
     getAvailableTransitions = ->
@@ -516,7 +492,6 @@
         else
           sourceTransitions = imageFlashTransitions
           defaultTransition = imageFlashTransitions.fadeOut
-
       else
         sourceTransitions = imageTransitions
         defaultTransition = imageTransitions.fadeIn
@@ -645,19 +620,14 @@
 
       settings.beforeChange.call @
 
-      vars.currentSlide++
+      vars.currentSlide = (vars.currentSlide + 1) % vars.totalSlides
+      settings.slideshowEnd.call(@) if vars.currentSlide is 0
 
-      if vars.currentSlide is vars.totalSlides
-        vars.currentSlide = 0
-        settings.slideshowEnd.call @
-
-      vars.currentSlide = (vars.totalSlides - 1) if vars.currentSlide < 0
+      vars.currentSlide = (vars.totalSlides + vars.currentSlide) if vars.currentSlide < 0
       setCurrentSlideElement children
 
       slider.find('.rambling-controlNav a').removeClass('active').filter(":eq(#{vars.currentSlide})").addClass('active') if settings.controlNav
-
       processCaption settings
-
       vars.running = true
 
       animationHelpers =
@@ -685,18 +655,5 @@
       getRandomAnimation().call animationHelpers
 
     settings.afterLoad.call @
-
-    @stop = stop
-    @start = start
-    @previousSlide = previousSlide
-    @nextSlide = nextSlide
-    @slide = slide
-    @effect = effect
-    @theme = theme
-    @option = option
-    @destroy = destroy
-    @initialize = initialize
-    @run = run
-
     @
 )(jQuery)

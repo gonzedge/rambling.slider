@@ -9,3 +9,6 @@ String::decapitalize = ->
 
 String::startsWith = (string) ->
   @substring(0, string.length) is string
+
+String::endsWith = (string) ->
+  @substring(@length - string.length, @length) is string

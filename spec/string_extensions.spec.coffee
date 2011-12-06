@@ -22,3 +22,13 @@ describe 'String Extensions', ->
 
     it 'should return false for anything else not in the string', ->
       expect('string'.startsWith('a')).toBeFalsy()
+
+  describe 'when finding out if a string ends with another string', ->
+    it 'should return true for the end of the string', ->
+      expect('string'.endsWith('g')).toBeTruthy()
+
+    it 'should return false for anything else in the string', ->
+      expect('string'.endsWith('t')).toBeFalsy()
+
+    it 'should return false for anything else not in the string', ->
+      expect('string'.endsWith('a')).toBeFalsy()

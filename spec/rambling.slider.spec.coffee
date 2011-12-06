@@ -211,6 +211,30 @@ describe 'Rambling Slider', ->
       it 'should call the slideshowEnd callback', ->
         expect(settings.slideshowEnd).toHaveBeenCalled()
 
+  describe 'when trying to initialize an already initialized slider', ->
+    error = null
+
+    describe 'without any options', ->
+      beforeEach ->
+        try
+          rambling_slider.ramblingSlider()
+        catch e
+          error = e
+
+      it 'should throw an already initialized error', ->
+        expect(error).toEqual 'Slider already initialized.'
+
+    describe 'and passing some new options', ->
+      beforeEach ->
+        try
+          rambling_slider.ramblingSlider {startSlide: 2, effect: 'sliceUp'}
+        catch e
+          error = e
+
+      it 'should throw an already initialized error', ->
+        expect(error).toEqual 'Slider already initialized.'
+
+
   # Methods
   describe 'when getting the effect', ->
     it 'should return the default one', ->
