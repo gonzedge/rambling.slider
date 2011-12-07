@@ -182,9 +182,12 @@
     @theme = (themes...) ->
       return settings.theme unless themes.length
 
-      slider.removeClass "theme-#{settings.theme}"
-      settings.theme = themes[0]
-      slider.addClass "theme-#{settings.theme}"
+      oldTheme = settings.theme
+      [settings.theme] = themes
+
+      classes = ["theme-#{oldTheme}", "theme-#{$.fn.ramblingSlider.defaults.theme}"]
+      slider.parents(classes.map((c) -> ".#{c}").join ',').removeClass(classes.join ' ').addClass("theme-#{settings.theme}")
+      slider
 
     @initialize = ->
       setSliderInitialState()

@@ -11,6 +11,7 @@ require '../src/rambling.slider.transitions'
 $ = jQuery
 
 describe 'Rambling Slider', ->
+  slider_wrapper = null
   rambling_slider = null
   result = null
   error = null
@@ -20,7 +21,10 @@ describe 'Rambling Slider', ->
   fake_timer = {}
 
   create_slider = (options...) ->
+    slider_wrapper = $ '<div id="slider-wrapper" class="theme-default"></div>'
     rambling_slider = $ '<div id="#slider"><img src="image1.jpg" alt="image1" /><img src="image2.jpg" alt="image2" /><img src="image3.jpg" alt="image3" /></div>'
+    slider_wrapper.append rambling_slider
+    $('body').empty().append slider_wrapper
     if options.length
       rambling_slider.ramblingSlider options[0]
     else
@@ -30,6 +34,8 @@ describe 'Rambling Slider', ->
     rambling_slider.data 'rambling:slider', null
     rambling_slider.data 'rambling:vars', null
     rambling_slider.remove()
+    slider_wrapper.remove()
+    $('body').empty()
 
   beforeEach ->
     timeout_spy = spyOn window, 'setTimeout'
@@ -76,7 +82,7 @@ describe 'Rambling Slider', ->
     expect(rambling_slider.data('rambling:vars').paused).toBeFalsy()
 
   it 'should set the default theme', ->
-    expect(rambling_slider).toHaveClass "theme-#{$.fn.ramblingSlider.defaults.theme}"
+    expect(slider_wrapper).toHaveClass "theme-#{$.fn.ramblingSlider.defaults.theme}"
 
   describe 'when the slider has only one slide', ->
     other_slider = null
@@ -428,10 +434,10 @@ describe 'Rambling Slider', ->
       create_slider theme: theme
 
     it 'should remove the previous theme class', ->
-      expect(rambling_slider).not.toHaveClass "theme-#{$.fn.ramblingSlider.defaults.theme}"
+      expect(slider_wrapper).not.toHaveClass "theme-#{$.fn.ramblingSlider.defaults.theme}"
 
     it 'should add the new theme class', ->
-      expect(rambling_slider).toHaveClass "theme-#{theme}"
+      expect(slider_wrapper).toHaveClass "theme-#{theme}"
 
     it 'should return the new theme when asked', ->
       expect(rambling_slider.ramblingSlider 'theme').toEqual theme
