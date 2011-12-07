@@ -613,23 +613,7 @@
           { opacity: '1', width: width, height: height }
         ), sortCallback
 
-    ramblingRun = (slider, children, settings, nudge) ->
-      settings.lastSlide.call(@) if vars.currentSlide is vars.totalSlides - 1
-
-      return false if vars.stopped and not nudge
-
-      settings.beforeChange.call @
-
-      vars.currentSlide = (vars.currentSlide + 1) % vars.totalSlides
-      settings.slideshowEnd.call(@) if vars.currentSlide is 0
-
-      vars.currentSlide = (vars.totalSlides + vars.currentSlide) if vars.currentSlide < 0
-      setCurrentSlideElement children
-
-      slider.find('.rambling-controlNav a').removeClass('active').filter(":eq(#{vars.currentSlide})").addClass('active') if settings.controlNav
-      processCaption settings
-      vars.running = true
-
+    getAnimationHelpers = ->
       animationHelpers =
         setSliderBackground: setSliderBackground
         currentSlideElement: vars.currentSlideElement
@@ -652,7 +636,24 @@
         rainBoxes: rainBoxes
         growBoxes: growBoxes
 
-      getRandomAnimation().call animationHelpers
+    ramblingRun = (slider, children, settings, nudge) ->
+      settings.lastSlide.call(@) if vars.currentSlide is vars.totalSlides - 1
+
+      return false if vars.stopped and not nudge
+
+      settings.beforeChange.call @
+
+      vars.currentSlide = (vars.currentSlide + 1) % vars.totalSlides
+      settings.slideshowEnd.call(@) if vars.currentSlide is 0
+
+      vars.currentSlide = (vars.totalSlides + vars.currentSlide) if vars.currentSlide < 0
+      setCurrentSlideElement children
+
+      slider.find('.rambling-controlNav a').removeClass('active').filter(":eq(#{vars.currentSlide})").addClass('active') if settings.controlNav
+      processCaption settings
+      vars.running = true
+
+      getRandomAnimation().call getAnimationHelpers()
 
     settings.afterLoad.call @
     @

@@ -73,10 +73,9 @@
       left: 'auto'
       position: 'relative'
 
-    flashSlideIn.apply @ [beforeAnimation, {left: '0'}, afterAnimation]
+    flashSlideIn.apply @, [beforeAnimation, {left: '0'}, afterAnimation]
 
-  $.fn.ramblingSlider.defaults.imageTransitions = []
-
+  $.fn.ramblingSlider.defaults.imageTransitions = {}
   $.each transitions, (index, group) ->
     $.each group, (index, transition) ->
       $.each group.suffixes, (index, suffix) ->
@@ -91,13 +90,14 @@
       slice.css height: '100%', width: slice.parents('.ramblingSlider').width(), position: 'absolute', top: 0, left: 0, opacity: '1'
 
       @setSliderBackground()
-      slice.animate {opacity: '0'}, @settings.speed * 2, '', =>
+      self = @
+      slice.animate {opacity: '0'}, @settings.speed * 2, '', ->
         slice.css display: 'none'
-        @raiseAnimationFinished()
+        self.raiseAnimationFinished()
 
   $.fn.ramblingSlider.defaults.flashTransitions =
     slideInRight: -> flashHorizontalSlideIn.apply @, [-@currentSlideElement.parents('.ramblingSlider').width()]
-    slideInLeft: -> flashHorizontalSlideIn.apply @ [@currentSlideElement.parents('.ramblingSlider').width()]
+    slideInLeft: -> flashHorizontalSlideIn.apply @, [@currentSlideElement.parents('.ramblingSlider').width()]
 
   $.extend $.fn.ramblingSlider.defaults.imageFlashTransitions, $.fn.ramblingSlider.defaults.flashTransitions
 
