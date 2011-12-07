@@ -207,7 +207,7 @@
 
     setUpTransitions = ->
       imageTransitions = $.extend {}, $.fn.ramblingSlider.defaults.imageTransitions, settings.imageTransitions
-      imageFlashTransitions = $.extend {}, $.fn.ramblingSlider.defaults.imageTransitions, settings.imageTransitions
+      imageFlashTransitions = $.extend {}, $.fn.ramblingSlider.defaults.imageFlashTransitions, settings.imageFlashTransitions
       flashTransitions = $.extend {}, $.fn.ramblingSlider.defaults.flashTransitions, settings.flashTransitions
 
       transitionGroups = getSettingsArrayFor 'transitionGroups'
