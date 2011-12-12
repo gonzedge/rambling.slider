@@ -1,0 +1,83 @@
+/*
+ * Skin Name: Rambling Slider Default Theme
+ * Skin Type: flexible
+ * Description: The default skin for the Rambling Slider.
+ * Version: 1.0
+ * Author: Edgar Gonzalez (originally by Gilbert Pellegrom)
+ * Author URI: http://ramblinglabs.com
+ */
+
+.theme-default {
+  .ramblingSlider {
+    position: relative;
+    background: #ffffff url(loading.gif) no-repeat 50% 50%;
+    margin-bottom: 50px;
+    -webkit-box-shadow: 0px 1px 5px 0px #4a4a4a;
+    -moz-box-shadow: 0px 1px 5px 0px #4a4a4a;
+    box-shadow: 0px 1px 5px 0px #4a4a4a;
+
+    img {
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      display: none;
+    }
+
+    a {
+      border: 0;
+      display: block;
+    }
+
+    .rambling-controlNav {
+      position: absolute;
+      left: 50%;
+      bottom: -42px;
+      margin-left: -40px; /* Tweak this to center bullets */
+
+      a {
+        display: block;
+        width: 22px;
+        height: 22px;
+        background: url(bullets.png) no-repeat;
+        text-indent: -9999px;
+        border: 0;
+        margin-right: 3px;
+        float: left;
+        &.active {
+          background-position: 0 -22px;
+        }
+      }
+    }
+
+    .rambling-directionNav a {
+      display: block;
+      width: 30px;
+      height: 30px;
+      background: url(arrows.png) no-repeat;
+      text-indent: -9999px;
+      border: 0;
+    }
+
+    a.rambling-nextNav {
+      background-position: -30px 0;
+      right: 15px;
+    }
+
+    a.rambling-prevNav {
+      left: 15px;
+    }
+
+    .rambling-caption {
+      font-family: Helvetica, Arial, sans-serif;
+
+      a {
+        color: #ffffff;
+        border-bottom: 1px dotted #ffffff;
+
+        &:hover {
+          color: #ffffff;
+        }
+      }
+    }
+  }
+}

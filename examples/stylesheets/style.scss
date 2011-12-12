@@ -1,0 +1,93 @@
+/*
+ * Rambling Slider Example
+ * December 2011
+ * By: Edgar Gonzalez
+ * http://ramblinglabs.com
+ */
+
+/* Reset Styles */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  font-weight: inherit;
+  font-style: inherit;
+  font-size: 100%;
+  font-family: inherit;
+  vertical-align: baseline;
+}
+
+body {
+  line-height: 1;
+  color: black;
+  background: white;
+}
+
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+caption, th, td {
+  text-align: left;
+  font-weight: normal;
+}
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+  content:"";
+}
+
+blockquote, q {
+  quotes:"" "";
+}
+
+header, section, footer,
+aside, nav, article, figure {
+  display: block;
+}
+
+/* Main Styles */
+body {
+  font: 14px/1.6 Georgia, Palatino, Palatino Linotype, Times, Times New Roman, serif;
+  color: #333333;
+  background: #eeeeee;
+}
+
+a, a:visited {
+  color: #00ff00;
+  text-decoration: none;
+}
+
+a:hover, a:active {
+  color: #000000;
+  text-decoration: none;
+}
+
+#slider.theme-default {
+  margin: 100px auto 0 auto;
+  width: 618px;
+  height: 246px;
+}
+
+#slider.theme-default.adaptingSlider {
+  width: 750px;
+  height: 299px;
+}
+
+.theme-pascal.slider-wrapper,
+.theme-orman.slider-wrapper {
+  margin-top: 150px;
+}
+
+.clear {
+  clear: both;
+}
