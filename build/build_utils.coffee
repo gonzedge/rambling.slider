@@ -36,10 +36,6 @@ class BuildUtils
   file_sorter: (first, second) ->
     return -1 if first is 'comments.coffee'
     return 1 if second is 'comments.coffee'
-    return -1 if second is 'rambling.slider.transitions.coffee'
-    return 1 if first is 'rambling.slider.transitions.coffee'
-    return -1 if second is 'rambling.slider.coffee'
-    return 1 if first is 'rambling.slider.coffee'
     return -1 if first < second
     return 1 if first > second
     0
@@ -50,7 +46,7 @@ class BuildUtils
       content = []
       contentAdded = 0
 
-      files = files.where (file) -> not file.startsWith '.'
+      files = files.where (file) -> file.endsWith('.coffee') and not file.startsWith('.')
       files = files.sort @file_sorter
 
       @log "Combining following files into `src/#{@slider_file}`:\n  #{files.join('\n  ')}"
