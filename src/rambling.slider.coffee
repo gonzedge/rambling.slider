@@ -114,6 +114,9 @@
 
     slider.data 'rambling:vars', vars
 
+    ramblingSliceGenerator = new RamblingSliceGenerator slider, settings, vars
+    ramblingBoxGenerator = new RamblingBoxGenerator slider, settings, vars
+
     @stop = ->
       vars.stopped = true
       slider
@@ -386,50 +389,6 @@
       vars.currentSlide -= 2 if direction is 'prev'
       ramblingRun slider, children, settings, direction
 
-    getOneSlice = (slideElement = vars.currentSlideElement) ->
-      createSlices 1, slideElement
-
-    createSlices = (slices = settings.slices, slideElement = vars.currentSlideElement) ->
-      sliceWidth = Math.round(slider.width() / slices)
-      animationContainer = slider.find '#rambling-animation'
-
-      for i in [0...slices] then do (i) ->
-        animationContainer.append getRamblingSlice(sliceWidth, i, slices, vars, slideElement)
-
-      slider.find '.rambling-slice'
-
-    createBoxes = (boxCols = settings.boxCols, boxRows = settings.boxRows) ->
-      boxWidth = Math.round(slider.width() / boxCols)
-      boxHeight = Math.round(slider.height() / boxRows)
-      animationContainer = slider.find '#rambling-animation'
-
-      for rows in [0...boxRows] then do (rows) ->
-        for cols in [0...boxCols] then do (cols) ->
-          animationContainer.append getRamblingBox(boxWidth, boxHeight, rows, cols, settings, vars)
-
-      slider.find '.rambling-box'
-
-    getSlice = (sliceWidth, position, total, vars, slideElement) ->
-      sliceCss =
-        left: sliceWidth * position
-        width: if position is (total - 1) then slider.width() - (sliceWidth * position) else sliceWidth
-        height: 0
-        opacity: 0
-        overflow: 'hidden'
-
-      $('<div class="rambling-slice"></div>').css sliceCss
-
-    getBox = (boxWidth, boxHeight, row, column, settings, vars) ->
-      boxCss =
-        opacity: 0
-        left: boxWidth * column
-        top: boxHeight * row
-        width: if column is (settings.boxCols - 1) then (slider.width() - (boxWidth * column)) else boxWidth
-        height: boxHeight
-        overflow: 'hidden'
-
-      $('<div class="rambling-box"></div>').css boxCss
-
     setSliderBackground = ->
       slideElement = slider.find '.currentSlideElement'
 
@@ -442,38 +401,6 @@
       slideElement.addClass('currentSlideElement').addClass if settings.alignBottom then 'alignBottom' else 'alignTop'
       slideElement.css display: 'block', 'z-index': 0
       slideElement.find('img').css display: 'block'
-
-    getRamblingSlice = (sliceWidth, position, total, vars, slideElement) ->
-      ramblingSlice = getSlice sliceWidth, position, total, vars, slideElement
-      ramblingSlice.append "<span><img src=\"#{slideElement.attr('src') or slideElement.find('img').attr('src')}\" alt=\"\"/></span>"
-
-      ramblingSliceImageStyle =
-        display: 'block'
-        width: slider.width()
-        left: -(position * sliceWidth)
-        bottom: if settings.alignBottom then 0 else 'auto'
-        top: if settings.alignBottom then 'auto' else 0
-
-      ramblingSlice.find('img').css ramblingSliceImageStyle
-      ramblingSlice
-
-    getRamblingBox = (boxWidth, boxHeight, row, column, settings, vars) ->
-      ramblingBox = getBox boxWidth, boxHeight, row, column, settings, vars
-
-      bottom = if settings.alignBottom then boxHeight * (settings.boxRows - (row + 1)) else 'auto'
-      top = if settings.alignBottom then 'auto' else row * boxHeight
-
-      ramblingBoxImageStyle =
-        display: 'block'
-        width: slider.width()
-        left: -(column * boxWidth)
-        top: if settings.alignBottom then 'auto' else -top
-        bottom: if settings.alignBottom then -bottom else 'auto'
-
-      ramblingBox.css top: top, bottom: bottom
-      ramblingBox.append("<span><img src='#{vars.currentSlideElement.attr('src') or vars.currentSlideElement.find('img').attr('src')}' alt=''/></span>")
-      ramblingBox.find('img').css ramblingBoxImageStyle
-      ramblingBox
 
     getAvailableTransitions = ->
       effects = settings.effect.split ','
@@ -514,14 +441,14 @@
     raiseAnimationFinished = -> slider.trigger 'rambling:finished'
 
     animateFullImage = (animationSetUp) ->
-      slice = getOneSlice()
+      slice = ramblingSliceGenerator.getOneSlice()
       slice.css top: (if settings.alignBottom then 'auto' else 0), bottom: (if settings.alignBottom then 0 else 'auto')
       slice.animate (animationSetUp.apply(slice, [slider, $.extend({}, settings)]) or width: slider.width()), settings.speed * 2, '', ->
         settings.afterChange.apply(slice) if settings.afterChange
         raiseAnimationFinished()
 
     animateSlices = (animationSetUp, sortCallback) ->
-      slices = createSlices()
+      slices = ramblingSliceGenerator.createSlices()
       animationTimeBuffer = 0
       slices = sortCallback.apply(slices) if sortCallback
       slices.each (index, element) ->
@@ -532,7 +459,7 @@
         animationTimeBuffer += 50
 
     animateBoxes = (animationCallback, sortCallback) ->
-      boxes = createBoxes()
+      boxes = ramblingBoxGenerator.createBoxes()
       animationTimeBuffer = 0
       boxes = sortCallback.apply(boxes) if sortCallback
       animationCallback.apply boxes, [raiseAnimationFinished]
@@ -623,9 +550,9 @@
         previousSlideElement: vars.previousSlideElement
         raiseAnimationFinished: raiseAnimationFinished
         settings: $.extend {}, settings
-        createSlices: createSlices
-        createBoxes: createBoxes
-        getOneSlice: getOneSlice
+        createSlices: (slices, element) -> ramblingSliceGenerator.createSlices slices, element
+        createBoxes: (rows, columns) -> ramblingBoxGenerator.createBoxes rows, columns
+        getOneSlice: (element) -> ramblingSliceGenerator.getOneSlice element
         animateFullImage: animateFullImage
         animateSlices: animateSlices
         animateBoxes: animateBoxes
