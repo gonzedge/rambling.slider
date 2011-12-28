@@ -190,7 +190,7 @@ describe 'Rambling Slider transitions', ->
           result = helper.animateFullImage ->
 
         it 'should set the top to 0 and the bottom to auto', ->
-          expect($.fn.css).toHaveBeenCalledWith top: '0', bottom: 'auto'
+          expect($.fn.css).toHaveBeenCalledWith top: 0, bottom: 'auto'
 
       describe 'and it is aligned to the bottom', ->
         beforeEach ->
@@ -198,7 +198,7 @@ describe 'Rambling Slider transitions', ->
           result = helper.animateFullImage ->
 
         it 'should set the top to auto and the bottom to 0', ->
-          expect($.fn.css).toHaveBeenCalledWith top: 'auto', bottom: '0'
+          expect($.fn.css).toHaveBeenCalledWith top: 'auto', bottom: 0
 
       describe 'and nothing is returned by the animation set up callback', ->
         beforeEach ->
@@ -353,7 +353,7 @@ describe 'Rambling Slider transitions', ->
 
       it 'should align the slices to the top', ->
         timeout_callback()
-        expect($.fn.css).toHaveBeenCalledWith top: '0px'
+        expect($.fn.css).toHaveBeenCalledWith top: 0
 
       it 'should sort the slices', ->
         expect(sort_callback).toHaveBeenCalled()
@@ -375,7 +375,7 @@ describe 'Rambling Slider transitions', ->
 
       it 'should align the slices to the bottom', ->
         timeout_callback()
-        expect($.fn.css).toHaveBeenCalledWith bottom: '0px'
+        expect($.fn.css).toHaveBeenCalledWith bottom: 0
 
       it 'should sort the slices', ->
         expect(sort_callback).toHaveBeenCalled()
@@ -418,7 +418,7 @@ describe 'Rambling Slider transitions', ->
 
       it 'should align the slices to the bottom', ->
         timeout_callback()
-        expect($.fn.css).toHaveBeenCalledWith top: '0px', height: '100%', width: 0
+        expect($.fn.css).toHaveBeenCalledWith top: 0, height: '100%', width: 0
 
       it 'should set the height to the slider width and the opacity to 1', ->
         timeout_callback()
@@ -577,13 +577,13 @@ describe 'Rambling Slider transitions', ->
         expect(animation_helpers.animateFullImage).toHaveBeenCalled()
 
       it 'should set the style to the slice', ->
-        expect($.fn.css).toHaveBeenCalledWith height: '100%', width: 0, opacity: '1', left: 'auto', right: '0px'
+        expect($.fn.css).toHaveBeenCalledWith height: '100%', width: 0, opacity: '1', left: 'auto', right: 0
 
       it 'should set the style to the image', ->
-        expect($.fn.css).toHaveBeenCalledWith left: "#{-rambling_slider.width()}px"
+        expect($.fn.css).toHaveBeenCalledWith left: -rambling_slider.width()
 
       it 'should animate the image', ->
-        expect($.fn.animate).toHaveBeenCalledWith {left: '0px'}, settings.speed * 2
+        expect($.fn.animate).toHaveBeenCalledWith {left: 0}, settings.speed * 2
 
       it 'should return the expected animation', ->
         expect(result).toEqual {width: rambling_slider.width()}
@@ -605,15 +605,15 @@ describe 'Rambling Slider transitions', ->
         expect($.fn.css).toHaveBeenCalledWith height: '100%', width: 0, opacity: '1'
 
       it 'should set the style to the image', ->
-        expect($.fn.css).toHaveBeenCalledWith left: "#{-rambling_slider.width()}px"
+        expect($.fn.css).toHaveBeenCalledWith left: -rambling_slider.width()
 
       it 'should animate the image', ->
-        expect($.fn.animate).toHaveBeenCalledWith {left: '0px'}, settings.speed * 2
+        expect($.fn.animate).toHaveBeenCalledWith {left: 0}, settings.speed * 2
 
       it 'should return the expected animation', ->
         expect(result).toEqual {width: rambling_slider.width()}
 
-    describe 'and executing a full image slide in right', ->
+    describe 'and executing a full image slide in left', ->
       finished_callback = null
 
       beforeEach ->
@@ -627,7 +627,7 @@ describe 'Rambling Slider transitions', ->
         expect(animation_helpers.animateFullImage).toHaveBeenCalled()
 
       it 'should set the style to the slice', ->
-        expect($.fn.css).toHaveBeenCalledWith height: '100%', width: 0, opacity: '1', left: 'auto', right: '0px'
+        expect($.fn.css).toHaveBeenCalledWith height: '100%', width: 0, opacity: '1', left: 'auto', right: 0
 
       it 'should bind to the rambling:finished event', ->
         expect($.fn.bind).toHaveBeenCalledWith 'rambling:finished', jasmine.any(Function)
@@ -637,7 +637,7 @@ describe 'Rambling Slider transitions', ->
           finished_callback()
 
         it 'should set the finished style to the slice', ->
-          expect($.fn.css).toHaveBeenCalledWith left: '0px', right: 'auto'
+          expect($.fn.css).toHaveBeenCalledWith left: 0, right: 'auto'
 
         it 'should unbind from the rambling:finished event', ->
           expect($.fn.unbind).toHaveBeenCalledWith 'rambling:finished', finished_callback

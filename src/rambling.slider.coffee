@@ -411,10 +411,10 @@
 
     getSlice = (sliceWidth, position, total, vars, slideElement) ->
       sliceCss =
-        left: "#{sliceWidth * position}px"
+        left: sliceWidth * position
         width: if position is (total - 1) then slider.width() - (sliceWidth * position) else sliceWidth
         height: 0
-        opacity: '0'
+        opacity: 0
         overflow: 'hidden'
 
       $('<div class="rambling-slice"></div>').css sliceCss
@@ -422,8 +422,8 @@
     getBox = (boxWidth, boxHeight, row, column, settings, vars) ->
       boxCss =
         opacity: 0
-        left: "#{boxWidth * column}px"
-        top: "#{boxHeight * row}px"
+        left: boxWidth * column
+        top: boxHeight * row
         width: if column is (settings.boxCols - 1) then (slider.width() - (boxWidth * column)) else boxWidth
         height: boxHeight
         overflow: 'hidden'
@@ -435,12 +435,12 @@
 
       return if slideElement.equals vars.currentSlideElement
 
-      slideElement.removeClass('currentSlideElement alignTop alignBottom').css display: 'none', 'z-index': '0'
+      slideElement.removeClass('currentSlideElement alignTop alignBottom').css display: 'none', 'z-index': 0
 
       slideElement = vars.currentSlideElement
       slideElement.siblings('.slideElement').css display: 'none'
       slideElement.addClass('currentSlideElement').addClass if settings.alignBottom then 'alignBottom' else 'alignTop'
-      slideElement.css display: 'block', 'z-index': '0'
+      slideElement.css display: 'block', 'z-index': 0
       slideElement.find('img').css display: 'block'
 
     getRamblingSlice = (sliceWidth, position, total, vars, slideElement) ->
@@ -450,9 +450,9 @@
       ramblingSliceImageStyle =
         display: 'block'
         width: slider.width()
-        left: "-#{(sliceWidth + (position * sliceWidth)) - sliceWidth}px"
-        bottom: if settings.alignBottom then '0' else 'auto'
-        top: if settings.alignBottom then 'auto' else '0'
+        left: -(position * sliceWidth)
+        bottom: if settings.alignBottom then 0 else 'auto'
+        top: if settings.alignBottom then 'auto' else 0
 
       ramblingSlice.find('img').css ramblingSliceImageStyle
       ramblingSlice
@@ -460,15 +460,15 @@
     getRamblingBox = (boxWidth, boxHeight, row, column, settings, vars) ->
       ramblingBox = getBox boxWidth, boxHeight, row, column, settings, vars
 
-      bottom = if settings.alignBottom then "#{(boxHeight * (settings.boxRows - (row + 1)))}px" else 'auto'
-      top = if settings.alignBottom then 'auto' else "#{((boxHeight + (row * boxHeight)) - boxHeight)}px"
+      bottom = if settings.alignBottom then boxHeight * (settings.boxRows - (row + 1)) else 'auto'
+      top = if settings.alignBottom then 'auto' else row * boxHeight
 
       ramblingBoxImageStyle =
         display: 'block'
         width: slider.width()
-        left: "-#{(boxWidth + (column * boxWidth)) - boxWidth}px"
-        top: if settings.alignBottom then 'auto' else "-#{top}"
-        bottom: if settings.alignBottom then "-#{bottom}" else 'auto'
+        left: -(column * boxWidth)
+        top: if settings.alignBottom then 'auto' else -top
+        bottom: if settings.alignBottom then -bottom else 'auto'
 
       ramblingBox.css top: top, bottom: bottom
       ramblingBox.append("<span><img src='#{vars.currentSlideElement.attr('src') or vars.currentSlideElement.find('img').attr('src')}' alt=''/></span>")
@@ -515,7 +515,7 @@
 
     animateFullImage = (animationSetUp) ->
       slice = getOneSlice()
-      slice.css top: (if settings.alignBottom then 'auto' else '0'), bottom: (if settings.alignBottom then '0' else 'auto')
+      slice.css top: (if settings.alignBottom then 'auto' else 0), bottom: (if settings.alignBottom then 0 else 'auto')
       slice.animate (animationSetUp.apply(slice, [slider, $.extend({}, settings)]) or width: slider.width()), settings.speed * 2, '', ->
         settings.afterChange.apply(slice) if settings.afterChange
         raiseAnimationFinished()
@@ -561,20 +561,20 @@
 
     slideDownSlices = (sortCallback) ->
       animateSlices ((index, element) ->
-          @css top: '0px'
+          @css top: 0
           { height: slider.height(), opacity:'1' }
         ), sortCallback
 
     slideUpSlices = (sortCallback) ->
       animateSlices ((index, element) ->
-          @css bottom: '0px'
+          @css bottom: 0
           { height: slider.height(), opacity:'1' }
         ), sortCallback
 
     slideUpDownSlices = (sortCallback) ->
       animateSlices ((index, element) ->
-          @css (if index % 2 then bottom: '0px' else top: '0px')
-          { height: slider.height(), opacity:'1' }
+          @css (if index % 2 then bottom: 0 else top: 0)
+          { height: slider.height(), opacity: '1' }
         ), sortCallback
 
     foldSlices = (sortCallback) ->
@@ -584,7 +584,7 @@
             width: slice.width()
             opacity: '1'
 
-          slice.css top: '0px', height: '100%', width: 0
+          slice.css top: 0, height: '100%', width: 0
           animateStyle
         ), sortCallback
 

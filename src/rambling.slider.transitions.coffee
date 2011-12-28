@@ -41,17 +41,17 @@
       @css height: '100%', width: 0, opacity: '1'
       return
     rolloverLeft: (slider, settings) ->
-      @css height: '100%', width: 0, opacity: '1', left: 'auto', right: '0px'
-      @find('img').css(left: "#{-slider.width()}px").animate {left: '0px'}, settings.speed * 2
+      @css height: '100%', width: 0, opacity: '1', left: 'auto', right: 0
+      @find('img').css(left: -slider.width()).animate {left: 0}, settings.speed * 2
       {width: slider.width()}
     slideInRight: (slider, settings) ->
       @css height: '100%', width: 0, opacity: '1'
-      @find('img').css(left: "#{-slider.width()}px").animate {left: '0px'}, settings.speed * 2
+      @find('img').css(left: -slider.width()).animate {left: 0}, settings.speed * 2
       {width: slider.width()}
     slideInLeft: (slider) ->
-      @css height: '100%', width: 0, opacity: '1', left: 'auto', right: '0px'
+      @css height: '100%', width: 0, opacity: '1', left: 'auto', right: 0
       finishedHandler = =>
-        @css left: '0px', right: 'auto'
+        @css left: 0, right: 'auto'
         slider.unbind 'rambling:finished', finishedHandler
       slider.bind 'rambling:finished', finishedHandler
       return
@@ -62,8 +62,8 @@
 
   flashHorizontalSlideIn = (initialLeft) ->
     beforeAnimation =
-      top: (if @settings.alignBottom then 'auto' else '0')
-      bottom: (if @settings.alignBottom then '0' else 'auto')
+      top: (if @settings.alignBottom then 'auto' else 0)
+      bottom: (if @settings.alignBottom then 0 else 'auto')
       left: initialLeft
       position: 'absolute'
       display: 'block'
@@ -73,7 +73,7 @@
       left: 'auto'
       position: 'relative'
 
-    flashSlideIn.apply @, [beforeAnimation, {left: '0'}, afterAnimation]
+    flashSlideIn.apply @, [beforeAnimation, {left: 0}, afterAnimation]
 
   $.fn.ramblingSlider.defaults.imageTransitions = {}
   $.each transitions, (index, group) ->
