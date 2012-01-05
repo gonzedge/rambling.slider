@@ -2,134 +2,98 @@
  * jQuery Rambling Slider
  * http://github.com/egonzalez0787/rambling.slider
  *
- * Copyright 2011, Rambling Labs
+ * Copyright 2011-2012, Rambling Labs
  * Released under the MIT license.
  * http://www.opensource.org/licenses/mit-license.php
  *
- * November 2011
+ * January 2012
  *
  * Based on jQuery Nivo Slider by Gilbert Pellegrom
  */
-
-/* The Rambling Slider styles */
 .ramblingSlider {
-	position:relative;
-}
-.ramblingSlider img {
-	position:absolute;
-	top:0px;
-	left:0px;
-}
-/* If an image is wrapped in a link */
-.ramblingSlider a.rambling-imageLink {
-	position:absolute;
-	top:0px;
-	left:0px;
-	width:100%;
-	height:100%;
-	border:0;
-	padding:0;
-	margin:0;
-	display:none;
-}
-/* The slices and boxes in the Slider */
-.rambling-slice {
-	display:block;
-	position:absolute;
-	z-index:5;
-	height:100%;
-}
-.rambling-box {
-	display:block;
-	position:absolute;
-	z-index:5;
-}
-/* Caption styles */
-.rambling-caption {
-	position:absolute;
-	left:0px;
-	bottom:0px;
-	background:#000;
-	color:#fff;
-	opacity:0.8; /* Overridden by captionOpacity setting */
-	width:100%;
-	z-index:8;
-}
-.rambling-caption p {
-	padding:5px;
-	margin:0;
-}
-.rambling-caption a {
-	display:inline !important;
-}
-.rambling-html-caption {
-    display:none;
-}
-/* Direction nav styles (e.g. Next & Prev) */
-.rambling-directionNav a {
-	position:absolute;
-	top:45%;
-	z-index:9;
-	cursor:pointer;
-}
-.rambling-prevNav {
-	left:0px;
-}
-.rambling-nextNav {
-	right:0px;
-}
-/* Control nav styles (e.g. 1,2,3...) */
-.rambling-controlNav a {
-	position:relative;
-	z-index:9;
-	cursor:pointer;
-}
-.rambling-controlNav a.active {
-	font-weight:bold;
-}
-
-.ramblingSlider #rambling-animation {
+  position: relative img;
+    position-position: absolute;
+    position-top: 0;
+    position-left: 0; }
+  .ramblingSlider a.rambling-imageLink {
     position: absolute;
-    overflow: hidden;
     top: 0;
     left: 0;
-}
+    width: 100%;
+    height: 100%;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    display: none; }
+  .ramblingSlider .rambling-slice {
+    position: absolute;
+    display: block;
+    z-index: 5;
+    height: 100%; }
+  .ramblingSlider .rambling-box {
+    position: absolute;
+    display: block;
+    z-index: 5; }
+  .ramblingSlider .rambling-caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background: #000000;
+    color: #ffffff;
+    opacity: 0.8;
+    width: 100%;
+    z-index: 8; }
+  .ramblingSlider p {
+    padding: 5px;
+    margin: 0; }
+  .ramblingSlider a {
+    display: inline !important; }
+  .ramblingSlider .rambling-directionNav a {
+    position: absolute;
+    top: 45%;
+    z-index: 9;
+    cursor: pointer; }
+  .ramblingSlider .rambling-prevNav {
+    left: 0px; }
+  .ramblingSlider .rambling-nextNav {
+    right: 0px; }
+  .ramblingSlider .rambling-controlNav a {
+    position: relative;
+    z-index: 9;
+    cursor: pointer; }
+    .ramblingSlider .rambling-controlNav a.active {
+      font-weight: bold; }
+  .ramblingSlider #rambling-animation {
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden; }
+  .ramblingSlider object {
+    display: none; }
+  .ramblingSlider .slideElement,
+  .ramblingSlider .slideElement object {
+    display: block; }
 
-.ramblingSlider object {
-  display: none;
-}
-
-.ramblingSlider .slideElement,
-.ramblingSlider .slideElement object {
-  display: block;
-}
+.rambling-html-caption {
+  display: none; }
 
 .adaptingSlider .currentSlideElement img,
 .adaptingSlider img.currentSlideElement {
-    display: block;
-    width: 100%;
-    position: absolute;
-}
-
+  position: absolute;
+  display: block;
+  width: 100%; }
 .adaptingSlider img.currentSlideElement.alignBottom {
-    right: 0;
-    bottom: 0;
-    top: auto;
-    left: auto;
-}
-
-.adaptingSlider .rambling-box span,
-.adaptingSlider .rambling-slice span {
-    position: relative;
-    display: block;
-    height: 100%;
-}
-
-.adaptingSlider .rambling-box img,
-.adaptingSlider .rambling-slice img {
-    display: block;
-    position: absolute;
-    right: 0;
-    bottom: 0;
-}
-
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  top: auto;
+  left: auto; }
+.adaptingSlider .rambling-box span, .adaptingSlider .rambling-slice span {
+  position: relative;
+  display: block;
+  height: 100%; }
+.adaptingSlider .rambling-box img, .adaptingSlider .rambling-slice img {
+  display: block;
+  position: absolute;
+  bottom: 0;
+  right: 0; }

@@ -1,8 +1,14 @@
 /*
- * Rambling Slider Example
- * December 2011
- * By: Edgar Gonzalez
- * http://ramblinglabs.com
+ * jQuery Rambling Slider
+ * http://github.com/egonzalez0787/rambling.slider
+ *
+ * Copyright 2011-2012, Rambling Labs
+ * Released under the MIT license.
+ * http://www.opensource.org/licenses/mit-license.php
+ *
+ * January 2012
+ *
+ * Based on jQuery Nivo Slider by Gilbert Pellegrom
  */
 
 /* Reset Styles */
@@ -72,15 +78,28 @@ a:hover, a:active {
   text-decoration: none;
 }
 
-#slider.theme-default {
+#ramblingLink {
+  position:absolute;
+  top:0;
+  left:50px;
+  background:url(../images/rl_favicon_64x58.png) no-repeat;
+  width:64px;
+  height:58px;
+  border:0;
+  display:block;
+  box-shadow: 0 1px 5px 0 #4a4a4a;
+  text-indent:-9999px;
+}
+
+.theme-default #slider {
   margin: 100px auto 0 auto;
   width: 618px;
   height: 246px;
-}
 
-#slider.theme-default.adaptingSlider {
-  width: 750px;
-  height: 299px;
+  &.adaptingSlider {
+    width: 750px;
+    height: 299px;
+  }
 }
 
 .theme-pascal.slider-wrapper,

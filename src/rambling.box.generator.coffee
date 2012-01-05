@@ -7,9 +7,9 @@ class RamblingBoxGenerator
     boxHeight = Math.round(@slider.height() / boxRows)
     animationContainer = @slider.find '#rambling-animation'
 
-    for rows in [0...boxRows] then do (rows) =>
-      for cols in [0...boxCols] then do (cols) =>
-        animationContainer.append @boxer.getRamblingBox(boxWidth, boxHeight, rows, cols, @settings, @vars)
+    for row in [0...boxRows] then do (row) =>
+      for column in [0...boxCols] then do (column) =>
+        animationContainer.append @boxer.getRamblingBox(boxWidth, boxHeight, row, column, @settings, @vars)
 
     @slider.find '.rambling-box'
 
