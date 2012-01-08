@@ -68,6 +68,8 @@
     top: 0;
     left: 0;
     overflow: hidden; }
+    .ramblingSlider #rambling-animation img {
+      width: 100%; }
   .ramblingSlider object {
     display: none; }
   .ramblingSlider .slideElement,

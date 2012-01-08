@@ -110,6 +110,10 @@
   #rambling-animation {
     @include absolute-top-left;
     overflow: hidden;
+
+    img {
+      width: 100%;
+    }
   }
 
   object {
