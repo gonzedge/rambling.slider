@@ -235,17 +235,13 @@
 
       vars.totalSlides = children.length
 
+      prepareSliderChildren()
       prepareAnimationContainer()
       prepareAdaptiveSlider() if settings.adaptImages
-      prepareSliderChildren()
 
     prepareAnimationContainer = ->
-      slider.prepend $('<div id="rambling-animation"></div>').css(width: slider.width(), height: slider.height(), overflow: 'hidden')
-
-    prepareAdaptiveSlider = -> slider.addClass 'adaptingSlider'
-
-    prepareSliderChildren = ->
-      ramblingAnimationContainer = slider.find '#rambling-animation'
+      ramblingAnimationContainer = $('<div id="rambling-animation"></div>').css(width: slider.width(), height: slider.height(), overflow: 'hidden')
+      slider.prepend ramblingAnimationContainer
       children.each ->
         child = $(@)
         child.css display: 'none'
@@ -256,6 +252,9 @@
         ramblingAnimationContainer.append clone
       children = ramblingAnimationContainer.children()
 
+    prepareAdaptiveSlider = -> slider.addClass 'adaptingSlider'
+
+    prepareSliderChildren = ->
       children.each ->
         child = $ @
         link = null
