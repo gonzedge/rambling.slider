@@ -24,10 +24,8 @@ class BuildUtils
       @log "Building `src/#{@slider_file}`"
       exec "coffee -c lib/#{@slider_file}", (err, stdout, stderr) =>
         @error_handler err, stdout, stderr
-        fs.unlink "lib/#{@slider_file}", (err) =>
-          @error_handler err
-          @log "Done. Output in `lib/#{@slider_file.replace(/coffee/, 'js')}`"
-          callback()
+        @log "Done. Output in `lib/#{@slider_file.replace(/coffee/, 'js')}`"
+        callback()
 
   compile: (callback) ->
     @combine_source_files (content) =>
