@@ -10,12 +10,12 @@ You can find more about it on [my blog](http://www.ramblinglabs.com/blog) or on 
 The compiled JavaScript files, both for development and production, are in the `lib/` directory, named `jquery.rambling.slider.js` and `jquery.rambling.slider.min.js` respectively. Include one of them on your html and, assuming you have something like this:
 
 ``` html
-&lt;div id="slider"&gt;
-  &lt;img src="images/image1.jpg" alt="image1"/&gt;
-  &lt;a href="#link"&gt;&lt;img src="images/image2.jpg" alt="image2"/&gt;&lt;/a&gt;
-  &lt;img src="images/image3.jpg" alt="image3"/&gt;
-  &lt;img src="images/image4.jpg" alt="image4"/&gt;
-&lt;/div&gt;
+<div id="slider">
+  <img src="images/image1.jpg" alt="image1"/>
+  <a href="#link"><img src="images/image2.jpg" alt="image2"/></a>
+  <img src="images/image3.jpg" alt="image3"/>
+  <img src="images/image4.jpg" alt="image4"/>
+</div>
 ```
 
 You can then initialize your slider with:
