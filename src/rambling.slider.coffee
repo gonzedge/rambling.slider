@@ -205,7 +205,6 @@
       addKeyboardNavigation()
       slider.hover(pauseSlider, unpauseSlider) if settings.pauseOnHover
       setAnimationFinishedActions()
-      extendAvailableTransitions()
 
     @run = ->
       if not settings.manualAdvance and vars.totalSlides > 1
@@ -341,11 +340,6 @@
         slider.find('.rambling-slice,.rambling-box').remove()
 
         settings.afterChange.call @
-
-    extendAvailableTransitions = ->
-      $.extend imageTransitions, settings.imageTransitions if settings.imageTransitions
-      $.extend imageFlashTransitions, settings.imageFlashTransitions if settings.imageFlashTransitions
-      $.extend flashTransitions, settings.flashTransitions if settings.flashTransitions
 
     processCaption = (settings) ->
       ramblingCaption = slider.find '.rambling-caption'
