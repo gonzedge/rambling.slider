@@ -231,7 +231,7 @@
       setUpTransitions()
 
       slider.css position: 'relative'
-      slider.addClass "ramblingSlider"
+      slider.addClass 'ramblingSlider'
 
       vars.totalSlides = children.length
 

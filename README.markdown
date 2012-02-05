@@ -9,20 +9,22 @@ You can find more about it on [my blog](http://www.ramblinglabs.com/blog) or on 
 
 The compiled JavaScript files, both for development and production, are in the `lib/` directory, named `jquery.rambling.slider.js` and `jquery.rambling.slider.min.js` respectively. Include one of them on your html and, assuming you have something like this:
 
-<pre><code>&lt;div id="slider"&gt;
+``` html
+&lt;div id="slider"&gt;
   &lt;img src="images/image1.jpg" alt="image1"/&gt;
   &lt;a href="#link"&gt;&lt;img src="images/image2.jpg" alt="image2"/&gt;&lt;/a&gt;
   &lt;img src="images/image3.jpg" alt="image3"/&gt;
   &lt;img src="images/image4.jpg" alt="image4"/&gt;
 &lt;/div&gt;
-</code></pre>
+```
 
 You can then initialize your slider with:
 
-<pre><code>$(window).load(function(){
+``` javascript
+$(window).load(function(){
   $('#slider').ramblingSlider();
 });
-</code></pre>
+```
 
 Note that it's set up in the `load` event from `window`, to ensure that the images are already loaded.
 
