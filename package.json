@@ -3,8 +3,9 @@
     "version": "0.3.1",
     "title": "jQuery Rambling Slider",
     "author": {
-        "name": "Edgar Gonzalez",
-        "url": "https://github.com/egonzalez0787"
+        "name": "Rambling Labs",
+        "email": "development@ramblinglabs.com"
+        "url": "http://ramblinglabs.com"
     },
     "licenses": [
         {
@@ -24,7 +25,7 @@
         "animation",
         "effects"
     ],
-    "homepage": "https://github.com/egonzalez0787/rambling.slider",
+    "homepage": "https://github.com/ramblinglabs/rambling.slider",
     "contributors": [
     ],
     "files": [

@@ -3,7 +3,7 @@
 The jQuery Rambling Slider is a CoffeeScript improved modified version of the [jQuery Nivo Slider](http://github.com/gilbitron/Nivo-Slider) by Gilbert Pellegrom, which is "The Most Awesome jQuery Image Slider".
 It includes some new options and methods to give the slider the ability to adapt different image sizes, flash support and transitions extensions.
 
-You can find more about it on [my blog](http://www.ramblinglabs.com/blog) or on [this repository's wiki](http://github.com/egonzalez0787/rambling.slider/wiki).
+You can find more about it on [my blog](http://www.ramblinglabs.com/blog) or on [this repository's wiki](http://github.com/ramblinglabs/rambling.slider/wiki).
 
 ## How to use the jQuery Rambling Slider
 
@@ -35,7 +35,7 @@ You might want to see `default.html`, `adaptive.html` and `flash.html`.
 
 ## Issues
 
-Please submit any issue you have or any bug that you find with the slider to [the project's issues on GitHub](http://github.com/egonzalez0787/rambling.slider/issues).
+Please submit any issue you have or any bug that you find with the slider to [the project's issues on GitHub](http://github.com/ramblinglabs/rambling.slider/issues).
 
 ## Features
 
@@ -50,7 +50,7 @@ Among others, the new features added on top of the Nivo Slider include:
 * Methods `previousSlide`, `nextSlide` and `slide` were added and allow method chaining.
 * Method `theme` was added and allows method chaining.
 * Some new transitions: `foldLeft`, `rolloverLeft`, `rolloverRight`, `slideInRight`, `sliceUpRandom`, `sliceDownRandom`, `sliceUpDownRandom`, `foldRandom`, `sliceUpOutIn`, `sliceUpInOut`, `sliceDownOutIn`, `sliceDownInOut`, `sliceUpDownOutIn`, `sliceUpDownInOut`, `sliceFadeOutIn`, `sliceFadeInOut`, `foldOutIn`, `foldInOut`, `boxRainOutIn`, `boxRainInOut`, `boxRainGrowOutIn`, `boxRainGrowInOut`.
-* Support for transitions extensibility. See [Adding and Overriding Transitions](http://github.com/egonzalez0787/rambling.slider/wiki/Adding-and-Overriding-Transitions).
+* Support for transitions extensibility. See [Adding and Overriding Transitions](http://github.com/ramblinglabs/rambling.slider/wiki/Adding-and-Overriding-Transitions).
 * Support for flash elements.
 * `fadeOut`, `slideInRight` and `slideInLeft` transitions from image to flash object.
 * `slideInRight` and `slideInLeft` transitions from one flash object to another one.
@@ -65,7 +65,7 @@ The jQuery Rambling Slider has been tested with the following jQuery Releases:
 * 1.4.x
 * 1.3.x
 
-For more info on the jQuery versions supported go to the [Supported jQuery Versions page](http://github.com/egonzalez0787/rambling.slider/wiki/Supported-jQuery-Versions).
+For more info on the jQuery versions supported go to the [Supported jQuery Versions page](http://github.com/ramblinglabs/rambling.slider/wiki/Supported-jQuery-Versions).
 
 ## CoffeeScript and Cake
 
