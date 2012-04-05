@@ -10,7 +10,7 @@
  */
 
 .theme-pascal.slider-wrapper {
-  background: url(slider.png) no-repeat;
+  background: url(../images/themes/pascal/slider.png) no-repeat;
   width: 668px;
   height: 299px;
   margin: 0 auto;
@@ -24,7 +24,7 @@
     width: 630px;
     height: 235px;
     margin-left: 19px;
-    background: url(loading.gif) no-repeat 50% 50%;
+    background: url(../images/themes/pascal/loading.gif) no-repeat 50% 50%;
 
     img {
       position: absolute;
@@ -41,7 +41,7 @@
     }
 
     .rambling-controlNav {
-      background: url(controlnav.png) no-repeat;
+      background: url(../images/themes/pascal/controlnav.png) no-repeat;
       width: 251px;
       height: 40px;
       position: absolute;
@@ -54,7 +54,7 @@
         display: block;
         width: 22px;
         height: 22px;
-        background: url(bullets.png) no-repeat;
+        background: url(../images/themes/pascal/bullets.png) no-repeat;
         text-indent: -9999px;
         border: 0;
         margin-right: 3px;
@@ -100,7 +100,7 @@
   }
 
   .ribbon {
-    background: url(ribbon.png) no-repeat;
+    background: url(../images/themes/pascal/ribbon.png) no-repeat;
     width: 111px;
     height: 111px;
     position: absolute;

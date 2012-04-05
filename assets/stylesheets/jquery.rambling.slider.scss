@@ -158,3 +158,23 @@
     }
   }
 }
+
+@import "themes/default";
+@import "themes/orman";
+@import "themes/pascal";
+
+.theme-default #slider {
+  margin: 100px auto 0 auto;
+  width: 618px;
+  height: 246px;
+
+  &.adaptingSlider {
+    width: 750px;
+    height: 299px;
+  }
+}
+
+.theme-pascal.slider-wrapper,
+.theme-orman.slider-wrapper {
+  margin-top: 150px;
+}

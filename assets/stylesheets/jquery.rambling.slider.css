@@ -1,0 +1,345 @@
+/*
+ * jQuery Rambling Slider
+ * http://github.com/ramblinglabs/rambling.slider
+ * http://ramblinglabs.com
+ *
+ * Copyright 2011-2012, Rambling Labs
+ * Released under the MIT license.
+ * http://www.opensource.org/licenses/mit-license.php
+ *
+ * January 2012
+ *
+ * Based on jQuery Nivo Slider by Gilbert Pellegrom
+ */
+.ramblingSlider {
+  position: relative img;
+    position-position: absolute;
+    position-top: 0;
+    position-left: 0; }
+  .ramblingSlider a.rambling-imageLink {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    display: none; }
+  .ramblingSlider .rambling-slice {
+    position: absolute;
+    display: block;
+    z-index: 5;
+    height: 100%; }
+  .ramblingSlider .rambling-box {
+    position: absolute;
+    display: block;
+    z-index: 5; }
+  .ramblingSlider .rambling-caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background: #000000;
+    color: #ffffff;
+    opacity: 0.8;
+    width: 100%;
+    z-index: 8; }
+  .ramblingSlider p {
+    padding: 5px;
+    margin: 0; }
+  .ramblingSlider a {
+    display: inline !important; }
+  .ramblingSlider .rambling-directionNav a {
+    position: absolute;
+    top: 45%;
+    z-index: 9;
+    cursor: pointer; }
+  .ramblingSlider .rambling-prevNav {
+    left: 0px; }
+  .ramblingSlider .rambling-nextNav {
+    right: 0px; }
+  .ramblingSlider .rambling-controlNav a {
+    position: relative;
+    z-index: 9;
+    cursor: pointer; }
+    .ramblingSlider .rambling-controlNav a.active {
+      font-weight: bold; }
+  .ramblingSlider #rambling-animation {
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden; }
+    .ramblingSlider #rambling-animation img {
+      width: 100%; }
+  .ramblingSlider object {
+    display: none; }
+  .ramblingSlider .slideElement,
+  .ramblingSlider .slideElement object {
+    display: block; }
+
+.rambling-html-caption {
+  display: none; }
+
+.adaptingSlider .currentSlideElement img,
+.adaptingSlider img.currentSlideElement {
+  position: absolute;
+  display: block;
+  width: 100%; }
+.adaptingSlider img.currentSlideElement.alignBottom {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  top: auto;
+  left: auto; }
+.adaptingSlider .rambling-box span, .adaptingSlider .rambling-slice span {
+  position: relative;
+  display: block;
+  height: 100%; }
+.adaptingSlider .rambling-box img, .adaptingSlider .rambling-slice img {
+  display: block;
+  position: absolute;
+  bottom: 0;
+  right: 0; }
+
+/*
+ * Skin Name: Rambling Slider Default Theme
+ * Skin Type: flexible
+ * Description: The default skin for the Rambling Slider.
+ * Version: 1.0
+ * Author: Rambling Labs (originally by Gilbert Pellegrom)
+ * Author URI: http://ramblinglabs.com
+ */
+.theme-default .ramblingSlider {
+  position: relative;
+  background: white url(../images/themes/default/loading.gif) no-repeat 50% 50%;
+  margin-bottom: 50px;
+  -webkit-box-shadow: 0px 1px 5px 0px #4a4a4a;
+  -moz-box-shadow: 0px 1px 5px 0px #4a4a4a;
+  box-shadow: 0px 1px 5px 0px #4a4a4a; }
+  .theme-default .ramblingSlider img {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    display: none; }
+  .theme-default .ramblingSlider a {
+    border: 0;
+    display: block; }
+  .theme-default .ramblingSlider .rambling-controlNav {
+    position: absolute;
+    left: 50%;
+    bottom: -42px;
+    margin-left: -40px;
+    /* Tweak this to center bullets */ }
+    .theme-default .ramblingSlider .rambling-controlNav a {
+      display: block;
+      width: 22px;
+      height: 22px;
+      background: url(../images/themes/default/bullets.png) no-repeat;
+      text-indent: -9999px;
+      border: 0;
+      margin-right: 3px;
+      float: left; }
+      .theme-default .ramblingSlider .rambling-controlNav a.active {
+        background-position: 0 -22px; }
+  .theme-default .ramblingSlider .rambling-directionNav a {
+    display: block;
+    width: 30px;
+    height: 30px;
+    background: url(../images/themes/default/arrows.png) no-repeat;
+    text-indent: -9999px;
+    border: 0; }
+  .theme-default .ramblingSlider a.rambling-nextNav {
+    background-position: -30px 0;
+    right: 15px; }
+  .theme-default .ramblingSlider a.rambling-prevNav {
+    left: 15px; }
+  .theme-default .ramblingSlider .rambling-caption {
+    font-family: Helvetica, Arial, sans-serif; }
+    .theme-default .ramblingSlider .rambling-caption a {
+      color: #ffffff;
+      border-bottom: 1px dotted #ffffff; }
+      .theme-default .ramblingSlider .rambling-caption a:hover {
+        color: #ffffff; }
+
+/*
+ * Skin Name: Orman Theme
+ * Skin Type: fixed
+ * Image Width: 568
+ * Image Height: 268
+ * Description: A light and green skin for the Nivo Slider.
+ * Version: 1.0
+ * Author: Rambling Labs (originally by Gilbert Pellegrom & Orman Clark)
+ * Author URI: http://ramblinglabs.com
+ */
+.theme-orman.slider-wrapper {
+  background: url(../images/themes/orman/slider.png) no-repeat;
+  width: 722px;
+  height: 337px;
+  margin: 0 auto;
+  padding-top: 18px;
+  position: relative; }
+
+.theme-orman .ramblingSlider {
+  position: relative;
+  width: 568px;
+  height: 268px;
+  margin-left: 77px;
+  background: url(../images/themes/orman/loading.gif) no-repeat 50% 50%; }
+  .theme-orman .ramblingSlider img {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    display: none;
+    width: 568px;
+    height: 268px; }
+  .theme-orman .ramblingSlider a {
+    border: 0;
+    display: block; }
+  .theme-orman .ramblingSlider .rambling-controlNav {
+    position: absolute;
+    left: 50%;
+    bottom: -60px;
+    margin-left: -30px; }
+    .theme-orman .ramblingSlider .rambling-controlNav a {
+      display: block;
+      width: 10px;
+      height: 10px;
+      background: url(../images/themes/orman/bullets.png) no-repeat;
+      text-indent: -9999px;
+      border: 0;
+      margin-right: 7px;
+      float: left; }
+      .theme-orman .ramblingSlider .rambling-controlNav a.active {
+        background-position: 0 -10px; }
+  .theme-orman .ramblingSlider .rambling-directionNav a {
+    display: block;
+    width: 25px;
+    height: 200px;
+    background: url(../images/themes/orman/arrows.png) no-repeat 0% 50%;
+    text-indent: -9999px;
+    border: 0;
+    top: 40px; }
+  .theme-orman .ramblingSlider a.rambling-nextNav {
+    background-position: 100% 50%;
+    right: -40px;
+    padding-right: 20px; }
+  .theme-orman .ramblingSlider a.rambling-prevNav {
+    left: -40px;
+    padding-left: 20px; }
+  .theme-orman .ramblingSlider .rambling-caption {
+    font-family: Helvetica, Arial, sans-serif; }
+    .theme-orman .ramblingSlider .rambling-caption a {
+      color: #ffffff;
+      border-bottom: 1px dotted #ffffff; }
+      .theme-orman .ramblingSlider .rambling-caption a:hover {
+        color: #ffffff; }
+.theme-orman .ribbon {
+  background: url(../images/themes/orman/ribbon.png) no-repeat;
+  width: 111px;
+  height: 111px;
+  position: absolute;
+  top: -3px;
+  left: 56px;
+  z-index: 300; }
+
+/*
+ * Skin Name: Pascal Theme
+ * Skin Type: fixed
+ * Image Width: 630
+ * Image Height: 235
+ * Description: A nice, light skin for the Nivo Slider.
+ * Version: 1.0
+ * Author: Rambling Labs (originally by Gilbert Pellegrom & Pascal Gartner)
+ * Author URI: http://dev7studios.com
+ */
+.theme-pascal.slider-wrapper {
+  background: url(../images/themes/pascal/slider.png) no-repeat;
+  width: 668px;
+  height: 299px;
+  margin: 0 auto;
+  padding-top: 17px;
+  position: relative; }
+
+.theme-pascal .ramblingSlider {
+  position: relative;
+  width: 630px;
+  height: 235px;
+  margin-left: 19px;
+  background: url(../images/themes/pascal/loading.gif) no-repeat 50% 50%; }
+  .theme-pascal .ramblingSlider img {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    display: none;
+    width: 630px;
+    /* Make sure your images are the same size */
+    height: 235px;
+    /* Make sure your images are the same size */ }
+  .theme-pascal .ramblingSlider a {
+    border: 0;
+    display: block; }
+  .theme-pascal .ramblingSlider .rambling-controlNav {
+    background: url(../images/themes/pascal/controlnav.png) no-repeat;
+    width: 251px;
+    height: 40px;
+    position: absolute;
+    left: 200px;
+    /* Tweak this to center bullets */
+    bottom: -42px;
+    padding: 8px 0 0 82px;
+    z-index: 20; }
+    .theme-pascal .ramblingSlider .rambling-controlNav a {
+      display: block;
+      width: 22px;
+      height: 22px;
+      background: url(../images/themes/pascal/bullets.png) no-repeat;
+      text-indent: -9999px;
+      border: 0;
+      margin-right: 3px;
+      float: left; }
+      .theme-pascal .ramblingSlider .rambling-controlNav a.active {
+        background-position: 0 -22px; }
+  .theme-pascal .ramblingSlider .rambling-directionNav a {
+    display: none; }
+  .theme-pascal .ramblingSlider .rambling-caption {
+    bottom: 40%;
+    left: auto;
+    right: 0px;
+    width: auto;
+    max-width: 630px;
+    overflow: hidden;
+    background: #fff;
+    text-shadow: none;
+    font-family: arial, serif;
+    color: #4c4b4b; }
+    .theme-pascal .ramblingSlider .rambling-caption p {
+      padding: 5px 15px;
+      color: #333;
+      font-weight: bold;
+      font-size: 27px;
+      text-transform: uppercase; }
+    .theme-pascal .ramblingSlider .rambling-caption a {
+      color: #333;
+      font-weight: bold;
+      font-size: 27px;
+      text-transform: uppercase; }
+.theme-pascal .ribbon {
+  background: url(../images/themes/pascal/ribbon.png) no-repeat;
+  width: 111px;
+  height: 111px;
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  z-index: 300; }
+
+.theme-default #slider {
+  margin: 100px auto 0 auto;
+  width: 618px;
+  height: 246px; }
+  .theme-default #slider.adaptingSlider {
+    width: 750px;
+    height: 299px; }
+
+.theme-pascal.slider-wrapper,
+.theme-orman.slider-wrapper {
+  margin-top: 150px; }

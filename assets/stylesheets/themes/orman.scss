@@ -10,7 +10,7 @@
  */
 
 .theme-orman.slider-wrapper {
-  background: url(slider.png) no-repeat;
+  background: url(../images/themes/orman/slider.png) no-repeat;
   width: 722px;
   height: 337px;
   margin: 0 auto;
@@ -24,7 +24,7 @@
     width: 568px;
     height: 268px;
     margin-left: 77px;
-    background: url(loading.gif) no-repeat 50% 50%;
+    background: url(../images/themes/orman/loading.gif) no-repeat 50% 50%;
 
     img {
       position: absolute;
@@ -50,7 +50,7 @@
         display: block;
         width: 10px;
         height: 10px;
-        background: url(bullets.png) no-repeat;
+        background: url(../images/themes/orman/bullets.png) no-repeat;
         text-indent: -9999px;
         border: 0;
         margin-right: 7px;
@@ -66,7 +66,7 @@
       display: block;
       width: 25px;
       height: 200px;
-      background: url(arrows.png) no-repeat 0% 50%;
+      background: url(../images/themes/orman/arrows.png) no-repeat 0% 50%;
       text-indent: -9999px;
       border: 0;
       top: 40px;
@@ -98,7 +98,7 @@
   }
 
   .ribbon {
-    background: url(ribbon.png) no-repeat;
+    background: url(../images/themes/orman/ribbon.png) no-repeat;
     width: 111px;
     height: 111px;
     position: absolute;
