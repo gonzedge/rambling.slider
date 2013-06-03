@@ -44,12 +44,12 @@
     "effects"
   ],
   "homepage": "https://github.com/gonzedge/rambling.slider",
+  "docs": "https://github.com/gonzedge/rambling.slider.wiki",
   "contributors": [
   ],
   "files": [
     "assets",
     "examples",
-    "lib",
     "src",
     "spec"
   ]

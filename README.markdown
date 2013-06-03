@@ -7,7 +7,9 @@ You can find more about it on [my blog](http://www.ramblinglabs.com/blog) or on 
 
 ## How to use the jQuery Rambling Slider
 
-The compiled JavaScript files, both for development and production, are in the `lib/` directory, named `jquery.rambling.slider.js` and `jquery.rambling.slider.min.js` respectively. Include one of them on your html and, assuming you have something like this:
+The compiled JavaScript and CSS files, are in the `assets/` directory. Those are `assets/javascripts/jquery.rambling.slider.js` and `assets/stylesheets/jquery.rambling.slider.css` for development, as well as `assets/javascripts/jquery.rambling.slider.min.js` and `assets/stylesheets/jquery.rambling.slider.min.css` for production. The images for the different themes are under `assets/images`.
+
+Include the files (either development or production) in your html, and assuming you have something that resembles this:
 
 ``` html
 <div id="slider">

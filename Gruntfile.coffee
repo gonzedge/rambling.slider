@@ -23,11 +23,11 @@ module.exports = (grunt) ->
           'src/jquery*.coffee'
           'src/rambling*.coffee'
         ]
-        dest: 'lib/jquery.<%= pkg.name %>.coffee'
+        dest: 'assets/javascripts/jquery.<%= pkg.name %>.coffee'
     coffee:
       build:
         files:
-          'lib/jquery.<%= pkg.name %>.js': 'lib/jquery.<%= pkg.name %>.coffee'
+          'assets/javascripts/jquery.<%= pkg.name %>.js': 'assets/javascripts/jquery.<%= pkg.name %>.coffee'
     jasmine_node:
       extensions: 'coffee'
     sass:
@@ -44,7 +44,7 @@ module.exports = (grunt) ->
     uglify:
       dist:
         files:
-          'lib/jquery.<%= pkg.name %>.min.js': ['lib/jquery.<%= pkg.name %>.js']
+          'assets/javascripts/jquery.<%= pkg.name %>.min.js': ['assets/javascripts/jquery.<%= pkg.name %>.js']
       options:
         banner: banner
     watch:
