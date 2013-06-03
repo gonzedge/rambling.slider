@@ -10,10 +10,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ramblinglabs/rambling.slider"
+    "url": "https://github.com/gonzedge/rambling.slider"
   },
   "bugs": {
-    "url": "https://github.com/ramblinglabs/rambling.slider/issues"
+    "url": "https://github.com/gonzedge/rambling.slider/issues"
   },
   "licenses": [
     {
@@ -42,7 +42,7 @@
     "animation",
     "effects"
   ],
-  "homepage": "https://github.com/ramblinglabs/rambling.slider",
+  "homepage": "https://github.com/gonzedge/rambling.slider",
   "contributors": [
   ],
   "files": [
