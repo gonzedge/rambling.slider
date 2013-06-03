@@ -7,3 +7,10 @@
 
 # NPM
 node_modules/
+
+# RVM
+.ruby-gemset
+.ruby-version
+
+# Bundler
+Gemfile.lock

@@ -23,17 +23,28 @@ module.exports = (grunt) ->
           'src/jquery*.coffee'
           'src/rambling*.coffee'
         ]
-        dest: 'lib/<%= pkg.name %>.coffee'
+        dest: 'lib/jquery.<%= pkg.name %>.coffee'
     coffee:
       build:
         files:
-          'lib/<%= pkg.name %>.js': 'lib/<%= pkg.name %>.coffee'
+          'lib/jquery.<%= pkg.name %>.js': 'lib/jquery.<%= pkg.name %>.coffee'
     jasmine_node:
       extensions: 'coffee'
+    sass:
+      dev:
+        files:
+          'assets/stylesheets/jquery.<%= pkg.name %>.css': 'assets/stylesheets/jquery.<%= pkg.name %>.scss'
+          'assets/stylesheets/style.css': 'assets/stylesheets/style.scss'
+      dist:
+        options:
+          style: 'compressed'
+        files:
+          'assets/stylesheets/jquery.<%= pkg.name %>.min.css': 'assets/stylesheets/jquery.<%= pkg.name %>.scss'
+          'assets/stylesheets/style.min.css': 'assets/stylesheets/style.scss'
     uglify:
       dist:
         files:
-          'lib/<%= pkg.name %>.min.js': ['lib/<%= pkg.name %>.js']
+          'lib/jquery.<%= pkg.name %>.min.js': ['lib/jquery.<%= pkg.name %>.js']
       options:
         banner: banner
     watch:
@@ -43,9 +54,10 @@ module.exports = (grunt) ->
 
   grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-contrib-concat'
+  grunt.loadNpmTasks 'grunt-contrib-sass'
   grunt.loadNpmTasks 'grunt-contrib-uglify'
   grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-jasmine-node'
 
   grunt.registerTask 'spec', ['jasmine_node']
-  grunt.registerTask 'default', ['concat', 'coffee', 'uglify']
+  grunt.registerTask 'default', ['concat', 'coffee', 'uglify', 'sass']
