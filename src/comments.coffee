@@ -11,4 +11,3 @@
  *
  * Based on jQuery Nivo Slider by Gilbert Pellegrom
 ###
-

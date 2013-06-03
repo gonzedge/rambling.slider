@@ -12,8 +12,6 @@
  * Based on jQuery Nivo Slider by Gilbert Pellegrom
 ###
 
-
-
 Array::shuffle = ->
   for i in [@length..1]
     j = parseInt Math.random() * i
@@ -59,6 +57,20 @@ Array::sortOutIn = ->
 
   newArray
 
+String::contains = (string) ->
+  @indexOf(string) isnt -1
+
+String::decapitalize = ->
+  first = @[0..0]
+  rest = @[1..]
+
+  "#{first.toLowerCase()}#{rest}"
+
+String::startsWith = (string) ->
+  @substring(0, string.length) is string
+
+String::endsWith = (string) ->
+  @substring(@length - string.length, @length) is string
 
 (($) ->
   $.fn.reverse = [].reverse
@@ -94,7 +106,6 @@ Array::sortOutIn = ->
     result
 )(jQuery)
 
-
 class RamblingBoxGenerator
   constructor: (@slider, @settings, @vars) ->
     @boxer = new RamblingBoxer @slider
@@ -112,7 +123,6 @@ class RamblingBoxGenerator
 
 root = global ? window
 root.RamblingBoxGenerator = RamblingBoxGenerator
-
 
 class RamblingBoxer
   constructor: (@slider) ->
@@ -149,7 +159,6 @@ class RamblingBoxer
 root = global ? window
 root.RamblingBoxer = RamblingBoxer
 
-
 class RamblingSliceGenerator
   constructor: (@slider, @settings, @vars) ->
     @slicer = new RamblingSlicer @slider
@@ -168,7 +177,6 @@ class RamblingSliceGenerator
 
 root = global ? window
 root.RamblingSliceGenerator = RamblingSliceGenerator
-
 
 class RamblingSlicer
   constructor: (@slider) ->
@@ -199,7 +207,6 @@ class RamblingSlicer
 
 root = global ? window
 root.RamblingSlicer = RamblingSlicer
-
 
 (($) ->
 
@@ -785,7 +792,6 @@ root.RamblingSlicer = RamblingSlicer
     @
 )(jQuery)
 
-
 (($) ->
   allAroundTransitions = [
     { name: 'sliceUp', helper: 'slideUpSlices' },
@@ -896,19 +902,3 @@ root.RamblingSlicer = RamblingSlicer
 
   $.fn.ramblingSlider.defaults.transitionGroupSuffixes = ['Right', 'Left', 'OutIn', 'InOut', 'Random', 'Forward', 'Reverse', 'In', 'Out']
 )(jQuery)
-
-
-String::contains = (string) ->
-  @indexOf(string) isnt -1
-
-String::decapitalize = ->
-  first = @[0..0]
-  rest = @[1..]
-
-  "#{first.toLowerCase()}#{rest}"
-
-String::startsWith = (string) ->
-  @substring(0, string.length) is string
-
-String::endsWith = (string) ->
-  @substring(@length - string.length, @length) is string
