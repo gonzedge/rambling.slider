@@ -17,11 +17,11 @@
           @
       else
         if optionsIsString
-          $.error "Method '#{options}' not found."
+          throw "Method '#{options}' not found."
         else
-          $.error "Slider already initialized."
+          throw "Slider already initialized."
     else
-      $.error "Tried to call method '#{options}' on element without slider." if methodExists or optionsIsString
+      throw "Tried to call method '#{options}' on element without slider." if methodExists or optionsIsString
 
     @each (key, value) ->
       element = $ @
@@ -170,7 +170,7 @@
       else
         if value?
           if option in cannotChange
-            return $.error "Slider already running. Option '#{option}' cannot be changed."
+            throw "Slider already running. Option '#{option}' cannot be changed."
 
           settings[option] = value
         else

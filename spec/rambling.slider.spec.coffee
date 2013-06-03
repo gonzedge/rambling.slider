@@ -17,7 +17,6 @@ describe 'Rambling Slider', ->
   slider_wrapper = null
   rambling_slider = null
   result = null
-  error = null
   interval_spy = null
   interval_callback = null
   timeout_spy = null
@@ -221,28 +220,13 @@ describe 'Rambling Slider', ->
         expect(settings.slideshowEnd).toHaveBeenCalled()
 
   describe 'when trying to initialize an already initialized slider', ->
-    error = null
-
     describe 'without any options', ->
-      beforeEach ->
-        try
-          rambling_slider.ramblingSlider()
-        catch e
-          error = e
-
       it 'should throw an already initialized error', ->
-        expect(error).toEqual 'Slider already initialized.'
+        expect(-> rambling_slider.ramblingSlider()).toThrow 'Slider already initialized.'
 
     describe 'and passing some new options', ->
-      beforeEach ->
-        try
-          rambling_slider.ramblingSlider {startSlide: 2, effect: 'sliceUp'}
-        catch e
-          error = e
-
       it 'should throw an already initialized error', ->
-        expect(error).toEqual 'Slider already initialized.'
-
+        expect(-> rambling_slider.ramblingSlider {startSlide: 2, effect: 'sliceUp'}).toThrow 'Slider already initialized.'
 
   # Methods
   describe 'when getting the effect', ->
@@ -327,15 +311,8 @@ describe 'Rambling Slider', ->
   describe 'when setting a readonly option', ->
     startSlide = 2
 
-    beforeEach ->
-      try
-        rambling_slider.ramblingSlider 'option', 'startSlide', startSlide
-      catch e
-        error = e
-
-    it 'should throw an error', ->
-      expect(error).not.toBeNull()
-      expect(error).toEqual "Slider already running. Option 'startSlide' cannot be changed."
+    it 'should throw an already running error', ->
+      expect(-> rambling_slider.ramblingSlider 'option', 'startSlide', startSlide).toThrow "Slider already running. Option 'startSlide' cannot be changed."
 
     it 'should not change the value', ->
       expect(rambling_slider.ramblingSlider('option', 'startSlide')).toEqual $.fn.ramblingSlider.defaults.startSlide
@@ -358,7 +335,7 @@ describe 'Rambling Slider', ->
       expect(rambling_slider).not.toHaveClass 'ramblingSlider'
 
     it 'should remove the custom styles from the slider', ->
-      expect(rambling_slider.attr 'style').toEqual ''
+      expect(rambling_slider.attr 'style').toBeUndefined()
 
     it 'should clear the timer', ->
       expect(window.clearInterval).toHaveBeenCalledWith fake_timer
@@ -446,23 +423,9 @@ describe 'Rambling Slider', ->
       expect(rambling_slider.ramblingSlider 'theme').toEqual theme
 
   describe 'when trying to call a non existent method', ->
-    beforeEach ->
-      try
-        rambling_slider.ramblingSlider 'methodNotPresent'
-      catch e
-        error = e
-
-    it 'should throw and error', ->
-      expect(error).not.toBeNull()
-      expect(error).toEqual "Method 'methodNotPresent' not found."
+    it 'should throw a method not present error', ->
+      expect(-> rambling_slider.ramblingSlider 'methodNotPresent').toThrow "Method 'methodNotPresent' not found."
 
   describe 'when trying to call a method over an uninitialized slider', ->
-    beforeEach ->
-      try
-        $('<div></div>').ramblingSlider 'start'
-      catch e
-        error = e
-
-    it 'should throw an error', ->
-      expect(error).not.toBeNull()
-      expect(error).toEqual "Tried to call method 'start' on element without slider."
+    it 'should throw an invalid arguments error', ->
+      expect(-> $('<div></div>').ramblingSlider 'start').toThrow "Tried to call method 'start' on element without slider."
