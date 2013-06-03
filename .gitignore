@@ -1,6 +1,9 @@
-.idea/
+# Vim
 *.swp
 *.swo
-*~
-.rvmrc
+
+# SASS
 .sass-cache/
+
+# NPM
+node_modules/
