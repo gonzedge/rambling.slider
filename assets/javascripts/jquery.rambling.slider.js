@@ -690,10 +690,10 @@
               return directionNav.hide();
             }));
           }
-          slider.find('a.rambling-prevNav').live('click', function() {
+          slider.find('a.rambling-prevNav').on('click', function() {
             return slideTo('prev');
           });
-          return slider.find('a.rambling-nextNav').live('click', function() {
+          return slider.find('a.rambling-nextNav').on('click', function() {
             return slideTo('next');
           });
         }
@@ -725,7 +725,7 @@
           }
           controlNavAnchors = slider.find('.rambling-controlNav a');
           controlNavAnchors.filter(":eq(" + vars.currentSlide + ")").addClass('active');
-          return controlNavAnchors.live('click', function() {
+          return controlNavAnchors.on('click', function() {
             if (vars.running) {
               return false;
             }

@@ -500,8 +500,8 @@ root.RamblingSlicer = RamblingSlicer
           directionNav.hide()
           slider.hover (-> directionNav.show()), (-> directionNav.hide())
 
-        slider.find('a.rambling-prevNav').live 'click', -> slideTo 'prev'
-        slider.find('a.rambling-nextNav').live 'click', -> slideTo 'next'
+        slider.find('a.rambling-prevNav').on 'click', -> slideTo 'prev'
+        slider.find('a.rambling-nextNav').on 'click', -> slideTo 'next'
 
     addControlNavigation = =>
       self = @
@@ -522,7 +522,7 @@ root.RamblingSlicer = RamblingSlicer
         controlNavAnchors = slider.find '.rambling-controlNav a'
         controlNavAnchors.filter(":eq(#{vars.currentSlide})").addClass 'active'
 
-        controlNavAnchors.live 'click', ->
+        controlNavAnchors.on 'click', ->
           return false if vars.running
           return false if $(@).hasClass 'active'
           resetTimer()

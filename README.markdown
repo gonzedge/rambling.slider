@@ -61,7 +61,13 @@ Among others, the new features added on top of the Nivo Slider include:
 
 The jQuery Rambling Slider has been tested with the following jQuery Releases:
 
+* 1.10.x
+* 1.9.x
+* 1.8.x
 * 1.7.x
+
+Version `0.4.0` drops support for versions:
+
 * 1.6.x
 * 1.5.x
 * 1.4.x
