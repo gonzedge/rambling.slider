@@ -1,6 +1,6 @@
 {
   "name": "rambling.slider",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "title": "jQuery Rambling Slider",
   "description": "A CoffeeScript improved modified version of the jQuery Nivo Slider by Gilbert Pellegrom, which is 'The Most Awesome jQuery Image Slider'. It includes some new options and methods to give the slider the ability to adapt different image sizes, flash support and transition extensions.",
   "author": {
