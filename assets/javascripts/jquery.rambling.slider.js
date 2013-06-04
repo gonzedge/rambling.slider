@@ -614,9 +614,6 @@
         children.each(function() {
           var child, clone;
           child = $(this);
-          child.css({
-            display: 'none'
-          });
           clone = child.clone().addClass('slideElement');
           if (clone.containsFlash()) {
             if (!clone.find('param[name=wmode]').length) {
@@ -663,12 +660,7 @@
             display: 'none'
           });
         });
-        child = setCurrentSlideElement(children);
-        if (child.is('a')) {
-          return child.css({
-            display: 'block'
-          });
-        }
+        return child = setCurrentSlideElement(children);
       };
       addCaption = function() {
         slider.append($('<div class="rambling-caption"><p></p></div>').css({
@@ -801,6 +793,11 @@
         child = $(children.get(vars.currentSlide));
         vars.previousSlideElement = vars.currentSlideElement;
         vars.currentSlideElement = child;
+        if (child.is('a')) {
+          child.css({
+            display: 'block'
+          });
+        }
         if (child.is('a') && !child.containsFlash()) {
           vars.currentSlideElement = child.find('img:first');
         }

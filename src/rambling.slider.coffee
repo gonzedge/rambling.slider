@@ -242,8 +242,7 @@
       ramblingAnimationContainer = $('<div id="rambling-animation"></div>').css(width: slider.width(), height: slider.height(), overflow: 'hidden')
       slider.prepend ramblingAnimationContainer
       children.each ->
-        child = $(@)
-        child.css display: 'none'
+        child = $ @
         clone = child.clone().addClass 'slideElement'
         if clone.containsFlash()
           clone.find('object').prepend('<param name="wmode" value="opaque" />') unless clone.find('param[name=wmode]').length
@@ -275,7 +274,6 @@
         child.css display: 'none'
 
       child = setCurrentSlideElement children
-      child.css(display: 'block') if child.is 'a'
 
     addCaption = ->
       slider.append $('<div class="rambling-caption"><p></p></div>').css(display:'none', opacity: settings.captionOpacity)
@@ -361,6 +359,7 @@
       child = $ children.get(vars.currentSlide)
       vars.previousSlideElement = vars.currentSlideElement
       vars.currentSlideElement = child
+      child.css(display: 'block') if child.is('a')
       vars.currentSlideElement = child.find('img:first') if child.is('a') and not child.containsFlash()
       child
 

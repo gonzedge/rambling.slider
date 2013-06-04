@@ -24,7 +24,8 @@ describe 'Rambling Slider', ->
 
   create_slider = (options...) ->
     slider_wrapper = $ '<div id="slider-wrapper" class="theme-default"></div>'
-    rambling_slider = $ '<div id="#slider"><img src="image1.jpg" alt="image1" /><img src="image2.jpg" alt="image2" /><img src="image3.jpg" alt="image3" /></div>'
+    sliderTemplate = options[0] and options[0].sliderTemplate
+    rambling_slider = $(if sliderTemplate then sliderTemplate else '<div id="#slider"><img src="image1.jpg" alt="image1" /><img src="image2.jpg" alt="image2" /><img src="image3.jpg" alt="image3" /></div>')
     slider_wrapper.append rambling_slider
     $('body').empty().append slider_wrapper
     if options.length
@@ -124,6 +125,13 @@ describe 'Rambling Slider', ->
 
     it 'should set the corresponding image as the current slide element', ->
       expect(rambling_slider.find '.currentSlideElement').toEqualJquery rambling_slider.find('img.slideElement[alt=image2]')
+
+  describe 'when the slider has links', ->
+    beforeEach ->
+      create_slider sliderTemplate: '<div id="#slider"><a href="a"><img src="image1.jpg" alt="image1" /></a><a href="b"><img src="image2.jpg" alt="image2" /></a><a href="c"><img src="image3.jpg" alt="image3" /></a></div>'
+
+    it 'should display the first link as a block', ->
+      expect(rambling_slider.find('#rambling-animation .rambling-imageLink:first').css('display')).toBe 'block'
 
   describe 'when clicking any navigation control', ->
     beforeEach ->

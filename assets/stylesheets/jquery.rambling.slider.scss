@@ -72,7 +72,6 @@
     opacity: 0.8;
     width: 100%;
     z-index: 8;
-  }
 
     p {
       padding: 5px;
@@ -82,6 +81,7 @@
     a {
       display: inline !important;
     }
+  }
 
   .rambling-directionNav a {
     @include absolute;
