@@ -60,4 +60,4 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-jasmine-node'
 
   grunt.registerTask 'spec', ['jasmine_node']
-  grunt.registerTask 'default', ['concat', 'coffee', 'uglify', 'sass']
+  grunt.registerTask 'default', ['concat', 'coffee', 'uglify', 'sass', 'jasmine_node']
