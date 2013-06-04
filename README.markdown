@@ -69,47 +69,37 @@ The jQuery Rambling Slider has been tested with the following jQuery Releases:
 
 For more info on the jQuery versions supported go to the [Supported jQuery Versions page](http://github.com/gonzedge/rambling.slider/wiki/Supported-jQuery-Versions).
 
-## CoffeeScript and Cake
+## Contributing
+
+### CoffeeScript and Gruntfile
 
 If you're interested in modifying or improving this script, you'll need to resolve these dependencies first:
 
-* NodeJS (`apt-get install nodejs`)
-* Node Package Manager -- optional (`apt-get install npm`)
-* CoffeeScript (`apt-get install coffeescript` or `npm install -g coffee-script`)
+* NodeJS (`apt-get install nodejs`, `brew install node` for Mac OSX)
+* Node Package Manager (`apt-get install npm`, comes with `node` in Mac OSX)
+* CoffeeScript (`npm install -g coffee-script`)
 
-You can run your development build like this:
+You will need to run this inside the project's root directory:
 
-`cake build`
+``` bash
+npm install
+```
 
-And your production build like this:
+You can run the build like this:
 
-`cake -e 'production' build`
-
-If you want to minify the existing js:
-
-`cake minify`
+``` bash
+grunt
+# or
+grunt default
+```
 
 ### Unit testing
 
-If you want to run the unit tests, you'll need to install the following node packages:
+To run the tests, just run:
 
-* `jasmine-node`
-* `jsdom`
-* `jquery`
-
-They're easily installed with:
-
-`npm install -g jasmine-node`
-`npm install -g jsdom`
-`npm install -g jquery`
-
-To run all the tests, you can run:
-
-`jasmine-node --coffee spec/`
-
-Or simply:
-
-`cake spec`
+``` bash
+grunt spec
+```
 
 ## License and copyright
 
