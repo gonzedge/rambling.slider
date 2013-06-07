@@ -1,24 +1,19 @@
 module.exports = (grunt) ->
-  banner = "
-/*\n
- * jQuery Rambling Slider\n
- * http://github.com/gonzedge/rambling.slider\n
- * http://ramblinglabs.com\n
- *\n
- * Copyright 2011-2013, Edgar Gonzalez\n
- * Released under the MIT license.\n
- * http://www.opensource.org/licenses/mit-license.php\n
- *\n
- * May 2013\n
- *\n
- * Based on jQuery Nivo Slider by Gilbert Pellegrom\n
-*/\n"
+  banner = '<%= grunt.file.read("assets/javascripts/comments.js").split("\\n").slice(0, 14).join("\\n") %>'
   grunt.initConfig
     pkg: grunt.file.readJSON 'package.json'
     concat:
-      dist:
+      sass:
+        options:
+          banner: banner
         src: [
-          'src/comments.coffee',
+          'assets/stylesheets/<%= pkg.name %>.scss'
+        ]
+        dest: 'assets/stylesheets/jquery.<%= pkg.name %>.scss'
+      coffee:
+        options:
+          banner: grunt.file.read 'src/comments.coffee'
+        src: [
           'src/*extensions.coffee'
           'src/jquery*.coffee'
           'src/rambling*.coffee'
@@ -28,6 +23,9 @@ module.exports = (grunt) ->
       build:
         files:
           'assets/javascripts/jquery.<%= pkg.name %>.js': 'assets/javascripts/jquery.<%= pkg.name %>.coffee'
+      comments:
+        files:
+          'assets/javascripts/comments.js': 'src/comments.coffee'
     jasmine_node:
       extensions: 'coffee'
     sass:
@@ -41,6 +39,9 @@ module.exports = (grunt) ->
         files:
           'assets/stylesheets/jquery.<%= pkg.name %>.min.css': 'assets/stylesheets/jquery.<%= pkg.name %>.scss'
           'assets/stylesheets/style.min.css': 'assets/stylesheets/style.scss'
+    shell:
+      delete:
+        command: 'rm assets/javascripts/comments.js'
     uglify:
       dist:
         files:
@@ -58,6 +59,15 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-uglify'
   grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-jasmine-node'
+  grunt.loadNpmTasks 'grunt-shell'
 
   grunt.registerTask 'spec', ['jasmine_node']
-  grunt.registerTask 'default', ['concat', 'coffee', 'uglify', 'sass', 'jasmine_node']
+  grunt.registerTask 'default', [
+    'concat:coffee',
+    'coffee',
+    'uglify',
+    'concat:sass',
+    'sass',
+    'shell',
+    'jasmine_node'
+  ]
