@@ -1,11 +1,3 @@
-global.window = require('jsdom').jsdom().createWindow()
-global.jQuery = require 'jquery'
-
-require '../src/array_extensions'
-require '../src/jquery.plugins'
-
-$ = jQuery
-
 describe 'jQuery Plugins', ->
   html_box = null
 

@@ -1,5 +1,3 @@
-require '../../src/jquery.plugins'
-
 formatJqueryElement = (jQueryArray) ->
   return 'undefined' unless jQueryArray.length
 
@@ -16,7 +14,7 @@ formatElement = (element) ->
   format = "#{format}>#{element.innerHTML}</#{tag_name}>"
 
 beforeEach ->
-  matchers =
+  @addMatchers
     toEqualJquery: (jQueryArray) ->
       @message = ->
         "Expected #{formatJqueryElement(@actual)} to equal #{formatJqueryElement(jQueryArray)}"
@@ -46,5 +44,3 @@ beforeEach ->
 
     toHaveData: (data_name) ->
       @actual.data data_name
-
-  @addMatchers matchers

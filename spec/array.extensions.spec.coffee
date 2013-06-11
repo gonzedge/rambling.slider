@@ -1,5 +1,3 @@
-require '../src/array_extensions'
-
 describe 'Array Extensions', ->
   array = null
 

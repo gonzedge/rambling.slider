@@ -1,5 +1,3 @@
-require '../src/string_extensions'
-
 describe 'String Extensions', ->
   describe 'when finding out if a string contains a given string', ->
     it 'should return true for a contained string', ->

@@ -1,9 +1,3 @@
-global.window = require('jsdom').jsdom().createWindow()
-global.jQuery = require 'jquery'
-global.$ = global.jQuery
-
-require '../src/rambling.slice.generator'
-
 describe 'Rambling Box Slicer', ->
   rambling_slice_generator = null
   slider = null

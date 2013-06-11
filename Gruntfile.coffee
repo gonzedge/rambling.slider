@@ -28,6 +28,8 @@ module.exports = (grunt) ->
           'assets/javascripts/comments.js': 'src/comments.coffee'
     jasmine_node:
       extensions: 'coffee'
+      projectRoot: 'spec'
+      useHelpers: true
     sass:
       dev:
         files:
