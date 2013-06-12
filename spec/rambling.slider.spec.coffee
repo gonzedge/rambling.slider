@@ -54,17 +54,14 @@ describe 'Rambling Slider', ->
     expect(@sliderWrapper).toHaveClass "theme-#{$.fn.ramblingSlider.defaults.theme}"
 
   describe 'when the slider has only one slide', ->
-    otherSlider = null
-
     beforeEach ->
-      otherSlider = $ '<div><img src="image1.jpg" alt="image1"/></div>'
-      otherSlider.ramblingSlider()
+      @helpers.createSlider sliderTemplate: '<div><img src="image1.jpg" alt="image1"/></div>'
 
     it 'never shows the direction nav', ->
-      expect(otherSlider.find('rambling-directionNav').is(':visible')).toBeFalsy()
+      expect(@ramblingSlider.find('rambling-directionNav').is(':visible')).toBeFalsy()
 
-      otherSlider.trigger 'mouseenter', type: 'mouseenter'
-      expect(otherSlider.find('rambling-directionNav').is(':visible')).toBeFalsy()
+      @ramblingSlider.trigger 'mouseenter', type: 'mouseenter'
+      expect(@ramblingSlider.find('rambling-directionNav').is(':visible')).toBeFalsy()
 
   describe 'when the slider is adaptive', ->
     beforeEach ->
@@ -145,10 +142,10 @@ describe 'Rambling Slider', ->
 
     beforeEach ->
       settings = jasmine.createSpyObj 'settings', [
-        'beforeChange',
-        'afterChange',
-        'slideshowEnd',
-        'lastSlide',
+        'beforeChange'
+        'afterChange'
+        'slideshowEnd'
+        'lastSlide'
         'afterLoad'
       ]
       settings.effect = 'sliceUpRight'
@@ -203,10 +200,14 @@ describe 'Rambling Slider', ->
     it 'returns the default one', ->
       expect(@ramblingSlider.ramblingSlider 'effect').toEqual $.fn.ramblingSlider.defaults.effect
 
-    it 'returns the one set at initialization', ->
+    describe 'when set on initialization', ->
       effect = 'boxRain'
-      otherSlider = @helpers.createSlider effect: effect
-      expect(otherSlider.ramblingSlider 'effect').toEqual effect
+
+      beforeEach ->
+        @helpers.createSlider effect: effect
+
+      it 'returns the one previously set', ->
+        expect(@ramblingSlider.ramblingSlider 'effect').toEqual effect
 
   describe 'when setting the effect', ->
     effect = null

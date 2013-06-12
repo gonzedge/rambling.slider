@@ -428,15 +428,15 @@ describe 'Rambling Slider transitions', ->
     animationSetUpCallback = null
     imageTransitions = null
     allAroundTransitions = [
-      { name: 'sliceDown', shortName: 'down', helper: 'slideDownSlices', helperName: 'slide down' },
-      { name: 'sliceUp', shortName: 'up', helper: 'slideUpSlices', helperName: 'slide up' },
-      { name: 'sliceUpDown', shortName: 'up down', helper: 'slideUpDownSlices', helperName: 'slide up down' },
-      { name: 'sliceFade', shortName: 'fade', helper: 'fadeSlices', helperName: 'fading' },
-      { name: 'fold', shortName: 'fold', helper: 'foldSlices', helperName: 'folding' },
+      { name: 'sliceDown', shortName: 'down', helper: 'slideDownSlices', helperName: 'slide down' }
+      { name: 'sliceUp', shortName: 'up', helper: 'slideUpSlices', helperName: 'slide up' }
+      { name: 'sliceUpDown', shortName: 'up down', helper: 'slideUpDownSlices', helperName: 'slide up down' }
+      { name: 'sliceFade', shortName: 'fade', helper: 'fadeSlices', helperName: 'fading' }
+      { name: 'fold', shortName: 'fold', helper: 'foldSlices', helperName: 'folding' }
     ]
     boxTransitions = [
-      { name: 'boxRain', shortName: 'rain', helper: 'rainBoxes' },
-      { name: 'boxGrow', shortName: 'grow', helper: 'growBoxes' },
+      { name: 'boxRain', shortName: 'rain', helper: 'rainBoxes' }
+      { name: 'boxGrow', shortName: 'grow', helper: 'growBoxes' }
     ]
 
     beforeEach ->
@@ -445,10 +445,10 @@ describe 'Rambling Slider transitions', ->
       sortedHelpers = (element.helper for element in allAroundTransitions)
 
       animationHelpers = jasmine.createSpyObj 'animation', [
-        'animateFullImage',
-        'fadeBoxes',
-        'rainBoxes',
-        'growBoxes',
+        'animateFullImage'
+        'fadeBoxes'
+        'rainBoxes'
+        'growBoxes'
         sortedHelpers...
       ]
 

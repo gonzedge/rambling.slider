@@ -70,25 +70,25 @@
     afterLoad: ->
 
   cannotChange = [
-   'startSlide',
-   'directionNav',
-   'directionNavHide',
-   'controlNav',
-   'controlNavThumbs',
-   'controlNavThumbsFromRel',
-   'controlNavThumbsSearch',
-   'controlNavThumbsReplace',
-   'adaptImages',
-   'useLargerImage',
-   'keyboardNav',
-   'pauseOnHover',
-   'prevText',
-   'nextText',
-   'imageTransitions',
-   'flashTransitions',
-   'imageFlashTransitions',
-   'transitionGroups',
-   'transitionGroupSuffixes',
+   'startSlide'
+   'directionNav'
+   'directionNavHide'
+   'controlNav'
+   'controlNavThumbs'
+   'controlNavThumbsFromRel'
+   'controlNavThumbsSearch'
+   'controlNavThumbsReplace'
+   'adaptImages'
+   'useLargerImage'
+   'keyboardNav'
+   'pauseOnHover'
+   'prevText'
+   'nextText'
+   'imageTransitions'
+   'flashTransitions'
+   'imageFlashTransitions'
+   'transitionGroups'
+   'transitionGroupSuffixes'
    'afterLoad'
   ]
 
