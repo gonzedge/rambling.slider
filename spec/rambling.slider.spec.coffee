@@ -19,38 +19,38 @@ describe 'Rambling Slider', ->
   afterEach ->
     @helpers.destroy_slider()
 
-  it 'should return the jQuery Array for method chaining', ->
+  it 'returns the jQuery Array for method chaining', ->
     expect(result).toEqualJquery @rambling_slider
 
-  it 'should set the first image as the current slide element', ->
+  it 'sets the first image as the current slide element', ->
     expect(@rambling_slider).toContainElementWithClass 'currentSlideElement'
     expect(@rambling_slider.find '.currentSlideElement').toEqualJquery @rambling_slider.find('img').first()
 
-  it 'should add all the expected html elements', ->
+  it 'adds all the expected html elements', ->
     expect(@rambling_slider).toContainElementWithClass 'rambling-caption'
     expect(@rambling_slider).toContainElementWithClass 'rambling-directionNav'
     expect(@rambling_slider).toContainElementWithClass 'rambling-controlNav'
 
-  it 'should add the animation container element', ->
+  it 'adds the animation container element', ->
     expect(@rambling_slider).toContainElementWithId 'rambling-animation'
 
-  it 'should add the "ramblingSlider" class', ->
+  it 'adds the "ramblingSlider" class', ->
     expect(@rambling_slider).toHaveClass 'ramblingSlider'
 
-  it 'should add the slider data', ->
+  it 'adds the slider data', ->
     expect(@rambling_slider).toHaveData 'rambling:slider'
     expect(@rambling_slider).toHaveData 'rambling:vars'
 
-  it 'should not show the direction nav', ->
+  it 'does not show the direction nav', ->
     expect(@rambling_slider.find('.rambling-directionNav').is(':visible')).toBeFalsy()
 
-  it 'should add the expected amount of navigation controls', ->
+  it 'adds the expected amount of navigation controls', ->
     expect(@rambling_slider.find('.rambling-controlNav a').length).toEqual @rambling_slider.find('.slideElement').length
 
-  it 'should not pause the slider', ->
+  it 'does not pause the slider', ->
     expect(@rambling_slider.data('rambling:vars').paused).toBeFalsy()
 
-  it 'should set the default theme', ->
+  it 'sets the default theme', ->
     expect(@slider_wrapper).toHaveClass "theme-#{$.fn.ramblingSlider.defaults.theme}"
 
   describe 'when the slider has only one slide', ->
@@ -60,7 +60,7 @@ describe 'Rambling Slider', ->
       other_slider = $ '<div><img src="image1.jpg" alt="image1"/></div>'
       other_slider.ramblingSlider()
 
-    it 'should never show the direction nav', ->
+    it 'never shows the direction nav', ->
       expect(other_slider.find('rambling-directionNav').is(':visible')).toBeFalsy()
 
       other_slider.trigger 'mouseenter', type: 'mouseenter'
@@ -70,14 +70,14 @@ describe 'Rambling Slider', ->
     beforeEach ->
       @helpers.create_slider adaptImages: true
 
-    it 'should add the "adaptingSlider" class', ->
+    it 'adds the "adaptingSlider" class', ->
       expect(@rambling_slider).toHaveClass 'adaptingSlider'
 
     describe 'and the slider is destroyed', ->
       beforeEach ->
         @rambling_slider.ramblingSlider 'destroy'
 
-      it 'should remove the "adaptingSlider" class', ->
+      it 'removes the "adaptingSlider" class', ->
         expect(@rambling_slider).not.toHaveClass 'adaptingSlider'
 
   describe 'when the startSlide is not the default', ->
@@ -86,17 +86,17 @@ describe 'Rambling Slider', ->
     beforeEach ->
       @helpers.create_slider startSlide: slide
 
-    it 'should set the current slide index', ->
+    it 'sets the current slide index', ->
       expect(@rambling_slider.data('rambling:vars').currentSlide).toEqual slide
 
-    it 'should set the corresponding image as the current slide element', ->
+    it 'sets the corresponding image as the current slide element', ->
       expect(@rambling_slider.find '.currentSlideElement').toEqualJquery @rambling_slider.find('img.slideElement[alt=image2]')
 
   describe 'when the slider has links', ->
     beforeEach ->
       @helpers.create_slider sliderTemplate: '<div id="#slider"><a href="a"><img src="image1.jpg" alt="image1" /></a><a href="b"><img src="image2.jpg" alt="image2" /></a><a href="c"><img src="image3.jpg" alt="image3" /></a></div>'
 
-    it 'should display the first link as a block', ->
+    it 'displays the first link as a block', ->
       expect(@rambling_slider.find('#rambling-animation .rambling-imageLink:first').css('display')).toBe 'block'
 
   describe 'when clicking any navigation control', ->
@@ -105,30 +105,30 @@ describe 'Rambling Slider', ->
       timeout_spy.andCallFake => @rambling_slider.trigger 'rambling:finished'
       @rambling_slider.find('.rambling-controlNav a').last().click()
 
-    it 'should set the current slide index', ->
+    it 'sets the current slide index', ->
       expect(@rambling_slider.data('rambling:vars').currentSlide).toEqual @rambling_slider.find('.slideElement').length - 1
 
-    it 'should set the corresponding current slide element', ->
+    it 'sets the corresponding current slide element', ->
       expect(@rambling_slider.find('.currentSlideElement')).toEqualJquery @rambling_slider.find('.slideElement').last()
 
   describe 'when hovering into the slider', ->
     beforeEach ->
       @rambling_slider.trigger 'mouseenter'
 
-    it 'should show the direction nav', ->
+    it 'shows the direction nav', ->
       expect(@rambling_slider.find('.rambling-directionNav').is(':visible')).toBeTruthy()
 
-    it 'should pause the slider', ->
+    it 'pauses the slider', ->
       expect(@rambling_slider.data('rambling:vars').paused).toBeTruthy()
 
     describe 'and hovering out', ->
       beforeEach ->
         @rambling_slider.trigger 'mouseleave'
 
-      it 'should hide the direction nav', ->
+      it 'hides the direction nav', ->
         expect(@rambling_slider.find('.rambling-directionNav').is(':visible')).toBeFalsy()
 
-      it 'should unpause the slider', ->
+      it 'unpauses the slider', ->
         expect(@rambling_slider.data('rambling:vars').paused).toBeFalsy()
 
     describe 'and the pauseOnHover option is false', ->
@@ -137,7 +137,7 @@ describe 'Rambling Slider', ->
         @helpers.create_slider pauseOnHover: false
         @rambling_slider.trigger 'mouseenter'
 
-      it 'should not pause the slider', ->
+      it 'does not pause the slider', ->
         expect(@rambling_slider.data('rambling:vars').paused).toBeFalsy()
 
   describe 'when passing the slider callbacks', ->
@@ -159,21 +159,21 @@ describe 'Rambling Slider', ->
 
       @helpers.create_slider settings
 
-    it 'should call the afterLoad immediately after creation', ->
+    it 'calls the afterLoad immediately after creation', ->
       expect(settings.afterLoad).toHaveBeenCalled()
 
     describe 'and the animation is finished', ->
       beforeEach ->
         @rambling_slider.trigger 'rambling:finished'
 
-      it 'should call afterChange callback', ->
+      it 'calls afterChange callback', ->
         expect(settings.afterChange).toHaveBeenCalled()
 
     describe 'and the first slide is run', ->
       beforeEach ->
         interval_callback()
 
-      it 'should call the beforeChange callback', ->
+      it 'calls the beforeChange callback', ->
         expect(settings.beforeChange).toHaveBeenCalled()
 
     describe 'and the last slide is run', ->
@@ -181,7 +181,7 @@ describe 'Rambling Slider', ->
         @rambling_slider.ramblingSlider 'slide', @rambling_slider.find('.slideElement').length - 1
         interval_callback()
 
-      it 'should call the lastSlide callback', ->
+      it 'calls the lastSlide callback', ->
         expect(settings.lastSlide).toHaveBeenCalled()
 
     describe 'and the slideshow is going to begin again', ->
@@ -190,24 +190,24 @@ describe 'Rambling Slider', ->
         interval_callback()
         interval_callback()
 
-      it 'should call the slideshowEnd callback', ->
+      it 'calls the slideshowEnd callback', ->
         expect(settings.slideshowEnd).toHaveBeenCalled()
 
   describe 'when trying to initialize an already initialized slider', ->
     describe 'without any options', ->
-      it 'should throw an already initialized error', ->
+      it 'throws an already initialized error', ->
         expect(=> @rambling_slider.ramblingSlider()).toThrow 'Slider already initialized.'
 
     describe 'and passing some new options', ->
-      it 'should throw an already initialized error', ->
+      it 'throws an already initialized error', ->
         expect(=> @rambling_slider.ramblingSlider {startSlide: 2, effect: 'sliceUp'}).toThrow 'Slider already initialized.'
 
   # Methods
   describe 'when getting the effect', ->
-    it 'should return the default one', ->
+    it 'returns the default one', ->
       expect(@rambling_slider.ramblingSlider 'effect').toEqual $.fn.ramblingSlider.defaults.effect
 
-    it 'should return the one set at initialization', ->
+    it 'returns the one set at initialization', ->
       effect = 'boxRain'
       other_slider = @helpers.create_slider effect: effect
       expect(other_slider.ramblingSlider 'effect').toEqual effect
@@ -219,51 +219,51 @@ describe 'Rambling Slider', ->
       effect = 'fade'
       result = @rambling_slider.ramblingSlider 'effect', effect
 
-    it 'should return the jQuery Array for method chaining', ->
+    it 'returns the jQuery Array for method chaining', ->
       expect(result).toEqualJquery @rambling_slider
 
-    it 'should have set the effect', ->
+    it 'sets the effect', ->
       expect(@rambling_slider.ramblingSlider 'effect').toEqual effect
 
   describe 'when stopping the slider', ->
     beforeEach ->
       result = @rambling_slider.ramblingSlider 'stop'
 
-    it 'should return the jQuery Array for method chaining', ->
+    it 'returns the jQuery Array for method chaining', ->
       expect(result).toEqualJquery @rambling_slider
 
-    it 'should stop the slider', ->
+    it 'stops the slider', ->
       expect(@rambling_slider.data('rambling:vars').stopped).toBeTruthy()
 
     describe 'when starting the slider after stopped', ->
       beforeEach ->
         @rambling_slider.ramblingSlider 'start'
 
-      it 'should start the slider', ->
+      it 'starts the slider', ->
         expect(@rambling_slider.data('rambling:vars').stopped).toBeFalsy()
 
   describe 'when starting the slider', ->
     beforeEach ->
       result = @rambling_slider.ramblingSlider 'start'
 
-    it 'should return the jQuery Array for method chaining', ->
+    it 'returns the jQuery Array for method chaining', ->
       expect(result).toEqualJquery @rambling_slider
 
-    it 'should stop the slider', ->
+    it 'stops the slider', ->
       expect(@rambling_slider.data('rambling:vars').stopped).toBeFalsy()
 
     describe 'when stopping the slider after started', ->
       beforeEach ->
         @rambling_slider.ramblingSlider 'stop'
 
-      it 'should start the slider', ->
+      it 'starts the slider', ->
         expect(@rambling_slider.data('rambling:vars').stopped).toBeTruthy()
 
   describe 'when getting any option', ->
-    it 'should get the default value', ->
+    it 'gets the default value', ->
       expect(@rambling_slider.ramblingSlider('option', 'slices')).toEqual $.fn.ramblingSlider.defaults.slices
 
-    it 'should return the one set at initialization', ->
+    it 'returns the one set at initialization', ->
       slices = 20
 
       @helpers.create_slider slices: slices
@@ -276,49 +276,49 @@ describe 'Rambling Slider', ->
       slices = 20
       result = @rambling_slider.ramblingSlider 'option', 'slices', slices
 
-    it 'should return the jQuery Array for method chaining', ->
+    it 'returns the jQuery Array for method chaining', ->
       expect(result).toEqualJquery @rambling_slider
 
-    it 'should set the option value', ->
+    it 'sets the option value', ->
       expect(@rambling_slider.ramblingSlider('option', 'slices')).toEqual slices
 
   describe 'when setting a readonly option', ->
     startSlide = 2
 
-    it 'should throw an already running error', ->
+    it 'throws an already running error', ->
       expect(=> @rambling_slider.ramblingSlider 'option', 'startSlide', startSlide).toThrow "Slider already running. Option 'startSlide' cannot be changed."
 
-    it 'should not change the value', ->
+    it 'does not change the value', ->
       expect(@rambling_slider.ramblingSlider('option', 'startSlide')).toEqual $.fn.ramblingSlider.defaults.startSlide
 
   describe 'when destroying the slider', ->
     beforeEach ->
       @rambling_slider.ramblingSlider 'destroy'
 
-    it 'should remove all the added html elements', ->
+    it 'removes all the added html elements', ->
       expect(@rambling_slider).not.toContainElementWithClass 'rambling-slice'
       expect(@rambling_slider).not.toContainElementWithClass 'rambling-box'
       expect(@rambling_slider).not.toContainElementWithClass 'rambling-caption'
       expect(@rambling_slider).not.toContainElementWithClass 'rambling-directionNav'
       expect(@rambling_slider).not.toContainElementWithClass 'rambling-controlNav'
 
-    it 'should remove the animation container element', ->
+    it 'removes the animation container element', ->
       expect(@rambling_slider).not.toContainElementWithId 'rambling-animation'
 
-    it 'should remove the "ramblingSlider" class', ->
+    it 'removes the "ramblingSlider" class', ->
       expect(@rambling_slider).not.toHaveClass 'ramblingSlider'
 
-    it 'should remove the custom styles from the slider', ->
+    it 'removes the custom styles from the slider', ->
       expect(@rambling_slider.attr 'style').toBeUndefined()
 
-    it 'should clear the timer', ->
+    it 'clears the timer', ->
       expect(window.clearInterval).toHaveBeenCalledWith fake_timer
 
-    it 'should remove the slider data', ->
+    it 'removes the slider data', ->
       expect(@rambling_slider).not.toHaveData 'rambling:slider'
       expect(@rambling_slider).not.toHaveData 'rambling:vars'
 
-    it 'should make the slider inner elements visible', ->
+    it 'makes the slider inner elements visible', ->
       @rambling_slider.children().each ->
         expect($(@).is ':visible').toBeTruthy()
 
@@ -331,26 +331,26 @@ describe 'Rambling Slider', ->
       beforeEach ->
         result = @rambling_slider.ramblingSlider 'previousSlide'
 
-      it 'should return the jQuery Array for method chaining', ->
+      it 'returns the jQuery Array for method chaining', ->
         expect(result).toEqualJquery @rambling_slider
 
-      it 'should change the current slide index', ->
+      it 'changes the current slide index', ->
         expect(@rambling_slider.data('rambling:vars').currentSlide).toEqual 2
 
-      it 'should change the current slide element to the previous one', ->
+      it 'changes the current slide element to the previous one', ->
         expect(@rambling_slider.find '.currentSlideElement').toEqualJquery @rambling_slider.find('img.slideElement[alt=image3]')
 
     describe 'when going to the next slide', ->
       beforeEach ->
         result = @rambling_slider.ramblingSlider 'nextSlide'
 
-      it 'should return the jQuery Array for method chaining', ->
+      it 'returns the jQuery Array for method chaining', ->
         expect(result).toEqualJquery @rambling_slider
 
-      it 'should change the current slide index', ->
+      it 'changes the current slide index', ->
         expect(@rambling_slider.data('rambling:vars').currentSlide).toEqual 1
 
-      it 'should change the current slide element to the next one', ->
+      it 'changes the current slide element to the next one', ->
         expect(@rambling_slider.find '.currentSlideElement').toEqualJquery @rambling_slider.find('img.slideElement[alt=image2]')
 
     describe 'when going to a specific slide', ->
@@ -360,24 +360,24 @@ describe 'Rambling Slider', ->
         slide_index = 1
         result = @rambling_slider.ramblingSlider 'slide', slide_index
 
-      it 'should return the jQuery Array for method chaining', ->
+      it 'returns the jQuery Array for method chaining', ->
         expect(result).toEqualJquery @rambling_slider
 
-      it 'should change the current slide index', ->
+      it 'changes the current slide index', ->
         expect(@rambling_slider.data('rambling:vars').currentSlide).toEqual slide_index
 
-      it 'should change the current slide element to the next one', ->
+      it 'changes the current slide element to the next one', ->
         expect(@rambling_slider.find '.currentSlideElement').toEqualJquery @rambling_slider.find('img.slideElement[alt=image2]')
 
   describe 'when getting the current slide index', ->
     beforeEach ->
       result = @rambling_slider.ramblingSlider 'slide'
 
-    it 'should return the expected index', ->
+    it 'returns the expected index', ->
       expect(result).toEqual 0
 
   describe 'when getting the slider theme', ->
-    it 'should return the default theme', ->
+    it 'returns the default theme', ->
       expect(@rambling_slider.ramblingSlider 'theme').toEqual $.fn.ramblingSlider.defaults.theme
 
   describe 'when setting the slider theme', ->
@@ -387,19 +387,19 @@ describe 'Rambling Slider', ->
       theme = 'another'
       @helpers.create_slider theme: theme
 
-    it 'should remove the previous theme class', ->
+    it 'removes the previous theme class', ->
       expect(@slider_wrapper).not.toHaveClass "theme-#{$.fn.ramblingSlider.defaults.theme}"
 
-    it 'should add the new theme class', ->
+    it 'adds the new theme class', ->
       expect(@slider_wrapper).toHaveClass "theme-#{theme}"
 
-    it 'should return the new theme when asked', ->
+    it 'returns the new theme when asked', ->
       expect(@rambling_slider.ramblingSlider 'theme').toEqual theme
 
   describe 'when trying to call a non existent method', ->
-    it 'should throw a method not present error', ->
+    it 'throws a method not present error', ->
       expect(=> @rambling_slider.ramblingSlider 'methodNotPresent').toThrow "Method 'methodNotPresent' not found."
 
   describe 'when trying to call a method over an uninitialized slider', ->
-    it 'should throw an invalid arguments error', ->
+    it 'throws an invalid arguments error', ->
       expect(-> $('<div></div>').ramblingSlider 'start').toThrow "Tried to call method 'start' on element without slider."

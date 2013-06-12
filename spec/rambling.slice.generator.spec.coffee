@@ -36,5 +36,5 @@ describe 'Rambling Box Slicer', ->
     afterEach ->
       RamblingSliceGenerator::createSlices = create_slices
 
-    it 'should create one slice', ->
+    it 'creates one slice', ->
       expect(RamblingSliceGenerator::createSlices).toHaveBeenCalledWith 1, vars.currentSlideElement

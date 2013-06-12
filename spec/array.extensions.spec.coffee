@@ -12,17 +12,17 @@ describe 'Array Extensions', ->
       first_copy = array.slice()
       second_copy = array.shuffle()
 
-    it 'should return the same array with shifted the positions', ->
+    it 'returns the same array with shifted the positions', ->
       expect(second_copy).toEqual array
 
-    it 'should not let the original array untouched', ->
+    it 'does not let the original array untouched', ->
       expect(first_copy).not.toEqual array
 
   describe 'when verifying if an array contains an element', ->
-    it 'should return true for a contained element', ->
+    it 'returns true for a contained element', ->
       expect(array.contains(1)).toBeTruthy()
 
-    it 'should return false for a non contained element', ->
+    it 'returns false for a non contained element', ->
       expect(array.contains(array.length + 1)).toBeFalsy()
 
   describe 'when getting the values that match a predicate', ->
@@ -31,11 +31,11 @@ describe 'Array Extensions', ->
     beforeEach ->
       new_array = array.where (number) -> number > 2
 
-    it 'should contain the matching elements', ->
+    it 'contains the matching elements', ->
       for number in [3..5] then do (number) ->
         expect(new_array).toContain number
 
-    it 'should not contain the non matching elements', ->
+    it 'does not contain the non matching elements', ->
       for number in [1..2] then do (number) ->
         expect(new_array).not.toContain number
 
@@ -45,28 +45,28 @@ describe 'Array Extensions', ->
     beforeEach ->
       predicate = (number) -> number > array[1]
 
-    it 'should return the first element', ->
+    it 'returns the first element', ->
       expect(array.first()).toEqual array[0]
 
     describe 'and passing a predicate', ->
-      it 'should return the first matching element', ->
+      it 'returns the first matching element', ->
         expect(array.first predicate).toEqual array[2]
 
       describe 'but the array is empty', ->
         expect([].first predicate).toBeUndefined()
 
     describe 'and the array is empty', ->
-      it 'should return undefined', ->
+      it 'returns undefined', ->
         expect([].first()).toBeUndefined()
 
   describe 'when mapping the array to another value', ->
-    it 'should map the values correctly', ->
+    it 'maps the values correctly', ->
       new_array = array.map (number) -> number * number
       for number in array then do (number) ->
         expect(new_array).toContain number * number
 
     describe 'and no map function is passed', ->
-      it 'should leave the elements as they are', ->
+      it 'leaves the elements as they are', ->
         expect(array.map()).toEqual array
 
   describe 'when adding values from an object', ->
@@ -82,7 +82,7 @@ describe 'Array Extensions', ->
       beforeEach ->
         array = [].fromObject object
 
-      it 'should contain all property values', ->
+      it 'contains all property values', ->
         for key, value of object then do (key, value) ->
           expect(array).toContain value
 
@@ -92,16 +92,16 @@ describe 'Array Extensions', ->
       beforeEach ->
         array = [].fromObject object, value_selector
 
-      it 'should contain the expected values', ->
+      it 'contains the expected values', ->
         for key, value of object then do (key, value) ->
           expect(array).toContain value_selector(key, value)
 
   describe 'when getting a random value from the array', ->
-    it 'should return a contained element', ->
+    it 'returns a contained element', ->
       expect(array).toContain array.random()
 
     describe 'and the array is empty', ->
-      it 'should return null', ->
+      it 'returns null', ->
         expect([].random()).toBeUndefined()
 
   describe 'when sorting an array from outer to inner elements', ->
@@ -110,10 +110,10 @@ describe 'Array Extensions', ->
     beforeEach ->
       new_array = array.sortOutIn()
 
-    it 'should return an array with the same length', ->
+    it 'returns an array with the same length', ->
       expect(new_array.length).toEqual array.length
 
-    it 'should return the elements in the expected order', ->
+    it 'returns the elements in the expected order', ->
       for i in [0...(Math.floor(array.length / 2))] then do (i) ->
         expect(new_array[2 * i]).toEqual array[i]
         expect(new_array[2 * i + 1]).toEqual array[array.length - i - 1]

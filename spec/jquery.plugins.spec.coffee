@@ -14,7 +14,7 @@ describe 'jQuery Plugins', ->
       original_array = html_box.find 'li'
       array = array.reverse()
 
-    it 'should return the elements in reverse order', ->
+    it 'returns the elements in reverse order', ->
       for i in [0...array.length]
         expect(array[i]).toEqual original_array[array.length - 1 - i]
 
@@ -28,14 +28,14 @@ describe 'jQuery Plugins', ->
       first_copy = original_array.slice()
       second_copy = original_array.shuffle()
 
-    it 'should return the same array with shifted the positions', ->
+    it 'returns the same array with shifted the positions', ->
       expect(second_copy).toEqual original_array
 
-    it 'should not let the original array untouched', ->
+    it 'does not let the original array untouched', ->
       expect(first_copy).not.toEqual original_array
 
   describe 'when converting an array to bidimensional', ->
-    it 'should return an array with the expected dimensions', ->
+    it 'returns an array with the expected dimensions', ->
       list_items = html_box.find 'li'
       array = list_items.as2dArray 2
 
@@ -48,18 +48,18 @@ describe 'jQuery Plugins', ->
       beforeEach ->
         html_box.append '<object></object>'
 
-      it 'should return true', ->
+      it 'returns true', ->
         expect(html_box.containsFlash()).toBeTruthy()
 
     describe 'and there is an embed element', ->
       beforeEach ->
         html_box.append '<embed></embed>'
 
-      it 'should return true', ->
+      it 'returns true', ->
         expect(html_box.containsFlash()).toBeTruthy()
 
     describe 'and there is no flash', ->
-      it 'should return false', ->
+      it 'returns false', ->
         expect(html_box.containsFlash()).toBeFalsy()
 
   describe 'when sorting a jQuery array from outer to inner elements', ->
@@ -70,10 +70,10 @@ describe 'jQuery Plugins', ->
       array = html_box.find 'li'
       new_array = array.sortOutIn()
 
-    it 'should return an array with the same length', ->
+    it 'returns an array with the same length', ->
       expect(new_array.length).toEqual array.length
 
-    it 'should return the elements in the expected order', ->
+    it 'returns the elements in the expected order', ->
       for i in [0...(Math.floor(array.length / 2))] then do (i) ->
         expect(new_array[2 * i]).toEqual array[i]
         expect(new_array[2 * i + 1]).toEqual array[array.length - i - 1]
@@ -88,10 +88,10 @@ describe 'jQuery Plugins', ->
       array = html_box.find 'li'
       new_array = array.sortInOut()
 
-    it 'should return an array with the same length', ->
+    it 'returns an array with the same length', ->
       expect(new_array.length).toEqual array.length
 
-    it 'should return the elements in the expected order', ->
+    it 'returns the elements in the expected order', ->
       for i in [0...(Math.floor(array.length / 2))] then do (i) ->
         expect(new_array[new_array.length - 2 * i - 1]).toEqual array[i]
         expect(new_array[new_array.length - 2 * i - 2]).toEqual array[array.length - i - 1]
@@ -105,17 +105,17 @@ describe 'jQuery Plugins', ->
       array = html_box.find 'li'
 
     describe 'and they are equal', ->
-      it 'should return true', ->
+      it 'returns true', ->
         expect(array.equals(html_box.find 'li')).toBeTruthy()
 
     describe 'and they are different', ->
-      it 'should return false', ->
+      it 'returns false', ->
         expect(array.equals(html_box.find 'ul')).toBeFalsy()
 
     describe 'and one of them is empty', ->
-      it 'should return false', ->
+      it 'returns false', ->
         expect(array.equals(html_box.find 'body')).toBeFalsy()
 
     describe 'and one of them is smaller', ->
-      it 'should return false', ->
+      it 'returns false', ->
         expect(array.equals(html_box.find('li').first())).toBeFalsy()

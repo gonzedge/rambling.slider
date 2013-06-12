@@ -26,10 +26,10 @@ describe 'Rambling Box Generator', ->
     beforeEach ->
       result = rambling_box_generator.createBoxes()
 
-    it 'should return the expected amount of boxes', ->
+    it 'returns the expected amount of boxes', ->
       expect(result.length).toEqual settings.boxCols * settings.boxRows
 
-    it 'should call the rambling boxer with the correct parameters', ->
+    it 'calls the rambling boxer with the correct parameters', ->
       box_width = slider.width() / settings.boxRows
       box_height = slider.height() / settings.boxCols
 
@@ -37,7 +37,7 @@ describe 'Rambling Box Generator', ->
         for column in [0...settings.boxCols]
           expect(RamblingBoxer::getRamblingBox).toHaveBeenCalledWith box_width, box_height, row, column, settings, vars
 
-    it 'should call the rambling boxer the expected amount of times', ->
+    it 'calls the rambling boxer the expected amount of times', ->
       expect(RamblingBoxer::getRamblingBox.callCount).toEqual settings.boxCols * settings.boxRows
 
   describe 'when creating a custom amount of boxes', ->
@@ -50,10 +50,10 @@ describe 'Rambling Box Generator', ->
 
       result = rambling_box_generator.createBoxes box_cols, box_rows
 
-    it 'should return the expected amount of boxes', ->
+    it 'returns the expected amount of boxes', ->
       expect(result.length).toEqual box_rows * box_cols
 
-    it 'should call the rambling boxer with the correct parameters', ->
+    it 'calls the rambling boxer with the correct parameters', ->
       box_width = Math.round slider.width() / box_rows
       box_height = Math.round slider.height() / box_cols
 
@@ -61,6 +61,6 @@ describe 'Rambling Box Generator', ->
         for column in [0...box_cols]
           expect(RamblingBoxer::getRamblingBox).toHaveBeenCalledWith box_height, box_width, row, column, settings, vars
 
-    it 'should call the rambling boxer the expected amount of times', ->
+    it 'calls the rambling boxer the expected amount of times', ->
       expect(RamblingBoxer::getRamblingBox.callCount).toEqual box_rows * box_cols
 
