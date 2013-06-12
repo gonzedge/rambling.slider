@@ -1,5 +1,5 @@
 /*!
- * jQuery Rambling Slider v0.4.0
+ * jQuery Rambling Slider v0.4.1
  * http://github.com/gonzedge/rambling.slider
  * http://ramblinglabs.com
  *
