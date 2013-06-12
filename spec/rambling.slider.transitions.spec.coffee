@@ -27,16 +27,16 @@ describe 'Rambling Slider transitions', ->
     beforeEach ->
       options =
         effect: 'newTransition'
-        afterChange: ->
+        afterChange: jasmine.createSpy()
         imageTransitions:
-          newTransition: ->
-            helper = @
-            called = true
-      spyOn(options.imageTransitions, 'newTransition').andCallThrough()
+          newTransition: jasmine.createSpy()
+
       spyOn($.fn, 'trigger').andCallThrough()
       spyOn($.fn, 'css').andCallThrough()
       spyOn($.fn, 'animate').andCallFake (options, speed, easing, callback) -> callback() if callback
-      spyOn options, 'afterChange'
+
+      options.imageTransitions.newTransition.andCallFake -> helper = @
+
       @helpers.createSlider options
       intervalCallback()
 
@@ -441,22 +441,22 @@ describe 'Rambling Slider transitions', ->
 
     beforeEach ->
       sortCallbackSetter = (callback) -> sortCallback = callback
-      animationHelpers =
-        animateFullImage: ->
-        fadeBoxes: ->
-        rainBoxes: ->
-        growBoxes: ->
+
+      sortedHelpers = (element.helper for element in allAroundTransitions)
+
+      animationHelpers = jasmine.createSpyObj 'animation', [
+        'animateFullImage',
+        'fadeBoxes',
+        'rainBoxes',
+        'growBoxes',
+        sortedHelpers...
+      ]
 
       spyOn($.fn, 'css').andCallFake -> @
       spyOn($.fn, 'animate').andCallFake -> @
-      spyOn(animationHelpers, 'animateFullImage').andCallFake (callback) -> animationSetUpCallback = callback
-      spyOn animationHelpers, 'fadeBoxes'
-      spyOn animationHelpers, 'rainBoxes'
-      spyOn animationHelpers, 'growBoxes'
 
-      $.each allAroundTransitions, (index, element) ->
-        animationHelpers[element.helper] = ->
-        spyOn(animationHelpers, element.helper).andCallFake sortCallbackSetter
+      animationHelpers.animateFullImage.andCallFake (callback) -> animationSetUpCallback = callback
+      animationHelpers[helper].andCallFake sortCallbackSetter for helper in sortedHelpers
 
       imageTransitions = $.fn.ramblingSlider.defaults.imageTransitions
 

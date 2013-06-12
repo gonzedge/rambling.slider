@@ -144,18 +144,14 @@ describe 'Rambling Slider', ->
     settings = null
 
     beforeEach ->
-      settings =
-        effect: 'sliceUpRight'
-        beforeChange: ->
-        afterChange: ->
-        slideshowEnd: ->
-        lastSlide: ->
-        afterLoad: ->
-      spyOn settings, 'beforeChange'
-      spyOn settings, 'afterChange'
-      spyOn settings, 'slideshowEnd'
-      spyOn settings, 'lastSlide'
-      spyOn settings, 'afterLoad'
+      settings = jasmine.createSpyObj 'settings', [
+        'beforeChange',
+        'afterChange',
+        'slideshowEnd',
+        'lastSlide',
+        'afterLoad'
+      ]
+      settings.effect = 'sliceUpRight'
 
       @helpers.createSlider settings
 
