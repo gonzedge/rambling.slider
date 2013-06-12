@@ -3,6 +3,7 @@ global.jQuery = require 'jquery'
 global.$ = global.jQuery
 
 require './matchers/jquery.matcher'
+require './helpers/slider'
 require '../src/array.extensions'
 require '../src/string.extensions'
 require '../src/jquery.plugins'

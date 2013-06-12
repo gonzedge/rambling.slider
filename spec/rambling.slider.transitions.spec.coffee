@@ -1,23 +1,10 @@
 describe 'Rambling Slider transitions', ->
-  rambling_slider = null
   result = null
   error = null
   interval_spy = null
   interval_callback = null
   timeout_spy = null
   fake_timer = {}
-
-  create_slider = (options...) ->
-    rambling_slider = $ '<div id="#slider"><img src="image1.jpg" alt="image1" /><img src="image2.jpg" alt="image2" /><img src="image3.jpg" alt="image3" /></div>'
-    if options.length
-      rambling_slider.ramblingSlider options[0]
-    else
-      rambling_slider.ramblingSlider()
-
-  destroy_slider = ->
-    rambling_slider.data 'rambling:slider', null
-    rambling_slider.data 'rambling:vars', null
-    rambling_slider.remove()
 
   beforeEach ->
     timeout_spy = spyOn window, 'setTimeout'
@@ -28,9 +15,10 @@ describe 'Rambling Slider transitions', ->
 
     spyOn window, 'clearInterval'
 
-    result = create_slider()
+    result = @helpers.create_slider()
 
-  afterEach destroy_slider
+  afterEach ->
+    @helpers.destroy_slider()
 
   describe 'when extending the available transitions', ->
     options = null
@@ -49,7 +37,7 @@ describe 'Rambling Slider transitions', ->
       spyOn($.fn, 'css').andCallThrough()
       spyOn($.fn, 'animate').andCallFake (options, speed, easing, callback) -> callback() if callback
       spyOn options, 'afterChange'
-      create_slider options
+      @helpers.create_slider options
       interval_callback()
 
     it 'should be able to execute the new transition', ->
@@ -81,11 +69,11 @@ describe 'Rambling Slider transitions', ->
           expect(result.length).toEqual $.fn.ramblingSlider.defaults.slices
 
         it 'should append all the slices to the animation container', ->
-          expect(rambling_slider.find('#rambling-animation .rambling-slice')).toEqualJquery result
+          expect(@rambling_slider.find('#rambling-animation .rambling-slice')).toEqualJquery result
 
         it 'should set the expected slice images', ->
-          result.find('img').each (index, element) ->
-            expect($(element).attr 'src').toEqual rambling_slider.find('img.currentSlideElement').next().attr('src')
+          result.find('img').each (index, element) =>
+            expect($(element).attr 'src').toEqual @rambling_slider.find('img.currentSlideElement').next().attr('src')
 
       describe 'with specific number of slices', ->
         slices = null
@@ -101,7 +89,7 @@ describe 'Rambling Slider transitions', ->
         slide_element = null
 
         beforeEach ->
-          slide_element = rambling_slider.find '.slideElement:last'
+          slide_element = @rambling_slider.find '.slideElement:last'
           result = helper.createSlices $.fn.ramblingSlider.defaults.slices, slide_element
 
         it 'should set the expected slice images', ->
@@ -117,11 +105,11 @@ describe 'Rambling Slider transitions', ->
           expect(result.length).toEqual $.fn.ramblingSlider.defaults.boxRows * $.fn.ramblingSlider.defaults.boxCols
 
         it 'should append all the boxes to the animation container', ->
-          expect(rambling_slider.find('#rambling-animation .rambling-box')).toEqualJquery result
+          expect(@rambling_slider.find('#rambling-animation .rambling-box')).toEqualJquery result
 
         it 'should set the expected box images', ->
-          result.find('img').each (index, element) ->
-            expect($(element).attr 'src').toEqual rambling_slider.find('img.currentSlideElement').next().attr('src')
+          result.find('img').each (index, element) =>
+            expect($(element).attr 'src').toEqual @rambling_slider.find('img.currentSlideElement').next().attr('src')
 
       describe 'with specific rows and columns', ->
         rows = null
@@ -144,16 +132,16 @@ describe 'Rambling Slider transitions', ->
           expect(result.length).toEqual 1
 
         it 'should append the slice to the animation container', ->
-          expect(rambling_slider.find('#rambling-animation .rambling-slice')).toEqualJquery result
+          expect(@rambling_slider.find('#rambling-animation .rambling-slice')).toEqualJquery result
 
         it 'should set the expected slice image', ->
-          expect(result.find('img').attr 'src').toEqual rambling_slider.find('img.currentSlideElement').next().attr('src')
+          expect(result.find('img').attr 'src').toEqual @rambling_slider.find('img.currentSlideElement').next().attr('src')
 
       describe 'for a specific element', ->
         slide_element = null
 
         beforeEach ->
-          slide_element = rambling_slider.find '.slideElement:last'
+          slide_element = @rambling_slider.find '.slideElement:last'
           result = helper.getOneSlice slide_element
 
         it 'should set the expected slice image', ->
@@ -174,7 +162,7 @@ describe 'Rambling Slider transitions', ->
 
       describe 'and it is aligned to the top', ->
         beforeEach ->
-          rambling_slider.ramblingSlider 'option', 'alignBottom', false
+          @rambling_slider.ramblingSlider 'option', 'alignBottom', false
           result = helper.animateFullImage ->
 
         it 'should set the top to 0 and the bottom to auto', ->
@@ -182,7 +170,7 @@ describe 'Rambling Slider transitions', ->
 
       describe 'and it is aligned to the bottom', ->
         beforeEach ->
-          rambling_slider.ramblingSlider 'option', 'alignBottom', true
+          @rambling_slider.ramblingSlider 'option', 'alignBottom', true
           result = helper.animateFullImage ->
 
         it 'should set the top to auto and the bottom to 0', ->
@@ -193,7 +181,7 @@ describe 'Rambling Slider transitions', ->
           result = helper.animateFullImage ->
 
         it 'should animate the slice width to the width of the slider', ->
-          expect($.fn.animate).toHaveBeenCalledWith {width: rambling_slider.width()}, $.fn.ramblingSlider.defaults.speed * 2, '', jasmine.any(Function)
+          expect($.fn.animate).toHaveBeenCalledWith {width: @rambling_slider.width()}, $.fn.ramblingSlider.defaults.speed * 2, '', jasmine.any(Function)
 
       describe 'and something is returned by the animation set up callback', ->
         animate = null
@@ -348,7 +336,7 @@ describe 'Rambling Slider transitions', ->
 
       it 'should set the height to the slider height and the opacity to 1', ->
         timeout_callback()
-        expect($.fn.animate).toHaveBeenCalledWith {height: rambling_slider.height(), opacity: '1'}, $.fn.ramblingSlider.defaults.speed, '', jasmine.any(Function)
+        expect($.fn.animate).toHaveBeenCalledWith {height: @rambling_slider.height(), opacity: '1'}, $.fn.ramblingSlider.defaults.speed, '', jasmine.any(Function)
 
     describe 'and calling the slide up slices helper function', ->
       sort_callback = null
@@ -370,7 +358,7 @@ describe 'Rambling Slider transitions', ->
 
       it 'should set the height to the slider height and the opacity to 1', ->
         timeout_callback()
-        expect($.fn.animate).toHaveBeenCalledWith {height: rambling_slider.height(), opacity: '1'}, $.fn.ramblingSlider.defaults.speed, '', jasmine.any(Function)
+        expect($.fn.animate).toHaveBeenCalledWith {height: @rambling_slider.height(), opacity: '1'}, $.fn.ramblingSlider.defaults.speed, '', jasmine.any(Function)
 
     describe 'and calling the slide up down slices helper function', ->
       sort_callback = null
@@ -388,7 +376,7 @@ describe 'Rambling Slider transitions', ->
 
       it 'should set the height to the slider height and the opacity to 1', ->
         timeout_callback()
-        expect($.fn.animate).toHaveBeenCalledWith {height: rambling_slider.height(), opacity: '1'}, $.fn.ramblingSlider.defaults.speed, '', jasmine.any(Function)
+        expect($.fn.animate).toHaveBeenCalledWith {height: @rambling_slider.height(), opacity: '1'}, $.fn.ramblingSlider.defaults.speed, '', jasmine.any(Function)
 
     describe 'and calling the slide fold slices helper function', ->
       sort_callback = null
@@ -410,7 +398,7 @@ describe 'Rambling Slider transitions', ->
 
       it 'should set the height to the slider width and the opacity to 1', ->
         timeout_callback()
-        expect($.fn.animate).toHaveBeenCalledWith {width: rambling_slider.width(), opacity: '1'}, $.fn.ramblingSlider.defaults.speed, '', jasmine.any(Function)
+        expect($.fn.animate).toHaveBeenCalledWith {width: @rambling_slider.width(), opacity: '1'}, $.fn.ramblingSlider.defaults.speed, '', jasmine.any(Function)
 
     describe 'and calling the slide fade slices helper function', ->
       sort_callback = null
@@ -428,7 +416,7 @@ describe 'Rambling Slider transitions', ->
 
       it 'should align the slices to the bottom', ->
         timeout_callback()
-        expect($.fn.css).toHaveBeenCalledWith height: rambling_slider.height()
+        expect($.fn.css).toHaveBeenCalledWith height: @rambling_slider.height()
 
       it 'should set the opacity to 1', ->
         timeout_callback()
@@ -512,13 +500,13 @@ describe 'Rambling Slider transitions', ->
     describe 'and executing a full image fade in', ->
       beforeEach ->
         image_transitions.fadeIn.apply animation_helpers
-        result = animation_set_up_callback.apply $('<div></div>'), [rambling_slider]
+        result = animation_set_up_callback.apply $('<div></div>'), [@rambling_slider]
 
       it 'should call the animate full image helper', ->
         expect(animation_helpers.animateFullImage).toHaveBeenCalled()
 
       it 'should set the style to the slice', ->
-        expect($.fn.css).toHaveBeenCalledWith height: '100%', width: rambling_slider.width(), position: 'absolute', top: 0, left: 0
+        expect($.fn.css).toHaveBeenCalledWith height: '100%', width: @rambling_slider.width(), position: 'absolute', top: 0, left: 0
 
       it 'should return the expected animation', ->
         expect(result).toEqual { opacity: '1' }
@@ -526,13 +514,13 @@ describe 'Rambling Slider transitions', ->
     describe 'and executing a full image fade out', ->
       beforeEach ->
         image_transitions.fadeOut.apply animation_helpers
-        result = animation_set_up_callback.apply $('<div></div>'), [rambling_slider]
+        result = animation_set_up_callback.apply $('<div></div>'), [@rambling_slider]
 
       it 'should call the animate full image helper', ->
         expect(animation_helpers.animateFullImage).toHaveBeenCalled()
 
       it 'should set the style to the slice', ->
-        expect($.fn.css).toHaveBeenCalledWith height: '100%', width: rambling_slider.width(), position: 'absolute', top: 0, left: 0
+        expect($.fn.css).toHaveBeenCalledWith height: '100%', width: @rambling_slider.width(), position: 'absolute', top: 0, left: 0
 
       it 'should return the expected animation', ->
         expect(result).toEqual { opacity: '1' }
@@ -540,7 +528,7 @@ describe 'Rambling Slider transitions', ->
     describe 'and executing a full image rollover right', ->
       beforeEach ->
         image_transitions.rolloverRight.apply animation_helpers
-        result = animation_set_up_callback.apply $('<div></div>'), [rambling_slider]
+        result = animation_set_up_callback.apply $('<div></div>'), [@rambling_slider]
 
       it 'should call the animate full image helper', ->
         expect(animation_helpers.animateFullImage).toHaveBeenCalled()
@@ -559,7 +547,7 @@ describe 'Rambling Slider transitions', ->
           speed: 500
 
         image_transitions.rolloverLeft.apply animation_helpers
-        result = animation_set_up_callback.apply $('<div><img src="" alt="" /></div>'), [rambling_slider, settings]
+        result = animation_set_up_callback.apply $('<div><img src="" alt="" /></div>'), [@rambling_slider, settings]
 
       it 'should call the animate full image helper', ->
         expect(animation_helpers.animateFullImage).toHaveBeenCalled()
@@ -568,13 +556,13 @@ describe 'Rambling Slider transitions', ->
         expect($.fn.css).toHaveBeenCalledWith height: '100%', width: 0, opacity: '1', left: 'auto', right: 0
 
       it 'should set the style to the image', ->
-        expect($.fn.css).toHaveBeenCalledWith left: -rambling_slider.width()
+        expect($.fn.css).toHaveBeenCalledWith left: -@rambling_slider.width()
 
       it 'should animate the image', ->
         expect($.fn.animate).toHaveBeenCalledWith {left: 0}, settings.speed * 2
 
       it 'should return the expected animation', ->
-        expect(result).toEqual {width: rambling_slider.width()}
+        expect(result).toEqual {width: @rambling_slider.width()}
 
     describe 'and executing a full image slide in right', ->
       settings = null
@@ -584,7 +572,7 @@ describe 'Rambling Slider transitions', ->
           speed: 500
 
         image_transitions.slideInRight.apply animation_helpers
-        result = animation_set_up_callback.apply $('<div><img src="" alt="" /></div>'), [rambling_slider, settings]
+        result = animation_set_up_callback.apply $('<div><img src="" alt="" /></div>'), [@rambling_slider, settings]
 
       it 'should call the animate full image helper', ->
         expect(animation_helpers.animateFullImage).toHaveBeenCalled()
@@ -593,13 +581,13 @@ describe 'Rambling Slider transitions', ->
         expect($.fn.css).toHaveBeenCalledWith height: '100%', width: 0, opacity: '1'
 
       it 'should set the style to the image', ->
-        expect($.fn.css).toHaveBeenCalledWith left: -rambling_slider.width()
+        expect($.fn.css).toHaveBeenCalledWith left: -@rambling_slider.width()
 
       it 'should animate the image', ->
         expect($.fn.animate).toHaveBeenCalledWith {left: 0}, settings.speed * 2
 
       it 'should return the expected animation', ->
-        expect(result).toEqual {width: rambling_slider.width()}
+        expect(result).toEqual {width: @rambling_slider.width()}
 
     describe 'and executing a full image slide in left', ->
       finished_callback = null
@@ -609,7 +597,7 @@ describe 'Rambling Slider transitions', ->
         spyOn $.fn, 'unbind'
 
         image_transitions.slideInLeft.apply animation_helpers
-        result = animation_set_up_callback.apply $('<div></div>'), [rambling_slider]
+        result = animation_set_up_callback.apply $('<div></div>'), [@rambling_slider]
 
       it 'should call the animate full image helper', ->
         expect(animation_helpers.animateFullImage).toHaveBeenCalled()
