@@ -1,24 +1,24 @@
 describe 'Rambling Slider transitions', ->
   result = null
   error = null
-  interval_spy = null
-  interval_callback = null
-  timeout_spy = null
-  fake_timer = {}
+  intervalSpy = null
+  intervalCallback = null
+  timeoutSpy = null
+  fakeTimer = {}
 
   beforeEach ->
-    timeout_spy = spyOn window, 'setTimeout'
-    interval_spy = spyOn window, 'setInterval'
-    interval_spy.andCallFake (callback, timeout) ->
-      interval_callback = callback
-      fake_timer
+    timeoutSpy = spyOn window, 'setTimeout'
+    intervalSpy = spyOn window, 'setInterval'
+    intervalSpy.andCallFake (callback, timeout) ->
+      intervalCallback = callback
+      fakeTimer
 
     spyOn window, 'clearInterval'
 
-    result = @helpers.create_slider()
+    result = @helpers.createSlider()
 
   afterEach ->
-    @helpers.destroy_slider()
+    @helpers.destroySlider()
 
   describe 'when extending the available transitions', ->
     options = null
@@ -37,8 +37,8 @@ describe 'Rambling Slider transitions', ->
       spyOn($.fn, 'css').andCallThrough()
       spyOn($.fn, 'animate').andCallFake (options, speed, easing, callback) -> callback() if callback
       spyOn options, 'afterChange'
-      @helpers.create_slider options
-      interval_callback()
+      @helpers.createSlider options
+      intervalCallback()
 
     it 'is able to execute the new transition', ->
       expect(options.imageTransitions.newTransition).toHaveBeenCalled()
@@ -69,11 +69,11 @@ describe 'Rambling Slider transitions', ->
           expect(result.length).toEqual $.fn.ramblingSlider.defaults.slices
 
         it 'appends all the slices to the animation container', ->
-          expect(@rambling_slider.find('#rambling-animation .rambling-slice')).toEqualJquery result
+          expect(@ramblingSlider.find('#rambling-animation .rambling-slice')).toEqualJquery result
 
         it 'sets the expected slice images', ->
           result.find('img').each (index, element) =>
-            expect($(element).attr 'src').toEqual @rambling_slider.find('img.currentSlideElement').next().attr('src')
+            expect($(element).attr 'src').toEqual @ramblingSlider.find('img.currentSlideElement').next().attr('src')
 
       describe 'with specific number of slices', ->
         slices = null
@@ -86,15 +86,15 @@ describe 'Rambling Slider transitions', ->
           expect(result.length).toEqual slices
 
       describe 'with specific slide element', ->
-        slide_element = null
+        slideElement = null
 
         beforeEach ->
-          slide_element = @rambling_slider.find '.slideElement:last'
-          result = helper.createSlices $.fn.ramblingSlider.defaults.slices, slide_element
+          slideElement = @ramblingSlider.find '.slideElement:last'
+          result = helper.createSlices $.fn.ramblingSlider.defaults.slices, slideElement
 
         it 'sets the expected slice images', ->
           result.find('img').each (index, element) ->
-            expect($(element).attr 'src').toEqual slide_element.attr('src')
+            expect($(element).attr 'src').toEqual slideElement.attr('src')
 
     describe 'and calling the create boxes helper function', ->
       describe 'with no arguments', ->
@@ -105,11 +105,11 @@ describe 'Rambling Slider transitions', ->
           expect(result.length).toEqual $.fn.ramblingSlider.defaults.boxRows * $.fn.ramblingSlider.defaults.boxCols
 
         it 'appends all the boxes to the animation container', ->
-          expect(@rambling_slider.find('#rambling-animation .rambling-box')).toEqualJquery result
+          expect(@ramblingSlider.find('#rambling-animation .rambling-box')).toEqualJquery result
 
         it 'sets the expected box images', ->
           result.find('img').each (index, element) =>
-            expect($(element).attr 'src').toEqual @rambling_slider.find('img.currentSlideElement').next().attr('src')
+            expect($(element).attr 'src').toEqual @ramblingSlider.find('img.currentSlideElement').next().attr('src')
 
       describe 'with specific rows and columns', ->
         rows = null
@@ -132,20 +132,20 @@ describe 'Rambling Slider transitions', ->
           expect(result.length).toEqual 1
 
         it 'appends the slice to the animation container', ->
-          expect(@rambling_slider.find('#rambling-animation .rambling-slice')).toEqualJquery result
+          expect(@ramblingSlider.find('#rambling-animation .rambling-slice')).toEqualJquery result
 
         it 'sets the expected slice image', ->
-          expect(result.find('img').attr 'src').toEqual @rambling_slider.find('img.currentSlideElement').next().attr('src')
+          expect(result.find('img').attr 'src').toEqual @ramblingSlider.find('img.currentSlideElement').next().attr('src')
 
       describe 'for a specific element', ->
-        slide_element = null
+        slideElement = null
 
         beforeEach ->
-          slide_element = @rambling_slider.find '.slideElement:last'
-          result = helper.getOneSlice slide_element
+          slideElement = @ramblingSlider.find '.slideElement:last'
+          result = helper.getOneSlice slideElement
 
         it 'sets the expected slice image', ->
-          expect(result.find('img').attr 'src').toEqual slide_element.attr('src')
+          expect(result.find('img').attr 'src').toEqual slideElement.attr('src')
 
     describe 'and calling the animate full image helper function', ->
       beforeEach ->
@@ -162,7 +162,7 @@ describe 'Rambling Slider transitions', ->
 
       describe 'and it is aligned to the top', ->
         beforeEach ->
-          @rambling_slider.ramblingSlider 'option', 'alignBottom', false
+          @ramblingSlider.ramblingSlider 'option', 'alignBottom', false
           result = helper.animateFullImage ->
 
         it 'sets the top to 0 and the bottom to auto', ->
@@ -170,7 +170,7 @@ describe 'Rambling Slider transitions', ->
 
       describe 'and it is aligned to the bottom', ->
         beforeEach ->
-          @rambling_slider.ramblingSlider 'option', 'alignBottom', true
+          @ramblingSlider.ramblingSlider 'option', 'alignBottom', true
           result = helper.animateFullImage ->
 
         it 'sets the top to auto and the bottom to 0', ->
@@ -181,7 +181,7 @@ describe 'Rambling Slider transitions', ->
           result = helper.animateFullImage ->
 
         it 'animates the slice width to the width of the slider', ->
-          expect($.fn.animate).toHaveBeenCalledWith {width: @rambling_slider.width()}, $.fn.ramblingSlider.defaults.speed * 2, '', jasmine.any(Function)
+          expect($.fn.animate).toHaveBeenCalledWith {width: @ramblingSlider.width()}, $.fn.ramblingSlider.defaults.speed * 2, '', jasmine.any(Function)
 
       describe 'and something is returned by the animation set up callback', ->
         animate = null
@@ -195,32 +195,32 @@ describe 'Rambling Slider transitions', ->
 
     describe 'and calling the animate slices helper function', ->
       beforeEach ->
-        timeout_spy.andCallFake (callback, timeout) -> callback()
+        timeoutSpy.andCallFake (callback, timeout) -> callback()
 
       describe 'and a sort callback is given', ->
-        sort_callback = null
+        sortCallback = null
 
         beforeEach ->
-          sort_callback = jasmine.createSpy()
-          sort_callback.andCallFake -> @
-          result = helper.animateSlices (->), sort_callback
+          sortCallback = jasmine.createSpy()
+          sortCallback.andCallFake -> @
+          result = helper.animateSlices (->), sortCallback
 
         it 'calls the sort callback', ->
-          expect(sort_callback).toHaveBeenCalled()
+          expect(sortCallback).toHaveBeenCalled()
 
       describe 'and an animate set up callback is given', ->
-        animation_callback = null
+        animationCallback = null
 
         beforeEach ->
-          animation_callback = jasmine.createSpy()
+          animationCallback = jasmine.createSpy()
 
         describe 'which returns nothing', ->
-          finished_callback = null
+          finishedCallback = null
 
           beforeEach ->
-            animation_callback.andReturn null
+            animationCallback.andReturn null
             $.fn.animate.reset()
-            result = helper.animateSlices animation_callback
+            result = helper.animateSlices animationCallback
 
           it 'calls the jQuery animate method with an empty object', ->
             expect($.fn.animate).toHaveBeenCalledWith {}, $.fn.ramblingSlider.defaults.speed, '', undefined
@@ -237,37 +237,37 @@ describe 'Rambling Slider transitions', ->
 
           beforeEach ->
             animate = width: 5000
-            animation_callback.andReturn animate
-            result = helper.animateSlices animation_callback
+            animationCallback.andReturn animate
+            result = helper.animateSlices animationCallback
 
           it 'calls the jQuery animate method with the returned object', ->
             expect($.fn.animate).toHaveBeenCalledWith animate, $.fn.ramblingSlider.defaults.speed, '', undefined
 
     describe 'and calling the animate boxes helper function', ->
       describe 'and a sort callback is given', ->
-        sort_callback = null
+        sortCallback = null
 
         beforeEach ->
-          sort_callback = jasmine.createSpy()
-          result = helper.animateBoxes (->), sort_callback
+          sortCallback = jasmine.createSpy()
+          result = helper.animateBoxes (->), sortCallback
 
         it 'calls the sort callback', ->
-          expect(sort_callback).toHaveBeenCalled()
+          expect(sortCallback).toHaveBeenCalled()
 
       describe 'and an animation callback is given', ->
-        animation_callback = null
-        finished_callback = null
+        animationCallback = null
+        finishedCallback = null
 
         beforeEach ->
-          animation_callback = jasmine.createSpy()
-          animation_callback.andCallFake (callback) -> finished_callback = callback
-          result = helper.animateBoxes animation_callback
+          animationCallback = jasmine.createSpy()
+          animationCallback.andCallFake (callback) -> finishedCallback = callback
+          result = helper.animateBoxes animationCallback
 
         it 'calls the animation callback', ->
-          expect(animation_callback).toHaveBeenCalledWith jasmine.any(Function)
+          expect(animationCallback).toHaveBeenCalledWith jasmine.any(Function)
 
         it 'raises the rambling:finished event with the finished callback', ->
-          finished_callback()
+          finishedCallback()
           expect($.fn.trigger).toHaveBeenCalledWith 'rambling:finished'
 
     describe 'and calling the animate boxes in 2d helper function', ->
@@ -275,36 +275,36 @@ describe 'Rambling Slider transitions', ->
         spyOn($.fn, 'as2dArray').andCallFake -> @
 
       describe 'and an animation set up callback is given', ->
-        set_up_callback = null
-        set_up_options = null
+        setUpCallback = null
+        setUpOptions = null
 
         beforeEach ->
-          set_up_options = {opacity: 5000}
-          set_up_callback = jasmine.createSpy()
-          set_up_callback.andReturn set_up_options
-          timeout_spy.andCallFake (callback) -> callback()
+          setUpOptions = {opacity: 5000}
+          setUpCallback = jasmine.createSpy()
+          setUpCallback.andReturn setUpOptions
+          timeoutSpy.andCallFake (callback) -> callback()
 
-          result = helper.animateBoxesIn2d set_up_callback
+          result = helper.animateBoxesIn2d setUpCallback
 
         it 'executes the set up callback the expected amount of times', ->
-          expect(set_up_callback.callCount).toEqual $.fn.ramblingSlider.defaults.boxRows * $.fn.ramblingSlider.defaults.boxCols
+          expect(setUpCallback.callCount).toEqual $.fn.ramblingSlider.defaults.boxRows * $.fn.ramblingSlider.defaults.boxCols
 
         it 'does not pass a finished callback to the jQuery animate for the first boxes', ->
-          expect($.fn.animate).toHaveBeenCalledWith set_up_options, $.fn.ramblingSlider.defaults.speed / 1.3, '', undefined
+          expect($.fn.animate).toHaveBeenCalledWith setUpOptions, $.fn.ramblingSlider.defaults.speed / 1.3, '', undefined
 
         it 'passs a finished callback to the jQuery animate for the last box', ->
-          expect($.fn.animate).toHaveBeenCalledWith set_up_options, $.fn.ramblingSlider.defaults.speed / 1.3, '', jasmine.any(Function)
+          expect($.fn.animate).toHaveBeenCalledWith setUpOptions, $.fn.ramblingSlider.defaults.speed / 1.3, '', jasmine.any(Function)
 
       describe 'and a sort callback is given', ->
-        custom_sort_callback = null
+        customSortCallback = null
 
         beforeEach ->
-          custom_sort_callback = jasmine.createSpy()
-          custom_sort_callback.andCallFake -> @
-          result = helper.animateBoxesIn2d (->), custom_sort_callback
+          customSortCallback = jasmine.createSpy()
+          customSortCallback.andCallFake -> @
+          result = helper.animateBoxesIn2d (->), customSortCallback
 
         it 'calls the sort callback', ->
-          expect(custom_sort_callback).toHaveBeenCalled()
+          expect(customSortCallback).toHaveBeenCalled()
 
         it 'divides the boxes into a bidimensional array', ->
           expect($.fn.as2dArray).toHaveBeenCalled()
@@ -317,131 +317,131 @@ describe 'Rambling Slider transitions', ->
           expect($.fn.as2dArray).toHaveBeenCalled()
 
     describe 'and calling the slide down slices helper function', ->
-      sort_callback = null
-      timeout_callback = null
+      sortCallback = null
+      timeoutCallback = null
 
       beforeEach ->
-        timeout_spy.andCallFake (callback) -> timeout_callback = callback
-        sort_callback = jasmine.createSpy()
-        sort_callback.andCallFake -> @
+        timeoutSpy.andCallFake (callback) -> timeoutCallback = callback
+        sortCallback = jasmine.createSpy()
+        sortCallback.andCallFake -> @
 
-        result = helper.slideDownSlices sort_callback
+        result = helper.slideDownSlices sortCallback
 
       it 'aligns the slices to the top', ->
-        timeout_callback()
+        timeoutCallback()
         expect($.fn.css).toHaveBeenCalledWith top: 0
 
       it 'sorts the slices', ->
-        expect(sort_callback).toHaveBeenCalled()
+        expect(sortCallback).toHaveBeenCalled()
 
       it 'sets the height to the slider height and the opacity to 1', ->
-        timeout_callback()
-        expect($.fn.animate).toHaveBeenCalledWith {height: @rambling_slider.height(), opacity: '1'}, $.fn.ramblingSlider.defaults.speed, '', jasmine.any(Function)
+        timeoutCallback()
+        expect($.fn.animate).toHaveBeenCalledWith {height: @ramblingSlider.height(), opacity: '1'}, $.fn.ramblingSlider.defaults.speed, '', jasmine.any(Function)
 
     describe 'and calling the slide up slices helper function', ->
-      sort_callback = null
-      timeout_callback = null
+      sortCallback = null
+      timeoutCallback = null
 
       beforeEach ->
-        timeout_spy.andCallFake (callback) -> timeout_callback = callback
-        sort_callback = jasmine.createSpy()
-        sort_callback.andCallFake -> @
+        timeoutSpy.andCallFake (callback) -> timeoutCallback = callback
+        sortCallback = jasmine.createSpy()
+        sortCallback.andCallFake -> @
 
-        result = helper.slideUpSlices sort_callback
+        result = helper.slideUpSlices sortCallback
 
       it 'aligns the slices to the bottom', ->
-        timeout_callback()
+        timeoutCallback()
         expect($.fn.css).toHaveBeenCalledWith bottom: 0
 
       it 'sorts the slices', ->
-        expect(sort_callback).toHaveBeenCalled()
+        expect(sortCallback).toHaveBeenCalled()
 
       it 'sets the height to the slider height and the opacity to 1', ->
-        timeout_callback()
-        expect($.fn.animate).toHaveBeenCalledWith {height: @rambling_slider.height(), opacity: '1'}, $.fn.ramblingSlider.defaults.speed, '', jasmine.any(Function)
+        timeoutCallback()
+        expect($.fn.animate).toHaveBeenCalledWith {height: @ramblingSlider.height(), opacity: '1'}, $.fn.ramblingSlider.defaults.speed, '', jasmine.any(Function)
 
     describe 'and calling the slide up down slices helper function', ->
-      sort_callback = null
-      timeout_callback = null
+      sortCallback = null
+      timeoutCallback = null
 
       beforeEach ->
-        timeout_spy.andCallFake (callback) -> timeout_callback = callback
-        sort_callback = jasmine.createSpy()
-        sort_callback.andCallFake -> @
+        timeoutSpy.andCallFake (callback) -> timeoutCallback = callback
+        sortCallback = jasmine.createSpy()
+        sortCallback.andCallFake -> @
 
-        result = helper.slideUpDownSlices sort_callback
+        result = helper.slideUpDownSlices sortCallback
 
       it 'sorts the slices', ->
-        expect(sort_callback).toHaveBeenCalled()
+        expect(sortCallback).toHaveBeenCalled()
 
       it 'sets the height to the slider height and the opacity to 1', ->
-        timeout_callback()
-        expect($.fn.animate).toHaveBeenCalledWith {height: @rambling_slider.height(), opacity: '1'}, $.fn.ramblingSlider.defaults.speed, '', jasmine.any(Function)
+        timeoutCallback()
+        expect($.fn.animate).toHaveBeenCalledWith {height: @ramblingSlider.height(), opacity: '1'}, $.fn.ramblingSlider.defaults.speed, '', jasmine.any(Function)
 
     describe 'and calling the slide fold slices helper function', ->
-      sort_callback = null
-      timeout_callback = null
+      sortCallback = null
+      timeoutCallback = null
 
       beforeEach ->
-        timeout_spy.andCallFake (callback) -> timeout_callback = callback
-        sort_callback = jasmine.createSpy()
-        sort_callback.andCallFake -> @
+        timeoutSpy.andCallFake (callback) -> timeoutCallback = callback
+        sortCallback = jasmine.createSpy()
+        sortCallback.andCallFake -> @
 
-        result = helper.foldSlices sort_callback
+        result = helper.foldSlices sortCallback
 
       it 'sorts the slices', ->
-        expect(sort_callback).toHaveBeenCalled()
+        expect(sortCallback).toHaveBeenCalled()
 
       it 'aligns the slices to the bottom', ->
-        timeout_callback()
+        timeoutCallback()
         expect($.fn.css).toHaveBeenCalledWith top: 0, height: '100%', width: 0
 
       it 'sets the height to the slider width and the opacity to 1', ->
-        timeout_callback()
-        expect($.fn.animate).toHaveBeenCalledWith {width: @rambling_slider.width(), opacity: '1'}, $.fn.ramblingSlider.defaults.speed, '', jasmine.any(Function)
+        timeoutCallback()
+        expect($.fn.animate).toHaveBeenCalledWith {width: @ramblingSlider.width(), opacity: '1'}, $.fn.ramblingSlider.defaults.speed, '', jasmine.any(Function)
 
     describe 'and calling the slide fade slices helper function', ->
-      sort_callback = null
-      timeout_callback = null
+      sortCallback = null
+      timeoutCallback = null
 
       beforeEach ->
-        timeout_spy.andCallFake (callback) -> timeout_callback = callback
-        sort_callback = jasmine.createSpy()
-        sort_callback.andCallFake -> @
+        timeoutSpy.andCallFake (callback) -> timeoutCallback = callback
+        sortCallback = jasmine.createSpy()
+        sortCallback.andCallFake -> @
 
-        result = helper.fadeSlices sort_callback
+        result = helper.fadeSlices sortCallback
 
       it 'sorts the slices', ->
-        expect(sort_callback).toHaveBeenCalled()
+        expect(sortCallback).toHaveBeenCalled()
 
       it 'aligns the slices to the bottom', ->
-        timeout_callback()
-        expect($.fn.css).toHaveBeenCalledWith height: @rambling_slider.height()
+        timeoutCallback()
+        expect($.fn.css).toHaveBeenCalledWith height: @ramblingSlider.height()
 
       it 'sets the opacity to 1', ->
-        timeout_callback()
+        timeoutCallback()
         expect($.fn.animate).toHaveBeenCalledWith {opacity: '1'}, $.fn.ramblingSlider.defaults.speed, '', jasmine.any(Function)
 
   describe 'when running the transitions', ->
-    animation_helpers = null
-    sort_callback = null
-    animation_set_up_callback = null
-    image_transitions = null
-    all_around_transitions = [
-      { name: 'sliceDown', short_name: 'down', helper: 'slideDownSlices', helper_name: 'slide down' },
-      { name: 'sliceUp', short_name: 'up', helper: 'slideUpSlices', helper_name: 'slide up' },
-      { name: 'sliceUpDown', short_name: 'up down', helper: 'slideUpDownSlices', helper_name: 'slide up down' },
-      { name: 'sliceFade', short_name: 'fade', helper: 'fadeSlices', helper_name: 'fading' },
-      { name: 'fold', short_name: 'fold', helper: 'foldSlices', helper_name: 'folding' },
+    animationHelpers = null
+    sortCallback = null
+    animationSetUpCallback = null
+    imageTransitions = null
+    allAroundTransitions = [
+      { name: 'sliceDown', shortName: 'down', helper: 'slideDownSlices', helperName: 'slide down' },
+      { name: 'sliceUp', shortName: 'up', helper: 'slideUpSlices', helperName: 'slide up' },
+      { name: 'sliceUpDown', shortName: 'up down', helper: 'slideUpDownSlices', helperName: 'slide up down' },
+      { name: 'sliceFade', shortName: 'fade', helper: 'fadeSlices', helperName: 'fading' },
+      { name: 'fold', shortName: 'fold', helper: 'foldSlices', helperName: 'folding' },
     ]
-    box_transitions = [
-      { name: 'boxRain', short_name: 'rain', helper: 'rainBoxes' },
-      { name: 'boxGrow', short_name: 'grow', helper: 'growBoxes' },
+    boxTransitions = [
+      { name: 'boxRain', shortName: 'rain', helper: 'rainBoxes' },
+      { name: 'boxGrow', shortName: 'grow', helper: 'growBoxes' },
     ]
 
     beforeEach ->
-      sort_callback_setter = (callback) -> sort_callback = callback
-      animation_helpers =
+      sortCallbackSetter = (callback) -> sortCallback = callback
+      animationHelpers =
         animateFullImage: ->
         fadeBoxes: ->
         rainBoxes: ->
@@ -449,89 +449,89 @@ describe 'Rambling Slider transitions', ->
 
       spyOn($.fn, 'css').andCallFake -> @
       spyOn($.fn, 'animate').andCallFake -> @
-      spyOn(animation_helpers, 'animateFullImage').andCallFake (callback) -> animation_set_up_callback = callback
-      spyOn animation_helpers, 'fadeBoxes'
-      spyOn animation_helpers, 'rainBoxes'
-      spyOn animation_helpers, 'growBoxes'
+      spyOn(animationHelpers, 'animateFullImage').andCallFake (callback) -> animationSetUpCallback = callback
+      spyOn animationHelpers, 'fadeBoxes'
+      spyOn animationHelpers, 'rainBoxes'
+      spyOn animationHelpers, 'growBoxes'
 
-      $.each all_around_transitions, (index, element) ->
-        animation_helpers[element.helper] = ->
-        spyOn(animation_helpers, element.helper).andCallFake sort_callback_setter
+      $.each allAroundTransitions, (index, element) ->
+        animationHelpers[element.helper] = ->
+        spyOn(animationHelpers, element.helper).andCallFake sortCallbackSetter
 
-      image_transitions = $.fn.ramblingSlider.defaults.imageTransitions
+      imageTransitions = $.fn.ramblingSlider.defaults.imageTransitions
 
-    $.each all_around_transitions, (index, element) ->
-      describe "and executing a #{element.helper_name} of slices", ->
+    $.each allAroundTransitions, (index, element) ->
+      describe "and executing a #{element.helperName} of slices", ->
         describe 'from left to right', ->
           beforeEach ->
-            image_transitions["#{element.name}Right"].apply animation_helpers
+            imageTransitions["#{element.name}Right"].apply animationHelpers
 
-          it "calls the #{element.helper_name} slices helper", ->
-            expect(animation_helpers[element.helper]).toHaveBeenCalled()
+          it "calls the #{element.helperName} slices helper", ->
+            expect(animationHelpers[element.helper]).toHaveBeenCalled()
 
         describe 'from right to left', ->
           beforeEach ->
-            image_transitions["#{element.name}Left"].apply animation_helpers
+            imageTransitions["#{element.name}Left"].apply animationHelpers
 
-          it "calls the #{element.helper_name} slices helper with the reverse callback", ->
-            expect(animation_helpers[element.helper]).toHaveBeenCalledWith $.fn.reverse
+          it "calls the #{element.helperName} slices helper with the reverse callback", ->
+            expect(animationHelpers[element.helper]).toHaveBeenCalledWith $.fn.reverse
 
         describe 'from outer to inner', ->
           beforeEach ->
-            image_transitions["#{element.name}OutIn"].apply animation_helpers
+            imageTransitions["#{element.name}OutIn"].apply animationHelpers
 
-          it "calls the #{element.helper_name} slices helper with the sort out in callback", ->
-            expect(animation_helpers[element.helper]).toHaveBeenCalledWith $.fn.sortOutIn
+          it "calls the #{element.helperName} slices helper with the sort out in callback", ->
+            expect(animationHelpers[element.helper]).toHaveBeenCalledWith $.fn.sortOutIn
 
         describe 'from inner to outer', ->
           beforeEach ->
-            image_transitions["#{element.name}InOut"].apply animation_helpers
+            imageTransitions["#{element.name}InOut"].apply animationHelpers
 
-          it "calls the #{element.helper_name} slices helper", ->
-            expect(animation_helpers[element.helper]).toHaveBeenCalledWith $.fn.sortInOut
+          it "calls the #{element.helperName} slices helper", ->
+            expect(animationHelpers[element.helper]).toHaveBeenCalledWith $.fn.sortInOut
 
         describe 'randomly', ->
           beforeEach ->
-            image_transitions["#{element.name}Random"].apply animation_helpers
+            imageTransitions["#{element.name}Random"].apply animationHelpers
 
-          it "calls the #{element.helper_name} slices helper with the shuffle callback", ->
-            expect(animation_helpers[element.helper]).toHaveBeenCalledWith $.fn.shuffle
+          it "calls the #{element.helperName} slices helper with the shuffle callback", ->
+            expect(animationHelpers[element.helper]).toHaveBeenCalledWith $.fn.shuffle
 
     describe 'and executing a full image fade in', ->
       beforeEach ->
-        image_transitions.fadeIn.apply animation_helpers
-        result = animation_set_up_callback.apply $('<div></div>'), [@rambling_slider]
+        imageTransitions.fadeIn.apply animationHelpers
+        result = animationSetUpCallback.apply $('<div></div>'), [@ramblingSlider]
 
       it 'calls the animate full image helper', ->
-        expect(animation_helpers.animateFullImage).toHaveBeenCalled()
+        expect(animationHelpers.animateFullImage).toHaveBeenCalled()
 
       it 'sets the style to the slice', ->
-        expect($.fn.css).toHaveBeenCalledWith height: '100%', width: @rambling_slider.width(), position: 'absolute', top: 0, left: 0
+        expect($.fn.css).toHaveBeenCalledWith height: '100%', width: @ramblingSlider.width(), position: 'absolute', top: 0, left: 0
 
       it 'returns the expected animation', ->
         expect(result).toEqual { opacity: '1' }
 
     describe 'and executing a full image fade out', ->
       beforeEach ->
-        image_transitions.fadeOut.apply animation_helpers
-        result = animation_set_up_callback.apply $('<div></div>'), [@rambling_slider]
+        imageTransitions.fadeOut.apply animationHelpers
+        result = animationSetUpCallback.apply $('<div></div>'), [@ramblingSlider]
 
       it 'calls the animate full image helper', ->
-        expect(animation_helpers.animateFullImage).toHaveBeenCalled()
+        expect(animationHelpers.animateFullImage).toHaveBeenCalled()
 
       it 'sets the style to the slice', ->
-        expect($.fn.css).toHaveBeenCalledWith height: '100%', width: @rambling_slider.width(), position: 'absolute', top: 0, left: 0
+        expect($.fn.css).toHaveBeenCalledWith height: '100%', width: @ramblingSlider.width(), position: 'absolute', top: 0, left: 0
 
       it 'returns the expected animation', ->
         expect(result).toEqual { opacity: '1' }
 
     describe 'and executing a full image rollover right', ->
       beforeEach ->
-        image_transitions.rolloverRight.apply animation_helpers
-        result = animation_set_up_callback.apply $('<div></div>'), [@rambling_slider]
+        imageTransitions.rolloverRight.apply animationHelpers
+        result = animationSetUpCallback.apply $('<div></div>'), [@ramblingSlider]
 
       it 'calls the animate full image helper', ->
-        expect(animation_helpers.animateFullImage).toHaveBeenCalled()
+        expect(animationHelpers.animateFullImage).toHaveBeenCalled()
 
       it 'sets the style to the slice', ->
         expect($.fn.css).toHaveBeenCalledWith height: '100%', width: 0, opacity: '1'
@@ -546,23 +546,23 @@ describe 'Rambling Slider transitions', ->
         settings =
           speed: 500
 
-        image_transitions.rolloverLeft.apply animation_helpers
-        result = animation_set_up_callback.apply $('<div><img src="" alt="" /></div>'), [@rambling_slider, settings]
+        imageTransitions.rolloverLeft.apply animationHelpers
+        result = animationSetUpCallback.apply $('<div><img src="" alt="" /></div>'), [@ramblingSlider, settings]
 
       it 'calls the animate full image helper', ->
-        expect(animation_helpers.animateFullImage).toHaveBeenCalled()
+        expect(animationHelpers.animateFullImage).toHaveBeenCalled()
 
       it 'sets the style to the slice', ->
         expect($.fn.css).toHaveBeenCalledWith height: '100%', width: 0, opacity: '1', left: 'auto', right: 0
 
       it 'sets the style to the image', ->
-        expect($.fn.css).toHaveBeenCalledWith left: -@rambling_slider.width()
+        expect($.fn.css).toHaveBeenCalledWith left: -@ramblingSlider.width()
 
       it 'animates the image', ->
         expect($.fn.animate).toHaveBeenCalledWith {left: 0}, settings.speed * 2
 
       it 'returns the expected animation', ->
-        expect(result).toEqual {width: @rambling_slider.width()}
+        expect(result).toEqual {width: @ramblingSlider.width()}
 
     describe 'and executing a full image slide in right', ->
       settings = null
@@ -571,36 +571,36 @@ describe 'Rambling Slider transitions', ->
         settings =
           speed: 500
 
-        image_transitions.slideInRight.apply animation_helpers
-        result = animation_set_up_callback.apply $('<div><img src="" alt="" /></div>'), [@rambling_slider, settings]
+        imageTransitions.slideInRight.apply animationHelpers
+        result = animationSetUpCallback.apply $('<div><img src="" alt="" /></div>'), [@ramblingSlider, settings]
 
       it 'calls the animate full image helper', ->
-        expect(animation_helpers.animateFullImage).toHaveBeenCalled()
+        expect(animationHelpers.animateFullImage).toHaveBeenCalled()
 
       it 'sets the style to the slice', ->
         expect($.fn.css).toHaveBeenCalledWith height: '100%', width: 0, opacity: '1'
 
       it 'sets the style to the image', ->
-        expect($.fn.css).toHaveBeenCalledWith left: -@rambling_slider.width()
+        expect($.fn.css).toHaveBeenCalledWith left: -@ramblingSlider.width()
 
       it 'animates the image', ->
         expect($.fn.animate).toHaveBeenCalledWith {left: 0}, settings.speed * 2
 
       it 'returns the expected animation', ->
-        expect(result).toEqual {width: @rambling_slider.width()}
+        expect(result).toEqual {width: @ramblingSlider.width()}
 
     describe 'and executing a full image slide in left', ->
-      finished_callback = null
+      finishedCallback = null
 
       beforeEach ->
-        spyOn($.fn, 'bind').andCallFake (event, callback) -> finished_callback = callback
+        spyOn($.fn, 'bind').andCallFake (event, callback) -> finishedCallback = callback
         spyOn $.fn, 'unbind'
 
-        image_transitions.slideInLeft.apply animation_helpers
-        result = animation_set_up_callback.apply $('<div></div>'), [@rambling_slider]
+        imageTransitions.slideInLeft.apply animationHelpers
+        result = animationSetUpCallback.apply $('<div></div>'), [@ramblingSlider]
 
       it 'calls the animate full image helper', ->
-        expect(animation_helpers.animateFullImage).toHaveBeenCalled()
+        expect(animationHelpers.animateFullImage).toHaveBeenCalled()
 
       it 'sets the style to the slice', ->
         expect($.fn.css).toHaveBeenCalledWith height: '100%', width: 0, opacity: '1', left: 'auto', right: 0
@@ -610,46 +610,46 @@ describe 'Rambling Slider transitions', ->
 
       describe 'and executing the finished callback', ->
         beforeEach ->
-          finished_callback()
+          finishedCallback()
 
         it 'sets the finished style to the slice', ->
           expect($.fn.css).toHaveBeenCalledWith left: 0, right: 'auto'
 
         it 'unbinds from the rambling:finished event', ->
-          expect($.fn.unbind).toHaveBeenCalledWith 'rambling:finished', finished_callback
+          expect($.fn.unbind).toHaveBeenCalledWith 'rambling:finished', finishedCallback
 
-    $.each box_transitions, (index, element) ->
-      describe "and executing a box #{element.short_name}", ->
+    $.each boxTransitions, (index, element) ->
+      describe "and executing a box #{element.shortName}", ->
         beforeEach ->
-          image_transitions["#{element.name}Forward"].apply animation_helpers
+          imageTransitions["#{element.name}Forward"].apply animationHelpers
 
-        it "#{element.short_name}s the boxes with default order", ->
-          expect(animation_helpers[element.helper]).toHaveBeenCalledWith
+        it "#{element.shortName}s the boxes with default order", ->
+          expect(animationHelpers[element.helper]).toHaveBeenCalledWith
 
-      describe "and executing a reversed box #{element.short_name}", ->
+      describe "and executing a reversed box #{element.shortName}", ->
         beforeEach ->
-          image_transitions["#{element.name}Reverse"].apply animation_helpers
+          imageTransitions["#{element.name}Reverse"].apply animationHelpers
 
-        it "#{element.short_name}s the boxes with reversed order", ->
-          expect(animation_helpers[element.helper]).toHaveBeenCalledWith $.fn.reverse
+        it "#{element.shortName}s the boxes with reversed order", ->
+          expect(animationHelpers[element.helper]).toHaveBeenCalledWith $.fn.reverse
 
-      describe "and executing a outer to inner box #{element.short_name}", ->
+      describe "and executing a outer to inner box #{element.shortName}", ->
         beforeEach ->
-          image_transitions["#{element.name}OutIn"].apply animation_helpers
+          imageTransitions["#{element.name}OutIn"].apply animationHelpers
 
-        it "#{element.short_name}s the boxes from outer to inner", ->
-          expect(animation_helpers[element.helper]).toHaveBeenCalledWith $.fn.sortOutIn
+        it "#{element.shortName}s the boxes from outer to inner", ->
+          expect(animationHelpers[element.helper]).toHaveBeenCalledWith $.fn.sortOutIn
 
-      describe "and executing a inner to outer box #{element.short_name}", ->
+      describe "and executing a inner to outer box #{element.shortName}", ->
         beforeEach ->
-          image_transitions["#{element.name}InOut"].apply animation_helpers
+          imageTransitions["#{element.name}InOut"].apply animationHelpers
 
-        it "#{element.short_name}s the boxes from inner to outer", ->
-          expect(animation_helpers[element.helper]).toHaveBeenCalledWith $.fn.sortInOut
+        it "#{element.shortName}s the boxes from inner to outer", ->
+          expect(animationHelpers[element.helper]).toHaveBeenCalledWith $.fn.sortInOut
 
-      describe "and executing a random box #{element.short_name}", ->
+      describe "and executing a random box #{element.shortName}", ->
         beforeEach ->
-          image_transitions["#{element.name}Random"].apply animation_helpers
+          imageTransitions["#{element.name}Random"].apply animationHelpers
 
-        it "#{element.short_name}s the boxes randomly", ->
-          expect(animation_helpers[element.helper]).toHaveBeenCalledWith $.fn.shuffle
+        it "#{element.shortName}s the boxes randomly", ->
+          expect(animationHelpers[element.helper]).toHaveBeenCalledWith $.fn.shuffle

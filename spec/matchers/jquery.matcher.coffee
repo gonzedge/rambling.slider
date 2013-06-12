@@ -5,13 +5,13 @@ formatJqueryElement = (jQueryArray) ->
   formatElement element
 
 formatElement = (element) ->
-  tag_name = element.tagName.toLowerCase()
+  tagName = element.tagName.toLowerCase()
   id = element.id
   classes = element.className
-  format = "<#{tag_name}"
+  format = "<#{tagName}"
   for attribute in element.attributes then do (attribute) ->
     format = "#{format} #{attribute.name}='#{attribute.value}'"
-  format = "#{format}>#{element.innerHTML}</#{tag_name}>"
+  format = "#{format}>#{element.innerHTML}</#{tagName}>"
 
 beforeEach ->
   @addMatchers
@@ -21,11 +21,11 @@ beforeEach ->
 
       @actual.equals jQueryArray
 
-    toContainElementWithClass: (class_name) ->
+    toContainElementWithClass: (className) ->
       @message = ->
-        "Expected #{formatJqueryElement(@actual)} to include an element with class '#{class_name}'"
+        "Expected #{formatJqueryElement(@actual)} to include an element with class '#{className}'"
 
-      @actual.find(".#{class_name}").length
+      @actual.find(".#{className}").length
 
     toContainElementWithId: (id) ->
       @message = ->
@@ -33,14 +33,14 @@ beforeEach ->
 
       @actual.find("##{id}").length
 
-    toHaveClass: (class_name) ->
+    toHaveClass: (className) ->
       @message = ->
-        "Expected #{formatJqueryElement(@actual)} to have class '#{class_name}'"
+        "Expected #{formatJqueryElement(@actual)} to have class '#{className}'"
 
-      @actual.hasClass class_name
+      @actual.hasClass className
 
     toHaveAttribute: (attribute) ->
       @actual.filter("[#{attribute}]").length
 
-    toHaveData: (data_name) ->
-      @actual.data data_name
+    toHaveData: (dataName) ->
+      @actual.data dataName

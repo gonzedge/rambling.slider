@@ -7,18 +7,18 @@
   $.fn.as2dArray = (totalColumns) ->
     rowIndex = 0
     colIndex = 0
-    array_2d = $ ''
-    array_2d[rowIndex] = $ ''
+    array2d = $ ''
+    array2d[rowIndex] = $ ''
 
     @each ->
-      array_2d[rowIndex][colIndex] = $ @
+      array2d[rowIndex][colIndex] = $ @
       colIndex++
       if colIndex is totalColumns
         rowIndex++
         colIndex = 0
-        array_2d[rowIndex] = $ ''
+        array2d[rowIndex] = $ ''
 
-    array_2d
+    array2d
 
   $.fn.containsFlash = ->
     @find('object,embed').length

@@ -1,5 +1,5 @@
 describe 'Rambling Box Slicer', ->
-  rambling_slice_generator = null
+  ramblingSliceGenerator = null
   slider = null
   settings = null
   vars = null
@@ -19,22 +19,22 @@ describe 'Rambling Box Slicer', ->
     RamblingSlicer::getRamblingSlice = jasmine.createSpy()
     RamblingSlicer::getRamblingSlice.andCallFake -> $ '<div class="rambling-slice"></div>'
 
-    rambling_slice_generator = new RamblingSliceGenerator slider, settings, vars
+    ramblingSliceGenerator = new RamblingSliceGenerator slider, settings, vars
 
   afterEach -> global.RamblingSlicer = realRamblingSlicer
 
   describe 'when getting one default slice', ->
-    create_slices = null
+    createSlices = null
 
     beforeEach ->
-      create_slices = RamblingSliceGenerator::createSlices
+      createSlices = RamblingSliceGenerator::createSlices
       RamblingSliceGenerator::createSlices = jasmine.createSpy()
       RamblingSliceGenerator::createSlices.andCallFake RamblingSlicer::getRamblingSlice
 
-      result = rambling_slice_generator.getOneSlice()
+      result = ramblingSliceGenerator.getOneSlice()
 
     afterEach ->
-      RamblingSliceGenerator::createSlices = create_slices
+      RamblingSliceGenerator::createSlices = createSlices
 
     it 'creates one slice', ->
       expect(RamblingSliceGenerator::createSlices).toHaveBeenCalledWith 1, vars.currentSlideElement

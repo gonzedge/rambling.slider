@@ -1,5 +1,5 @@
 describe 'Rambling Box Generator', ->
-  rambling_box_generator = null
+  ramblingBoxGenerator = null
   slider = null
   settings = null
   vars = null
@@ -18,49 +18,49 @@ describe 'Rambling Box Generator', ->
     RamblingBoxer::getRamblingBox = jasmine.createSpy()
     RamblingBoxer::getRamblingBox.andCallFake ->  $ '<div class="rambling-box"></div>'
 
-    rambling_box_generator = new RamblingBoxGenerator slider, settings, vars
+    ramblingBoxGenerator = new RamblingBoxGenerator slider, settings, vars
 
   afterEach -> global.RamblingBoxer = realRamblingBoxer
 
   describe 'when creating the default amount of boxes', ->
     beforeEach ->
-      result = rambling_box_generator.createBoxes()
+      result = ramblingBoxGenerator.createBoxes()
 
     it 'returns the expected amount of boxes', ->
       expect(result.length).toEqual settings.boxCols * settings.boxRows
 
     it 'calls the rambling boxer with the correct parameters', ->
-      box_width = slider.width() / settings.boxRows
-      box_height = slider.height() / settings.boxCols
+      boxWidth = slider.width() / settings.boxRows
+      boxHeight = slider.height() / settings.boxCols
 
       for row in [0...settings.boxRows]
         for column in [0...settings.boxCols]
-          expect(RamblingBoxer::getRamblingBox).toHaveBeenCalledWith box_width, box_height, row, column, settings, vars
+          expect(RamblingBoxer::getRamblingBox).toHaveBeenCalledWith boxWidth, boxHeight, row, column, settings, vars
 
     it 'calls the rambling boxer the expected amount of times', ->
       expect(RamblingBoxer::getRamblingBox.callCount).toEqual settings.boxCols * settings.boxRows
 
   describe 'when creating a custom amount of boxes', ->
-    box_rows = null
-    box_cols = null
+    boxRows = null
+    boxCols = null
 
     beforeEach ->
-      box_rows = 3
-      box_cols = 6
+      boxRows = 3
+      boxCols = 6
 
-      result = rambling_box_generator.createBoxes box_cols, box_rows
+      result = ramblingBoxGenerator.createBoxes boxCols, boxRows
 
     it 'returns the expected amount of boxes', ->
-      expect(result.length).toEqual box_rows * box_cols
+      expect(result.length).toEqual boxRows * boxCols
 
     it 'calls the rambling boxer with the correct parameters', ->
-      box_width = Math.round slider.width() / box_rows
-      box_height = Math.round slider.height() / box_cols
+      boxWidth = Math.round slider.width() / boxRows
+      boxHeight = Math.round slider.height() / boxCols
 
-      for row in [0...box_rows]
-        for column in [0...box_cols]
-          expect(RamblingBoxer::getRamblingBox).toHaveBeenCalledWith box_height, box_width, row, column, settings, vars
+      for row in [0...boxRows]
+        for column in [0...boxCols]
+          expect(RamblingBoxer::getRamblingBox).toHaveBeenCalledWith boxHeight, boxWidth, row, column, settings, vars
 
     it 'calls the rambling boxer the expected amount of times', ->
-      expect(RamblingBoxer::getRamblingBox.callCount).toEqual box_rows * box_cols
+      expect(RamblingBoxer::getRamblingBox.callCount).toEqual boxRows * boxCols
 

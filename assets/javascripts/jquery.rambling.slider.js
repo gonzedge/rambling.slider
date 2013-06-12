@@ -148,21 +148,21 @@
       return this.sortOutIn().reverse();
     };
     $.fn.as2dArray = function(totalColumns) {
-      var array_2d, colIndex, rowIndex;
+      var array2d, colIndex, rowIndex;
       rowIndex = 0;
       colIndex = 0;
-      array_2d = $('');
-      array_2d[rowIndex] = $('');
+      array2d = $('');
+      array2d[rowIndex] = $('');
       this.each(function() {
-        array_2d[rowIndex][colIndex] = $(this);
+        array2d[rowIndex][colIndex] = $(this);
         colIndex++;
         if (colIndex === totalColumns) {
           rowIndex++;
           colIndex = 0;
-          return array_2d[rowIndex] = $('');
+          return array2d[rowIndex] = $('');
         }
       });
-      return array_2d;
+      return array2d;
     };
     $.fn.containsFlash = function() {
       return this.find('object,embed').length;
