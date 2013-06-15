@@ -507,11 +507,8 @@
         }
         option = options[0], value = options[1];
         optionIsObject = typeof option === 'object';
-        if (option === 'effect') {
-          return _this.effect.apply(_this, value ? [value] : void 0);
-        }
-        if (option === 'theme') {
-          return _this.theme.apply(_this, value ? [value] : void 0);
+        if (['effect', 'theme'].contains(option)) {
+          return _this[option].call(_this, value ? value : void 0);
         }
         if (optionIsObject) {
           return $.extend(settings, option);
@@ -911,11 +908,11 @@
           top: (settings.alignBottom ? 'auto' : 0),
           bottom: (settings.alignBottom ? 0 : 'auto')
         });
-        return slice.animate(animationSetUp.apply(slice, [slider, $.extend({}, settings)]) || {
+        return slice.animate(animationSetUp.call(slice, slider, $.extend({}, settings)) || {
           width: slider.width()
         }, settings.speed * 2, '', function() {
           if (settings.afterChange) {
-            settings.afterChange.apply(slice);
+            settings.afterChange.call(slice);
           }
           return raiseAnimationFinished();
         });
@@ -927,14 +924,14 @@
           if (index === settings.slices - 1) {
             finishedCallback = raiseAnimationFinished;
           }
-          return slice.animate(animationSetUp.apply(slice, [index, element]) || {}, settings.speed, '', finishedCallback);
+          return slice.animate(animationSetUp.call(slice, index, element) || {}, settings.speed, '', finishedCallback);
         };
       };
       animateSlices = function(animationSetUp, sortCallback) {
         var slices;
         slices = ramblingSliceGenerator.createSlices();
         if (sortCallback) {
-          slices = sortCallback.apply(slices);
+          slices = sortCallback.call(slices);
         }
         return slices.each(function(index, element) {
           return setTimeout(animateSingleSlice(index, element, animationSetUp), 100 + index * 50);
@@ -945,9 +942,9 @@
         boxes = ramblingBoxGenerator.createBoxes();
         animationTimeBuffer = 0;
         if (sortCallback) {
-          boxes = sortCallback.apply(boxes);
+          boxes = sortCallback.call(boxes);
         }
-        return animationCallback.apply(boxes, [raiseAnimationFinished]);
+        return animationCallback.call(boxes, raiseAnimationFinished);
       };
       animateBoxesIn2d = function(animationSetUp, sortCallback) {
         return animateBoxes(function(finishedCallback) {
@@ -969,7 +966,7 @@
                       finished = finishedCallback;
                     }
                     setTimeout((function() {
-                      return box.animate(animationSetUp.apply(box), settings.speed / 1.3, '', finished);
+                      return box.animate(animationSetUp.call(box), settings.speed / 1.3, '', finished);
                     }), 100 + animationTimeBuffer);
                     index++;
                     animationTimeBuffer += 20;
@@ -1324,11 +1321,9 @@
         left: 'auto',
         position: 'relative'
       };
-      return flashSlideIn.apply(this, [
-        beforeAnimation, {
-          left: 0
-        }, afterAnimation
-      ]);
+      return flashSlideIn.call(this, beforeAnimation, {
+        left: 0
+      }, afterAnimation);
     };
     $.fn.ramblingSlider.defaults.imageTransitions = {};
     $.each(transitions, function(index, group) {
@@ -1375,10 +1370,10 @@
     };
     $.fn.ramblingSlider.defaults.flashTransitions = {
       slideInRight: function() {
-        return flashHorizontalSlideIn.apply(this, [-this.currentSlideElement.parents('.ramblingSlider').width()]);
+        return flashHorizontalSlideIn.call(this, -this.currentSlideElement.parents('.ramblingSlider').width());
       },
       slideInLeft: function() {
-        return flashHorizontalSlideIn.apply(this, [this.currentSlideElement.parents('.ramblingSlider').width()]);
+        return flashHorizontalSlideIn.call(this, this.currentSlideElement.parents('.ramblingSlider').width());
       }
     };
     $.extend($.fn.ramblingSlider.defaults.imageFlashTransitions, $.fn.ramblingSlider.defaults.flashTransitions);

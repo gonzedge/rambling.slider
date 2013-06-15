@@ -1,34 +1,37 @@
 (($) ->
   allAroundTransitions = [
-    { name: 'sliceUp', helper: 'slideUpSlices' },
-    { name: 'sliceDown', helper: 'slideDownSlices' },
-    { name: 'sliceUpDown', helper: 'slideUpDownSlices' },
-    { name: 'sliceFade', helper: 'fadeSlices' },
-    { name: 'fold', helper: 'foldSlices' },
+    { name: 'sliceUp', helper: 'slideUpSlices' }
+    { name: 'sliceDown', helper: 'slideDownSlices' }
+    { name: 'sliceUpDown', helper: 'slideUpDownSlices' }
+    { name: 'sliceFade', helper: 'fadeSlices' }
+    { name: 'fold', helper: 'foldSlices' }
   ]
 
   allAroundTransitions.suffixes = [
-    { name: 'Right', sorter: undefined },
-    { name: 'Left', sorter: $.fn.reverse },
-    { name: 'OutIn', sorter: $.fn.sortOutIn },
-    { name: 'InOut', sorter: $.fn.sortInOut },
-    { name: 'Random', sorter: $.fn.shuffle },
+    { name: 'Right', sorter: undefined }
+    { name: 'Left', sorter: $.fn.reverse }
+    { name: 'OutIn', sorter: $.fn.sortOutIn }
+    { name: 'InOut', sorter: $.fn.sortInOut }
+    { name: 'Random', sorter: $.fn.shuffle }
   ]
 
   boxTransitions = [
-    { name: 'boxRain', helper: 'rainBoxes' },
-    { name: 'boxGrow', helper: 'growBoxes' },
+    { name: 'boxRain', helper: 'rainBoxes' }
+    { name: 'boxGrow', helper: 'growBoxes' }
   ]
 
   boxTransitions.suffixes = [
-    { name: 'Forward', sorter: undefined },
-    { name: 'Reverse', sorter: $.fn.reverse },
-    { name: 'OutIn', sorter: $.fn.sortOutIn },
-    { name: 'InOut', sorter: $.fn.sortInOut },
-    { name: 'Random', sorter: $.fn.shuffle },
+    { name: 'Forward', sorter: undefined }
+    { name: 'Reverse', sorter: $.fn.reverse }
+    { name: 'OutIn', sorter: $.fn.sortOutIn }
+    { name: 'InOut', sorter: $.fn.sortInOut }
+    { name: 'Random', sorter: $.fn.shuffle }
   ]
 
-  transitions = [allAroundTransitions, boxTransitions]
+  transitions = [
+    allAroundTransitions
+    boxTransitions
+  ]
 
   animationFullImageOptions =
     fadeIn: (slider) ->
@@ -73,7 +76,7 @@
       left: 'auto'
       position: 'relative'
 
-    flashSlideIn.apply @, [beforeAnimation, {left: 0}, afterAnimation]
+    flashSlideIn.call @, beforeAnimation, {left: 0}, afterAnimation
 
   $.fn.ramblingSlider.defaults.imageTransitions = {}
   $.each transitions, (index, group) ->
@@ -96,15 +99,30 @@
         self.raiseAnimationFinished()
 
   $.fn.ramblingSlider.defaults.flashTransitions =
-    slideInRight: -> flashHorizontalSlideIn.apply @, [-@currentSlideElement.parents('.ramblingSlider').width()]
-    slideInLeft: -> flashHorizontalSlideIn.apply @, [@currentSlideElement.parents('.ramblingSlider').width()]
+    slideInRight: -> flashHorizontalSlideIn.call @, -@currentSlideElement.parents('.ramblingSlider').width()
+    slideInLeft: -> flashHorizontalSlideIn.call @, @currentSlideElement.parents('.ramblingSlider').width()
 
   $.extend $.fn.ramblingSlider.defaults.imageFlashTransitions, $.fn.ramblingSlider.defaults.flashTransitions
 
-  $.fn.ramblingSlider.defaults.transitionGroups = ['fade', 'rollover', 'slideIn']
+  $.fn.ramblingSlider.defaults.transitionGroups = [
+    'fade'
+    'rollover'
+    'slideIn'
+  ]
+
   $.each transitions, (index, group) ->
     $.each group, (index, element) ->
       $.fn.ramblingSlider.defaults.transitionGroups.push element.name
 
-  $.fn.ramblingSlider.defaults.transitionGroupSuffixes = ['Right', 'Left', 'OutIn', 'InOut', 'Random', 'Forward', 'Reverse', 'In', 'Out']
+  $.fn.ramblingSlider.defaults.transitionGroupSuffixes = [
+    'Right'
+    'Left'
+    'OutIn'
+    'InOut'
+    'Random'
+    'Forward'
+    'Reverse'
+    'In'
+    'Out'
+  ]
 )(jQuery)

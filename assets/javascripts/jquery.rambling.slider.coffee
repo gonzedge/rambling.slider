@@ -208,7 +208,17 @@ root = global ? window
 root.RamblingSlicer = RamblingSlicer
 
 (($) ->
-  publicMethods = ['stop', 'start', 'option', 'effect', 'destroy', 'previousSlide', 'nextSlide', 'slide', 'theme']
+  publicMethods = [
+    'stop'
+    'start'
+    'option'
+    'effect'
+    'destroy'
+    'previousSlide'
+    'nextSlide'
+    'slide'
+    'theme'
+  ]
 
   $.fn.ramblingSlider = (options, others...) ->
     methodExists = options in publicMethods
@@ -368,10 +378,9 @@ root.RamblingSlicer = RamblingSlicer
       return settings unless options.length
 
       [option, value] = options
-      optionIsObject =  typeof(option) is 'object'
+      optionIsObject = typeof(option) is 'object'
 
-      return @effect.apply(@, [value] if value) if option is 'effect'
-      return @theme.apply(@, [value] if value) if option is 'theme'
+      return @[option].call(@, value if value) if ['effect', 'theme'].contains option 
 
       return if optionIsObject
         $.extend settings, option
@@ -643,27 +652,27 @@ root.RamblingSlicer = RamblingSlicer
     animateFullImage = (animationSetUp) ->
       slice = ramblingSliceGenerator.getOneSlice()
       slice.css top: (if settings.alignBottom then 'auto' else 0), bottom: (if settings.alignBottom then 0 else 'auto')
-      slice.animate (animationSetUp.apply(slice, [slider, $.extend({}, settings)]) or width: slider.width()), settings.speed * 2, '', ->
-        settings.afterChange.apply(slice) if settings.afterChange
+      slice.animate (animationSetUp.call(slice, slider, $.extend({}, settings)) or width: slider.width()), settings.speed * 2, '', ->
+        settings.afterChange.call(slice) if settings.afterChange
         raiseAnimationFinished()
 
     animateSingleSlice = (index, element, animationSetUp) ->
       ->
         slice = $ element
         finishedCallback = raiseAnimationFinished if index is settings.slices - 1
-        slice.animate animationSetUp.apply(slice, [index, element]) or {}, settings.speed, '', finishedCallback
+        slice.animate animationSetUp.call(slice, index, element) or {}, settings.speed, '', finishedCallback
 
     animateSlices = (animationSetUp, sortCallback) ->
       slices = ramblingSliceGenerator.createSlices()
-      slices = sortCallback.apply(slices) if sortCallback
+      slices = sortCallback.call(slices) if sortCallback
       slices.each (index, element) ->
         setTimeout animateSingleSlice(index, element, animationSetUp), (100 + index * 50)
 
     animateBoxes = (animationCallback, sortCallback) ->
       boxes = ramblingBoxGenerator.createBoxes()
       animationTimeBuffer = 0
-      boxes = sortCallback.apply(boxes) if sortCallback
-      animationCallback.apply boxes, [raiseAnimationFinished]
+      boxes = sortCallback.call(boxes) if sortCallback
+      animationCallback.call boxes, raiseAnimationFinished
 
     animateBoxesIn2d = (animationSetUp, sortCallback) ->
       animateBoxes (finishedCallback) ->
@@ -676,7 +685,7 @@ root.RamblingSlicer = RamblingSlicer
                 box = $ boxes[row][column]
                 finished = finishedCallback if index is totalBoxes - 1
 
-                setTimeout (-> box.animate animationSetUp.apply(box), settings.speed / 1.3, '', finished), 100 + animationTimeBuffer
+                setTimeout (-> box.animate animationSetUp.call(box), settings.speed / 1.3, '', finished), 100 + animationTimeBuffer
 
                 index++
                 animationTimeBuffer += 20
@@ -792,35 +801,38 @@ root.RamblingSlicer = RamblingSlicer
 
 (($) ->
   allAroundTransitions = [
-    { name: 'sliceUp', helper: 'slideUpSlices' },
-    { name: 'sliceDown', helper: 'slideDownSlices' },
-    { name: 'sliceUpDown', helper: 'slideUpDownSlices' },
-    { name: 'sliceFade', helper: 'fadeSlices' },
-    { name: 'fold', helper: 'foldSlices' },
+    { name: 'sliceUp', helper: 'slideUpSlices' }
+    { name: 'sliceDown', helper: 'slideDownSlices' }
+    { name: 'sliceUpDown', helper: 'slideUpDownSlices' }
+    { name: 'sliceFade', helper: 'fadeSlices' }
+    { name: 'fold', helper: 'foldSlices' }
   ]
 
   allAroundTransitions.suffixes = [
-    { name: 'Right', sorter: undefined },
-    { name: 'Left', sorter: $.fn.reverse },
-    { name: 'OutIn', sorter: $.fn.sortOutIn },
-    { name: 'InOut', sorter: $.fn.sortInOut },
-    { name: 'Random', sorter: $.fn.shuffle },
+    { name: 'Right', sorter: undefined }
+    { name: 'Left', sorter: $.fn.reverse }
+    { name: 'OutIn', sorter: $.fn.sortOutIn }
+    { name: 'InOut', sorter: $.fn.sortInOut }
+    { name: 'Random', sorter: $.fn.shuffle }
   ]
 
   boxTransitions = [
-    { name: 'boxRain', helper: 'rainBoxes' },
-    { name: 'boxGrow', helper: 'growBoxes' },
+    { name: 'boxRain', helper: 'rainBoxes' }
+    { name: 'boxGrow', helper: 'growBoxes' }
   ]
 
   boxTransitions.suffixes = [
-    { name: 'Forward', sorter: undefined },
-    { name: 'Reverse', sorter: $.fn.reverse },
-    { name: 'OutIn', sorter: $.fn.sortOutIn },
-    { name: 'InOut', sorter: $.fn.sortInOut },
-    { name: 'Random', sorter: $.fn.shuffle },
+    { name: 'Forward', sorter: undefined }
+    { name: 'Reverse', sorter: $.fn.reverse }
+    { name: 'OutIn', sorter: $.fn.sortOutIn }
+    { name: 'InOut', sorter: $.fn.sortInOut }
+    { name: 'Random', sorter: $.fn.shuffle }
   ]
 
-  transitions = [allAroundTransitions, boxTransitions]
+  transitions = [
+    allAroundTransitions
+    boxTransitions
+  ]
 
   animationFullImageOptions =
     fadeIn: (slider) ->
@@ -865,7 +877,7 @@ root.RamblingSlicer = RamblingSlicer
       left: 'auto'
       position: 'relative'
 
-    flashSlideIn.apply @, [beforeAnimation, {left: 0}, afterAnimation]
+    flashSlideIn.call @, beforeAnimation, {left: 0}, afterAnimation
 
   $.fn.ramblingSlider.defaults.imageTransitions = {}
   $.each transitions, (index, group) ->
@@ -888,15 +900,30 @@ root.RamblingSlicer = RamblingSlicer
         self.raiseAnimationFinished()
 
   $.fn.ramblingSlider.defaults.flashTransitions =
-    slideInRight: -> flashHorizontalSlideIn.apply @, [-@currentSlideElement.parents('.ramblingSlider').width()]
-    slideInLeft: -> flashHorizontalSlideIn.apply @, [@currentSlideElement.parents('.ramblingSlider').width()]
+    slideInRight: -> flashHorizontalSlideIn.call @, -@currentSlideElement.parents('.ramblingSlider').width()
+    slideInLeft: -> flashHorizontalSlideIn.call @, @currentSlideElement.parents('.ramblingSlider').width()
 
   $.extend $.fn.ramblingSlider.defaults.imageFlashTransitions, $.fn.ramblingSlider.defaults.flashTransitions
 
-  $.fn.ramblingSlider.defaults.transitionGroups = ['fade', 'rollover', 'slideIn']
+  $.fn.ramblingSlider.defaults.transitionGroups = [
+    'fade'
+    'rollover'
+    'slideIn'
+  ]
+
   $.each transitions, (index, group) ->
     $.each group, (index, element) ->
       $.fn.ramblingSlider.defaults.transitionGroups.push element.name
 
-  $.fn.ramblingSlider.defaults.transitionGroupSuffixes = ['Right', 'Left', 'OutIn', 'InOut', 'Random', 'Forward', 'Reverse', 'In', 'Out']
+  $.fn.ramblingSlider.defaults.transitionGroupSuffixes = [
+    'Right'
+    'Left'
+    'OutIn'
+    'InOut'
+    'Random'
+    'Forward'
+    'Reverse'
+    'In'
+    'Out'
+  ]
 )(jQuery)
