@@ -1,19 +1,7 @@
 describe 'Rambling Slider', ->
   result = null
-  intervalSpy = null
-  intervalCallback = null
-  timeoutSpy = null
-  fakeTimer = {}
 
   beforeEach ->
-    timeoutSpy = spyOn window, 'setTimeout'
-    intervalSpy = spyOn window, 'setInterval'
-    intervalSpy.andCallFake (callback, timeout) ->
-      intervalCallback = callback
-      fakeTimer
-
-    spyOn window, 'clearInterval'
-
     result = @helpers.createSlider()
 
   afterEach ->
@@ -99,8 +87,8 @@ describe 'Rambling Slider', ->
   describe 'when clicking any navigation control', ->
     beforeEach ->
       @helpers.createSlider effect: 'sliceUpRight'
-      timeoutSpy.andCallFake => @ramblingSlider.trigger 'rambling:finished'
       @ramblingSlider.find('.rambling-controlNav a').last().click()
+      jasmine.Clock.tick 1000
 
     it 'sets the current slide index', ->
       expect(@ramblingSlider.data('rambling:vars').currentSlide).toEqual @ramblingSlider.find('.slideElement').length - 1
@@ -152,8 +140,12 @@ describe 'Rambling Slider', ->
 
       @helpers.createSlider settings
 
-    it 'calls the afterLoad immediately after creation', ->
+    it 'calls only the afterLoad immediately after creation', ->
       expect(settings.afterLoad).toHaveBeenCalled()
+      expect(settings.beforeChange).not.toHaveBeenCalled()
+      expect(settings.afterChange).not.toHaveBeenCalled()
+      expect(settings.slideshowEnd).not.toHaveBeenCalled()
+      expect(settings.lastSlide).not.toHaveBeenCalled()
 
     describe 'and the animation is finished', ->
       beforeEach ->
@@ -164,7 +156,7 @@ describe 'Rambling Slider', ->
 
     describe 'and the first slide is run', ->
       beforeEach ->
-        intervalCallback()
+        jasmine.Clock.tick 5000
 
       it 'calls the beforeChange callback', ->
         expect(settings.beforeChange).toHaveBeenCalled()
@@ -172,16 +164,10 @@ describe 'Rambling Slider', ->
     describe 'and the last slide is run', ->
       beforeEach ->
         @ramblingSlider.ramblingSlider 'slide', @ramblingSlider.find('.slideElement').length - 1
-        intervalCallback()
+        jasmine.Clock.tick 5000
 
       it 'calls the lastSlide callback', ->
         expect(settings.lastSlide).toHaveBeenCalled()
-
-    describe 'and the slideshow is going to begin again', ->
-      beforeEach ->
-        @ramblingSlider.ramblingSlider 'slide', @ramblingSlider.find('.slideElement').length - 1
-        intervalCallback()
-        intervalCallback()
 
       it 'calls the slideshowEnd callback', ->
         expect(settings.slideshowEnd).toHaveBeenCalled()
@@ -308,9 +294,6 @@ describe 'Rambling Slider', ->
     it 'removes the custom styles from the slider', ->
       expect(@ramblingSlider.attr 'style').toBeUndefined()
 
-    it 'clears the timer', ->
-      expect(window.clearInterval).toHaveBeenCalledWith fakeTimer
-
     it 'removes the slider data', ->
       expect(@ramblingSlider).not.toHaveData 'rambling:slider'
       expect(@ramblingSlider).not.toHaveData 'rambling:vars'
@@ -322,11 +305,11 @@ describe 'Rambling Slider', ->
   describe 'when calling the slide changing methods', ->
     beforeEach ->
       @ramblingSlider.ramblingSlider 'effect', 'sliceUpRight'
-      timeoutSpy.andCallFake => @ramblingSlider.trigger 'rambling:finished'
 
     describe 'when going to the previous slide', ->
       beforeEach ->
         result = @ramblingSlider.ramblingSlider 'previousSlide'
+        jasmine.Clock.tick 1000
 
       it 'returns the jQuery Array for method chaining', ->
         expect(result).toEqualJquery @ramblingSlider
@@ -340,6 +323,7 @@ describe 'Rambling Slider', ->
     describe 'when going to the next slide', ->
       beforeEach ->
         result = @ramblingSlider.ramblingSlider 'nextSlide'
+        jasmine.Clock.tick 1000
 
       it 'returns the jQuery Array for method chaining', ->
         expect(result).toEqualJquery @ramblingSlider
@@ -356,6 +340,7 @@ describe 'Rambling Slider', ->
       beforeEach ->
         slideIndex = 1
         result = @ramblingSlider.ramblingSlider 'slide', slideIndex
+        jasmine.Clock.tick 1000
 
       it 'returns the jQuery Array for method chaining', ->
         expect(result).toEqualJquery @ramblingSlider

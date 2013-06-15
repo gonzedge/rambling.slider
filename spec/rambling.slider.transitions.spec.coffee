@@ -1,20 +1,7 @@
 describe 'Rambling Slider transitions', ->
   result = null
-  error = null
-  intervalSpy = null
-  intervalCallback = null
-  timeoutSpy = null
-  fakeTimer = {}
 
   beforeEach ->
-    timeoutSpy = spyOn window, 'setTimeout'
-    intervalSpy = spyOn window, 'setInterval'
-    intervalSpy.andCallFake (callback, timeout) ->
-      intervalCallback = callback
-      fakeTimer
-
-    spyOn window, 'clearInterval'
-
     result = @helpers.createSlider()
 
   afterEach ->
@@ -33,12 +20,11 @@ describe 'Rambling Slider transitions', ->
 
       spyOn($.fn, 'trigger').andCallThrough()
       spyOn($.fn, 'css').andCallThrough()
-      spyOn($.fn, 'animate').andCallFake (options, speed, easing, callback) -> callback() if callback
 
       options.imageTransitions.newTransition.andCallFake -> helper = @
 
       @helpers.createSlider options
-      intervalCallback()
+      jasmine.Clock.tick 6000
 
     it 'is able to execute the new transition', ->
       expect(options.imageTransitions.newTransition).toHaveBeenCalled()
@@ -195,7 +181,7 @@ describe 'Rambling Slider transitions', ->
 
     describe 'and calling the animate slices helper function', ->
       beforeEach ->
-        timeoutSpy.andCallFake (callback, timeout) -> callback()
+        jasmine.Clock.tick 5000
 
       describe 'and a sort callback is given', ->
         sortCallback = null
@@ -209,18 +195,13 @@ describe 'Rambling Slider transitions', ->
           expect(sortCallback).toHaveBeenCalled()
 
       describe 'and an animate set up callback is given', ->
-        animationCallback = null
-
         beforeEach ->
-          animationCallback = jasmine.createSpy()
+          $.fn.animate.reset()
 
         describe 'which returns nothing', ->
-          finishedCallback = null
-
           beforeEach ->
-            animationCallback.andReturn null
-            $.fn.animate.reset()
-            result = helper.animateSlices animationCallback
+            result = helper.animateSlices (-> null)
+            jasmine.Clock.tick 1000
 
           it 'calls the jQuery animate method with an empty object', ->
             expect($.fn.animate).toHaveBeenCalledWith {}, $.fn.ramblingSlider.defaults.speed, '', undefined
@@ -233,15 +214,12 @@ describe 'Rambling Slider transitions', ->
             expect($.fn.animate.callCount).toEqual $.fn.ramblingSlider.defaults.slices
 
         describe 'which returns an object', ->
-          animate = null
-
           beforeEach ->
-            animate = width: 5000
-            animationCallback.andReturn animate
-            result = helper.animateSlices animationCallback
+            result = helper.animateSlices (-> width: 5000)
+            jasmine.Clock.tick 1000
 
           it 'calls the jQuery animate method with the returned object', ->
-            expect($.fn.animate).toHaveBeenCalledWith animate, $.fn.ramblingSlider.defaults.speed, '', undefined
+            expect($.fn.animate).toHaveBeenCalledWith {width: 5000}, $.fn.ramblingSlider.defaults.speed, '', undefined
 
     describe 'and calling the animate boxes helper function', ->
       describe 'and a sort callback is given', ->
@@ -282,9 +260,9 @@ describe 'Rambling Slider transitions', ->
           setUpOptions = {opacity: 5000}
           setUpCallback = jasmine.createSpy()
           setUpCallback.andReturn setUpOptions
-          timeoutSpy.andCallFake (callback) -> callback()
 
           result = helper.animateBoxesIn2d setUpCallback
+          jasmine.Clock.tick 5000
 
         it 'executes the set up callback the expected amount of times', ->
           expect(setUpCallback.callCount).toEqual $.fn.ramblingSlider.defaults.boxRows * $.fn.ramblingSlider.defaults.boxCols
@@ -318,54 +296,48 @@ describe 'Rambling Slider transitions', ->
 
     describe 'and calling the slide down slices helper function', ->
       sortCallback = null
-      timeoutCallback = null
 
       beforeEach ->
-        timeoutSpy.andCallFake (callback) -> timeoutCallback = callback
         sortCallback = jasmine.createSpy()
         sortCallback.andCallFake -> @
 
         result = helper.slideDownSlices sortCallback
 
       it 'aligns the slices to the top', ->
-        timeoutCallback()
+        jasmine.Clock.tick 5000
         expect($.fn.css).toHaveBeenCalledWith top: 0
 
       it 'sorts the slices', ->
         expect(sortCallback).toHaveBeenCalled()
 
       it 'sets the height to the slider height and the opacity to 1', ->
-        timeoutCallback()
+        jasmine.Clock.tick 5000
         expect($.fn.animate).toHaveBeenCalledWith {height: @ramblingSlider.height(), opacity: '1'}, $.fn.ramblingSlider.defaults.speed, '', jasmine.any(Function)
 
     describe 'and calling the slide up slices helper function', ->
       sortCallback = null
-      timeoutCallback = null
 
       beforeEach ->
-        timeoutSpy.andCallFake (callback) -> timeoutCallback = callback
         sortCallback = jasmine.createSpy()
         sortCallback.andCallFake -> @
 
         result = helper.slideUpSlices sortCallback
 
       it 'aligns the slices to the bottom', ->
-        timeoutCallback()
+        jasmine.Clock.tick 5000
         expect($.fn.css).toHaveBeenCalledWith bottom: 0
 
       it 'sorts the slices', ->
         expect(sortCallback).toHaveBeenCalled()
 
       it 'sets the height to the slider height and the opacity to 1', ->
-        timeoutCallback()
+        jasmine.Clock.tick 5000
         expect($.fn.animate).toHaveBeenCalledWith {height: @ramblingSlider.height(), opacity: '1'}, $.fn.ramblingSlider.defaults.speed, '', jasmine.any(Function)
 
     describe 'and calling the slide up down slices helper function', ->
       sortCallback = null
-      timeoutCallback = null
 
       beforeEach ->
-        timeoutSpy.andCallFake (callback) -> timeoutCallback = callback
         sortCallback = jasmine.createSpy()
         sortCallback.andCallFake -> @
 
@@ -375,15 +347,13 @@ describe 'Rambling Slider transitions', ->
         expect(sortCallback).toHaveBeenCalled()
 
       it 'sets the height to the slider height and the opacity to 1', ->
-        timeoutCallback()
+        jasmine.Clock.tick 5000
         expect($.fn.animate).toHaveBeenCalledWith {height: @ramblingSlider.height(), opacity: '1'}, $.fn.ramblingSlider.defaults.speed, '', jasmine.any(Function)
 
     describe 'and calling the slide fold slices helper function', ->
       sortCallback = null
-      timeoutCallback = null
 
       beforeEach ->
-        timeoutSpy.andCallFake (callback) -> timeoutCallback = callback
         sortCallback = jasmine.createSpy()
         sortCallback.andCallFake -> @
 
@@ -393,19 +363,17 @@ describe 'Rambling Slider transitions', ->
         expect(sortCallback).toHaveBeenCalled()
 
       it 'aligns the slices to the bottom', ->
-        timeoutCallback()
+        jasmine.Clock.tick 5000
         expect($.fn.css).toHaveBeenCalledWith top: 0, height: '100%', width: 0
 
       it 'sets the height to the slider width and the opacity to 1', ->
-        timeoutCallback()
+        jasmine.Clock.tick 5000
         expect($.fn.animate).toHaveBeenCalledWith {width: @ramblingSlider.width(), opacity: '1'}, $.fn.ramblingSlider.defaults.speed, '', jasmine.any(Function)
 
     describe 'and calling the slide fade slices helper function', ->
       sortCallback = null
-      timeoutCallback = null
 
       beforeEach ->
-        timeoutSpy.andCallFake (callback) -> timeoutCallback = callback
         sortCallback = jasmine.createSpy()
         sortCallback.andCallFake -> @
 
@@ -415,11 +383,11 @@ describe 'Rambling Slider transitions', ->
         expect(sortCallback).toHaveBeenCalled()
 
       it 'aligns the slices to the bottom', ->
-        timeoutCallback()
+        jasmine.Clock.tick 5000
         expect($.fn.css).toHaveBeenCalledWith height: @ramblingSlider.height()
 
       it 'sets the opacity to 1', ->
-        timeoutCallback()
+        jasmine.Clock.tick 5000
         expect($.fn.animate).toHaveBeenCalledWith {opacity: '1'}, $.fn.ramblingSlider.defaults.speed, '', jasmine.any(Function)
 
   describe 'when running the transitions', ->
@@ -453,7 +421,6 @@ describe 'Rambling Slider transitions', ->
       ]
 
       spyOn($.fn, 'css').andCallFake -> @
-      spyOn($.fn, 'animate').andCallFake -> @
 
       animationHelpers.animateFullImage.andCallFake (callback) -> animationSetUpCallback = callback
       animationHelpers[helper].andCallFake sortCallbackSetter for helper in sortedHelpers

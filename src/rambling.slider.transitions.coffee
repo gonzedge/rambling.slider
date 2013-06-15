@@ -58,7 +58,7 @@
 
   flashSlideIn = (beforeAnimation, animateStyle, afterAnimation) ->
     @currentSlideElement.css beforeAnimation
-    window.setTimeout (=> @currentSlideElement.animate animateStyle, @settings.speed * 2, @raiseAnimationFinished), @settings.speed * 2
+    setTimeout (=> @currentSlideElement.animate animateStyle, @settings.speed * 2, @raiseAnimationFinished), @settings.speed * 2
 
   flashHorizontalSlideIn = (initialLeft) ->
     beforeAnimation =

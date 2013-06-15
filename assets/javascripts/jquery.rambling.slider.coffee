@@ -208,7 +208,6 @@ root = global ? window
 root.RamblingSlicer = RamblingSlicer
 
 (($) ->
-
   publicMethods = ['stop', 'start', 'option', 'effect', 'destroy', 'previousSlide', 'nextSlide', 'slide', 'theme']
 
   $.fn.ramblingSlider = (options, others...) ->
@@ -417,7 +416,7 @@ root.RamblingSlicer = RamblingSlicer
 
     @run = ->
       if not settings.manualAdvance and vars.totalSlides > 1
-        timer = window.setInterval (-> ramblingRun slider, children, settings, false), settings.pauseTime
+        timer = setInterval (-> ramblingRun slider, children, settings, false), settings.pauseTime
 
     setUpTransitions = ->
       imageTransitions = $.extend {}, $.fn.ramblingSlider.defaults.imageTransitions, settings.imageTransitions
@@ -573,7 +572,7 @@ root.RamblingSlicer = RamblingSlicer
       child
 
     resetTimer = ->
-      window.clearInterval timer
+      clearInterval timer
       timer = ''
 
     pauseSlider = ->
@@ -648,16 +647,17 @@ root.RamblingSlicer = RamblingSlicer
         settings.afterChange.apply(slice) if settings.afterChange
         raiseAnimationFinished()
 
-    animateSlices = (animationSetUp, sortCallback) ->
-      slices = ramblingSliceGenerator.createSlices()
-      animationTimeBuffer = 0
-      slices = sortCallback.apply(slices) if sortCallback
-      slices.each (index, element) ->
+    animateSingleSlice = (index, element, animationSetUp) ->
+      ->
         slice = $ element
         finishedCallback = raiseAnimationFinished if index is settings.slices - 1
+        slice.animate animationSetUp.apply(slice, [index, element]) or {}, settings.speed, '', finishedCallback
 
-        window.setTimeout (-> slice.animate animationSetUp.apply(slice, [index, element]) or {}, settings.speed, '', finishedCallback), 100 + animationTimeBuffer
-        animationTimeBuffer += 50
+    animateSlices = (animationSetUp, sortCallback) ->
+      slices = ramblingSliceGenerator.createSlices()
+      slices = sortCallback.apply(slices) if sortCallback
+      slices.each (index, element) ->
+        setTimeout animateSingleSlice(index, element, animationSetUp), (100 + index * 50)
 
     animateBoxes = (animationCallback, sortCallback) ->
       boxes = ramblingBoxGenerator.createBoxes()
@@ -676,7 +676,7 @@ root.RamblingSlicer = RamblingSlicer
                 box = $ boxes[row][column]
                 finished = finishedCallback if index is totalBoxes - 1
 
-                window.setTimeout (-> box.animate animationSetUp.apply(box), settings.speed / 1.3, '', finished), 100 + animationTimeBuffer
+                setTimeout (-> box.animate animationSetUp.apply(box), settings.speed / 1.3, '', finished), 100 + animationTimeBuffer
 
                 index++
                 animationTimeBuffer += 20
@@ -730,7 +730,7 @@ root.RamblingSlicer = RamblingSlicer
             box = $ @
             finished = finishedCallback if index is totalBoxes - 1
 
-            window.setTimeout (-> box.animate { opacity:'1' }, settings.speed, '', finished), 100 + animationTimeBuffer
+            setTimeout (-> box.animate { opacity:'1' }, settings.speed, '', finished), 100 + animationTimeBuffer
             animationTimeBuffer += 20
         , sortCallback
 
@@ -850,7 +850,7 @@ root.RamblingSlicer = RamblingSlicer
 
   flashSlideIn = (beforeAnimation, animateStyle, afterAnimation) ->
     @currentSlideElement.css beforeAnimation
-    window.setTimeout (=> @currentSlideElement.animate animateStyle, @settings.speed * 2, @raiseAnimationFinished), @settings.speed * 2
+    setTimeout (=> @currentSlideElement.animate animateStyle, @settings.speed * 2, @raiseAnimationFinished), @settings.speed * 2
 
   flashHorizontalSlideIn = (initialLeft) ->
     beforeAnimation =

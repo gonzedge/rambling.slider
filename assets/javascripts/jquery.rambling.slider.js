@@ -434,7 +434,7 @@
     };
     cannotChange = ['startSlide', 'directionNav', 'directionNavHide', 'controlNav', 'controlNavThumbs', 'controlNavThumbsFromRel', 'controlNavThumbsSearch', 'controlNavThumbsReplace', 'adaptImages', 'useLargerImage', 'keyboardNav', 'pauseOnHover', 'prevText', 'nextText', 'imageTransitions', 'flashTransitions', 'imageFlashTransitions', 'transitionGroups', 'transitionGroupSuffixes', 'afterLoad'];
     return RamblingSlider = function(element, options) {
-      var addCaption, addControlNavigation, addDirectionNavigation, addKeyboardNavigation, animateBoxes, animateBoxesIn2d, animateFullImage, animateSlices, animationTimeBuffer, children, fadeBoxes, fadeSlices, flashTransitions, foldSlices, getAnimationHelpers, getAnimationsForCurrentSlideElement, getAvailableTransitions, getRandomAnimation, getSettingsArrayFor, growBoxes, imageFlashTransitions, imageTransitions, pauseSlider, prepareAdaptiveSlider, prepareAnimationContainer, prepareSliderChildren, processCaption, rainBoxes, raiseAnimationFinished, ramblingBoxGenerator, ramblingRun, ramblingSliceGenerator, resetTimer, setAnimationFinishedActions, setCurrentSlideElement, setSliderBackground, setSliderInitialState, setUpTransitions, settings, slideDownSlices, slideTo, slideUpDownSlices, slideUpSlices, slider, timer, transitionGroupSuffixes, transitionGroups, unpauseSlider, vars,
+      var addCaption, addControlNavigation, addDirectionNavigation, addKeyboardNavigation, animateBoxes, animateBoxesIn2d, animateFullImage, animateSingleSlice, animateSlices, animationTimeBuffer, children, fadeBoxes, fadeSlices, flashTransitions, foldSlices, getAnimationHelpers, getAnimationsForCurrentSlideElement, getAvailableTransitions, getRandomAnimation, getSettingsArrayFor, growBoxes, imageFlashTransitions, imageTransitions, pauseSlider, prepareAdaptiveSlider, prepareAnimationContainer, prepareSliderChildren, processCaption, rainBoxes, raiseAnimationFinished, ramblingBoxGenerator, ramblingRun, ramblingSliceGenerator, resetTimer, setAnimationFinishedActions, setCurrentSlideElement, setSliderBackground, setSliderInitialState, setUpTransitions, settings, slideDownSlices, slideTo, slideUpDownSlices, slideUpSlices, slider, timer, transitionGroupSuffixes, transitionGroups, unpauseSlider, vars,
         _this = this;
       slider = $(element);
       children = slider.children(':not(#rambling-animation)');
@@ -565,7 +565,7 @@
       };
       this.run = function() {
         if (!settings.manualAdvance && vars.totalSlides > 1) {
-          return timer = window.setInterval((function() {
+          return timer = setInterval((function() {
             return ramblingRun(slider, children, settings, false);
           }), settings.pauseTime);
         }
@@ -804,7 +804,7 @@
         return child;
       };
       resetTimer = function() {
-        window.clearInterval(timer);
+        clearInterval(timer);
         return timer = '';
       };
       pauseSlider = function() {
@@ -920,23 +920,24 @@
           return raiseAnimationFinished();
         });
       };
-      animateSlices = function(animationSetUp, sortCallback) {
-        var slices;
-        slices = ramblingSliceGenerator.createSlices();
-        animationTimeBuffer = 0;
-        if (sortCallback) {
-          slices = sortCallback.apply(slices);
-        }
-        return slices.each(function(index, element) {
+      animateSingleSlice = function(index, element, animationSetUp) {
+        return function() {
           var finishedCallback, slice;
           slice = $(element);
           if (index === settings.slices - 1) {
             finishedCallback = raiseAnimationFinished;
           }
-          window.setTimeout((function() {
-            return slice.animate(animationSetUp.apply(slice, [index, element]) || {}, settings.speed, '', finishedCallback);
-          }), 100 + animationTimeBuffer);
-          return animationTimeBuffer += 50;
+          return slice.animate(animationSetUp.apply(slice, [index, element]) || {}, settings.speed, '', finishedCallback);
+        };
+      };
+      animateSlices = function(animationSetUp, sortCallback) {
+        var slices;
+        slices = ramblingSliceGenerator.createSlices();
+        if (sortCallback) {
+          slices = sortCallback.apply(slices);
+        }
+        return slices.each(function(index, element) {
+          return setTimeout(animateSingleSlice(index, element, animationSetUp), 100 + index * 50);
         });
       };
       animateBoxes = function(animationCallback, sortCallback) {
@@ -967,7 +968,7 @@
                     if (index === totalBoxes - 1) {
                       finished = finishedCallback;
                     }
-                    window.setTimeout((function() {
+                    setTimeout((function() {
                       return box.animate(animationSetUp.apply(box), settings.speed / 1.3, '', finished);
                     }), 100 + animationTimeBuffer);
                     index++;
@@ -1061,7 +1062,7 @@
             if (index === totalBoxes - 1) {
               finished = finishedCallback;
             }
-            window.setTimeout((function() {
+            setTimeout((function() {
               return box.animate({
                 opacity: '1'
               }, settings.speed, '', finished);
@@ -1305,7 +1306,7 @@
     flashSlideIn = function(beforeAnimation, animateStyle, afterAnimation) {
       var _this = this;
       this.currentSlideElement.css(beforeAnimation);
-      return window.setTimeout((function() {
+      return setTimeout((function() {
         return _this.currentSlideElement.animate(animateStyle, _this.settings.speed * 2, _this.raiseAnimationFinished);
       }), this.settings.speed * 2);
     };
