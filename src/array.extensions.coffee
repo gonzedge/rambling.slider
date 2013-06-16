@@ -10,14 +10,14 @@ Array::where = (predicate) ->
 
 Array::first = (predicate) ->
   predicate = ((element) -> true) unless predicate
-  (element for element in @ when predicate(element))[0]
+  for element in @
+    return element if predicate(element)
 
 Array::map = (map) ->
   map = ((element) -> element) unless map
   map(element) for element in @
 
-Array::random = ->
-  @[Math.floor Math.random() * @length]
+Array::random = -> @[Math.floor Math.random() * @length]
 
 Array::fromObject = (object, valueSelector) ->
   valueSelector = ((key, value) -> value) unless valueSelector
