@@ -139,6 +139,45 @@
   };
 
   (function($) {
+    $.fn.reverse = Array.prototype.reverse;
+    $.fn.shuffle = Array.prototype.shuffle;
+    $.fn.sortOutIn = function() {
+      return $(Array.prototype.sortOutIn.apply(this));
+    };
+    $.fn.sortInOut = function() {
+      return this.sortOutIn().reverse();
+    };
+    $.fn.as2dArray = function(totalColumns) {
+      var array2d, colIndex, rowIndex;
+      rowIndex = 0;
+      colIndex = 0;
+      array2d = $('');
+      array2d[rowIndex] = $('');
+      this.each(function() {
+        array2d[rowIndex][colIndex] = $(this);
+        colIndex++;
+        if (colIndex === totalColumns) {
+          rowIndex++;
+          colIndex = 0;
+          return array2d[rowIndex] = $('');
+        }
+      });
+      return array2d;
+    };
+    $.fn.containsFlash = function() {
+      return this.find('object,embed').length;
+    };
+    return $.fn.equals = function(other) {
+      var result;
+      result = this.length === other.length;
+      this.each(function(index, element) {
+        return result = result && element === other.get(index);
+      });
+      return result;
+    };
+  })(jQuery);
+
+  (function($) {
     var publicMethods;
     publicMethods = ['stop', 'start', 'option', 'effect', 'destroy', 'previousSlide', 'nextSlide', 'slide', 'theme'];
     $.fn.ramblingSlider = function() {
@@ -217,46 +256,6 @@
       slideshowEnd: function() {},
       lastSlide: function() {},
       afterLoad: function() {}
-    };
-  })(jQuery);
-
-  (function($) {
-    $.fn.reverse = [].reverse;
-    $.fn.shuffle = [].shuffle;
-    $.fn.sortOutIn = function() {
-      return $(Array.prototype.sortOutIn.apply(this));
-    };
-    $.fn.sortInOut = function() {
-      return this.sortOutIn().reverse();
-    };
-    $.fn.as2dArray = function(totalColumns) {
-      var array2d, colIndex, rowIndex;
-      rowIndex = 0;
-      colIndex = 0;
-      array2d = $('');
-      array2d[rowIndex] = $('');
-      this.each(function() {
-        array2d[rowIndex][colIndex] = $(this);
-        colIndex++;
-        if (colIndex === totalColumns) {
-          rowIndex++;
-          colIndex = 0;
-          return array2d[rowIndex] = $('');
-        }
-      });
-      return array2d;
-    };
-    $.fn.containsFlash = function() {
-      return this.find('object,embed').length;
-    };
-    return $.fn.equals = function(other) {
-      var result;
-      result = true;
-      result = this.length === other.length;
-      this.each(function(index, element) {
-        return result = result && element === other.get(index);
-      });
-      return result;
     };
   })(jQuery);
 

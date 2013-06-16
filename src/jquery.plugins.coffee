@@ -1,7 +1,7 @@
 (($) ->
-  $.fn.reverse = [].reverse
-  $.fn.shuffle = [].shuffle
-  $.fn.sortOutIn = -> $ Array.prototype.sortOutIn.apply(@)
+  $.fn.reverse = Array::reverse
+  $.fn.shuffle = Array::shuffle
+  $.fn.sortOutIn = -> $ Array::sortOutIn.apply(@)
   $.fn.sortInOut = -> @sortOutIn().reverse()
 
   $.fn.as2dArray = (totalColumns) ->
@@ -20,11 +20,9 @@
 
     array2d
 
-  $.fn.containsFlash = ->
-    @find('object,embed').length
+  $.fn.containsFlash = -> @find('object,embed').length
 
   $.fn.equals = (other) ->
-    result = true
     result = @length is other.length
     @each (index, element) ->
       result = result and element is other.get(index)
