@@ -18,9 +18,6 @@ Array::shuffle = ->
 
   @
 
-Array::contains = (value) ->
-  value in @
-
 Array::where = (predicate) ->
   element for element in @ when predicate(element)
 
@@ -55,9 +52,6 @@ Array::sortOutIn = ->
   newArray.push(@[halfLength]) if length % 2
 
   newArray
-
-String::contains = (string) ->
-  @indexOf(string) isnt -1
 
 String::decapitalize = ->
   first = @[0..0]
@@ -379,7 +373,7 @@ RamblingSlider = (element, options) ->
     [option, value] = options
     optionIsObject = typeof(option) is 'object'
 
-    return @[option].call(@, value if value) if ['effect', 'theme'].contains option 
+    return @[option].call(@, value if value) if option in ['effect', 'theme']
 
     return if optionIsObject
       $.extend settings, option
@@ -613,7 +607,7 @@ RamblingSlider = (element, options) ->
   getAvailableTransitions = ->
     effects = settings.effect.split ','
     $.each transitionGroups, (index, group) ->
-      if effects.contains group
+      if group in effects
         parameters = [effects.indexOf(group), 1]
         $.each transitionGroupSuffixes, (index, suffix) -> parameters.push "#{group}#{suffix}"
         effects.splice.apply effects, parameters
@@ -636,7 +630,7 @@ RamblingSlider = (element, options) ->
 
     availableTransitions = getAvailableTransitions()
     transitions = [].fromObject sourceTransitions, (key, value) -> key
-    transitions = (transitions.where (animationName) -> availableTransitions.contains animationName) unless settings.effect is 'random'
+    transitions = (transitions.where (animationName) -> animationName in availableTransitions) unless settings.effect is 'random'
     transitions = transitions.map (animationName) -> sourceTransitions[animationName]
     transitions.default = defaultTransition
 

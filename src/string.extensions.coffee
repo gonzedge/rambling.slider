@@ -1,6 +1,3 @@
-String::contains = (string) ->
-  @indexOf(string) isnt -1
-
 String::decapitalize = ->
   first = @[0..0]
   rest = @[1..]

@@ -15,8 +15,8 @@
 
 (function() {
   var RamblingBoxGenerator, RamblingBoxer, RamblingSliceGenerator, RamblingSlicer, RamblingSlider, cannotChange, root,
-    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
-    __slice = [].slice;
+    __slice = [].slice,
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   Array.prototype.shuffle = function() {
     var i, j, _i, _ref, _ref1;
@@ -25,10 +25,6 @@
       _ref1 = [this[j], this[--i]], this[i] = _ref1[0], this[j] = _ref1[1];
     }
     return this;
-  };
-
-  Array.prototype.contains = function(value) {
-    return __indexOf.call(this, value) >= 0;
   };
 
   Array.prototype.where = function(predicate) {
@@ -117,10 +113,6 @@
       newArray.push(this[halfLength]);
     }
     return newArray;
-  };
-
-  String.prototype.contains = function(string) {
-    return this.indexOf(string) !== -1;
   };
 
   String.prototype.decapitalize = function() {
@@ -509,7 +501,7 @@
       }
       option = options[0], value = options[1];
       optionIsObject = typeof option === 'object';
-      if (['effect', 'theme'].contains(option)) {
+      if (option === 'effect' || option === 'theme') {
         return _this[option].call(_this, value ? value : void 0);
       }
       if (optionIsObject) {
@@ -854,7 +846,7 @@
       effects = settings.effect.split(',');
       $.each(transitionGroups, function(index, group) {
         var parameters;
-        if (effects.contains(group)) {
+        if (__indexOf.call(effects, group) >= 0) {
           parameters = [effects.indexOf(group), 1];
           $.each(transitionGroupSuffixes, function(index, suffix) {
             return parameters.push("" + group + suffix);
@@ -886,7 +878,7 @@
       });
       if (settings.effect !== 'random') {
         transitions = transitions.where(function(animationName) {
-          return availableTransitions.contains(animationName);
+          return __indexOf.call(availableTransitions, animationName) >= 0;
         });
       }
       transitions = transitions.map(function(animationName) {

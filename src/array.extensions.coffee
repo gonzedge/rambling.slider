@@ -5,9 +5,6 @@ Array::shuffle = ->
 
   @
 
-Array::contains = (value) ->
-  value in @
-
 Array::where = (predicate) ->
   element for element in @ when predicate(element)
 

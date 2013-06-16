@@ -1,11 +1,4 @@
 describe 'String Extensions', ->
-  describe 'when finding out if a string contains a given string', ->
-    it 'returns true for a contained string', ->
-      expect('string'.contains('s')).toBeTruthy()
-
-    it 'returns false for a non contained string', ->
-      expect('string'.contains('z')).toBeFalsy()
-
   describe 'when decapitalizing a string', ->
     it 'returns the expected decapitalized string', ->
       expect('String'.decapitalize()).toEqual('string')

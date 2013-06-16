@@ -18,13 +18,6 @@ describe 'Array Extensions', ->
     it 'does not let the original array untouched', ->
       expect(firstCopy).not.toEqual array
 
-  describe 'when verifying if an array contains an element', ->
-    it 'returns true for a contained element', ->
-      expect(array.contains(1)).toBeTruthy()
-
-    it 'returns false for a non contained element', ->
-      expect(array.contains(array.length + 1)).toBeFalsy()
-
   describe 'when getting the values that match a predicate', ->
     newArray = null
 
