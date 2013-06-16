@@ -14,7 +14,7 @@
 
 
 (function() {
-  var RamblingBoxGenerator, RamblingBoxer, RamblingSliceGenerator, RamblingSlicer, root,
+  var RamblingBoxGenerator, RamblingBoxer, RamblingSliceGenerator, RamblingSlicer, RamblingSlider, cannotChange, root,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __slice = [].slice;
 
@@ -137,6 +137,88 @@
   String.prototype.endsWith = function(string) {
     return this.substring(this.length - string.length, this.length) === string;
   };
+
+  (function($) {
+    var publicMethods;
+    publicMethods = ['stop', 'start', 'option', 'effect', 'destroy', 'previousSlide', 'nextSlide', 'slide', 'theme'];
+    $.fn.ramblingSlider = function() {
+      var isCallingGetter, methodExists, options, optionsIsString, others, ramblingSlider, value;
+      options = arguments[0], others = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      methodExists = __indexOf.call(publicMethods, options) >= 0;
+      optionsIsString = typeof options === 'string';
+      ramblingSlider = this.data('rambling:slider');
+      isCallingGetter = function(options, others) {
+        return !others.length || (options === 'option' && others.length === 1 && typeof others[0] === 'string');
+      };
+      if (ramblingSlider) {
+        if (methodExists) {
+          value = ramblingSlider[options].apply(ramblingSlider, others);
+          if (isCallingGetter(options, others)) {
+            return value;
+          } else {
+            return this;
+          }
+        } else {
+          if (optionsIsString) {
+            throw "Method '" + options + "' not found.";
+          } else {
+            throw "Slider already initialized.";
+          }
+        }
+      } else {
+        if (methodExists || optionsIsString) {
+          throw "Tried to call method '" + options + "' on element without slider.";
+        }
+      }
+      return this.each(function(key, value) {
+        var element;
+        element = $(this);
+        if (element.data('rambling:slider')) {
+          return;
+        }
+        ramblingSlider = new RamblingSlider(this, options);
+        element.data('rambling:slider', ramblingSlider);
+        ramblingSlider.initialize();
+        return ramblingSlider.run();
+      });
+    };
+    return $.fn.ramblingSlider.defaults = {
+      slices: 15,
+      boxCols: 8,
+      boxRows: 4,
+      speed: 500,
+      pauseTime: 4500,
+      manualAdvance: false,
+      captionOpacity: 0.8,
+      theme: 'default',
+      alignBottom: false,
+      effect: 'random',
+      startSlide: 0,
+      directionNav: true,
+      directionNavHide: true,
+      controlNav: true,
+      controlNavThumbs: false,
+      controlNavThumbsFromRel: false,
+      controlNavThumbsSearch: '.jpg',
+      controlNavThumbsReplace: '_thumb.jpg',
+      adaptImages: false,
+      useLargerImage: true,
+      keyboardNav: true,
+      pauseOnHover: true,
+      prevText: 'Prev',
+      nextText: 'Next',
+      imageTransitions: null,
+      flashTransitions: null,
+      imageFlashTransitions: null,
+      transitionGroups: [],
+      transitionGroupSuffixes: [],
+      beforeChange: function() {},
+      afterChange: function() {},
+      slideshowEnd: function() {},
+      lastSlide: function() {},
+      afterLoad: function() {}
+    };
+  })(jQuery);
 
   (function($) {
     $.fn.reverse = [].reverse;
@@ -352,803 +434,727 @@
 
   root.RamblingSlicer = RamblingSlicer;
 
-  (function($) {
-    var RamblingSlider, cannotChange, publicMethods;
-    publicMethods = ['stop', 'start', 'option', 'effect', 'destroy', 'previousSlide', 'nextSlide', 'slide', 'theme'];
-    $.fn.ramblingSlider = function() {
-      var isCallingGetter, methodExists, options, optionsIsString, others, ramblingSlider, value;
-      options = arguments[0], others = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-      methodExists = __indexOf.call(publicMethods, options) >= 0;
-      optionsIsString = typeof options === 'string';
-      ramblingSlider = this.data('rambling:slider');
-      isCallingGetter = function(options, others) {
-        return !others.length || (options === 'option' && others.length === 1 && typeof others[0] === 'string');
-      };
-      if (ramblingSlider) {
-        if (methodExists) {
-          value = ramblingSlider[options].apply(ramblingSlider, others);
-          if (isCallingGetter(options, others)) {
-            return value;
-          } else {
-            return this;
-          }
-        } else {
-          if (optionsIsString) {
-            throw "Method '" + options + "' not found.";
-          } else {
-            throw "Slider already initialized.";
-          }
-        }
+  cannotChange = ['startSlide', 'directionNav', 'directionNavHide', 'controlNav', 'controlNavThumbs', 'controlNavThumbsFromRel', 'controlNavThumbsSearch', 'controlNavThumbsReplace', 'adaptImages', 'useLargerImage', 'keyboardNav', 'pauseOnHover', 'prevText', 'nextText', 'imageTransitions', 'flashTransitions', 'imageFlashTransitions', 'transitionGroups', 'transitionGroupSuffixes', 'afterLoad'];
+
+  RamblingSlider = function(element, options) {
+    var addCaption, addControlNavigation, addDirectionNavigation, addKeyboardNavigation, animateBoxes, animateBoxesIn2d, animateFullImage, animateSingleSlice, animateSlices, animationTimeBuffer, children, fadeBoxes, fadeSlices, flashTransitions, foldSlices, getAnimationHelpers, getAnimationsForCurrentSlideElement, getAvailableTransitions, getRandomAnimation, getSettingsArrayFor, growBoxes, imageFlashTransitions, imageTransitions, pauseSlider, prepareAdaptiveSlider, prepareAnimationContainer, prepareSliderChildren, processCaption, rainBoxes, raiseAnimationFinished, ramblingBoxGenerator, ramblingRun, ramblingSliceGenerator, resetTimer, setAnimationFinishedActions, setCurrentSlideElement, setSliderBackground, setSliderInitialState, setUpTransitions, settings, slideDownSlices, slideTo, slideUpDownSlices, slideUpSlices, slider, timer, transitionGroupSuffixes, transitionGroups, unpauseSlider, vars,
+      _this = this;
+    slider = $(element);
+    children = slider.children(':not(#rambling-animation)');
+    settings = $.extend({}, $.fn.ramblingSlider.defaults, options);
+    timer = 0;
+    animationTimeBuffer = 0;
+    imageTransitions = null;
+    imageFlashTransitions = null;
+    flashTransitions = null;
+    transitionGroups = [];
+    transitionGroupSuffixes = [];
+    vars = {
+      currentSlide: 0,
+      currentSlideElement: '',
+      previousSlideElement: '',
+      totalSlides: 0,
+      running: false,
+      paused: false,
+      stopped: false
+    };
+    slider.data('rambling:vars', vars);
+    ramblingSliceGenerator = new RamblingSliceGenerator(slider, settings, vars);
+    ramblingBoxGenerator = new RamblingBoxGenerator(slider, settings, vars);
+    this.stop = function() {
+      vars.stopped = true;
+      return slider;
+    };
+    this.start = function() {
+      vars.stopped = false;
+      return slider;
+    };
+    this.previousSlide = function() {
+      slideTo('prev');
+      return slider;
+    };
+    this.nextSlide = function() {
+      slideTo('next');
+      return slider;
+    };
+    this.slide = function() {
+      var slideNumber, slideNumbers;
+      slideNumbers = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      if (!slideNumbers.length) {
+        return vars.currentSlide;
+      }
+      slideNumber = slideNumbers[0] % vars.totalSlides;
+      if (!(vars.running || vars.totalSlides === 1)) {
+        vars.currentSlide = slideNumber - 1;
+        ramblingRun(slider, children, settings, 'control');
+      }
+      return slider;
+    };
+    this.destroy = function() {
+      slider.find('#rambling-animation,.rambling-slice,.rambling-box,.rambling-caption,.rambling-directionNav,.rambling-controlNav').remove();
+      slider.removeClass('ramblingSlider adaptingSlider');
+      slider.removeAttr('style');
+      slider.data('rambling:vars', null);
+      slider.data('rambling:slider', null);
+      slider.unbind('rambling:finished');
+      slider.unbind('hover');
+      resetTimer();
+      slider.children().show().children().show();
+      return slider;
+    };
+    this.option = function() {
+      var option, optionIsObject, options, value;
+      options = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      if (!options.length) {
+        return settings;
+      }
+      option = options[0], value = options[1];
+      optionIsObject = typeof option === 'object';
+      if (['effect', 'theme'].contains(option)) {
+        return _this[option].call(_this, value ? value : void 0);
+      }
+      if (optionIsObject) {
+        return $.extend(settings, option);
       } else {
-        if (methodExists || optionsIsString) {
-          throw "Tried to call method '" + options + "' on element without slider.";
+        if (value != null) {
+          if (__indexOf.call(cannotChange, option) >= 0) {
+            throw "Slider already running. Option '" + option + "' cannot be changed.";
+          }
+          return settings[option] = value;
+        } else {
+          return settings[option];
         }
       }
-      return this.each(function(key, value) {
-        var element;
-        element = $(this);
-        if (element.data('rambling:slider')) {
-          return;
-        }
-        ramblingSlider = new RamblingSlider(this, options);
-        element.data('rambling:slider', ramblingSlider);
-        ramblingSlider.initialize();
-        return ramblingSlider.run();
+    };
+    this.effect = function() {
+      var effects;
+      effects = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      if (!effects.length) {
+        return settings.effect;
+      }
+      settings.effect = effects[0];
+      return slider;
+    };
+    this.theme = function() {
+      var classes, oldTheme, themes;
+      themes = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      if (!themes.length) {
+        return settings.theme;
+      }
+      oldTheme = settings.theme;
+      settings.theme = themes[0];
+      classes = ["theme-" + oldTheme, "theme-" + $.fn.ramblingSlider.defaults.theme];
+      slider.parents(classes.map(function(c) {
+        return "." + c;
+      }).join(',')).removeClass(classes.join(' ')).addClass("theme-" + settings.theme);
+      return slider;
+    };
+    this.initialize = function() {
+      setSliderInitialState();
+      vars.currentSlide = settings.startSlide = settings.startSlide % vars.totalSlides;
+      setCurrentSlideElement(children);
+      setSliderBackground();
+      addCaption();
+      addDirectionNavigation();
+      addControlNavigation(children);
+      addKeyboardNavigation();
+      if (settings.pauseOnHover) {
+        slider.hover(pauseSlider, unpauseSlider);
+      }
+      return setAnimationFinishedActions();
+    };
+    this.run = function() {
+      if (!settings.manualAdvance && vars.totalSlides > 1) {
+        return timer = setInterval((function() {
+          return ramblingRun(slider, children, settings, false);
+        }), settings.pauseTime);
+      }
+    };
+    setUpTransitions = function() {
+      imageTransitions = $.extend({}, $.fn.ramblingSlider.defaults.imageTransitions, settings.imageTransitions);
+      imageFlashTransitions = $.extend({}, $.fn.ramblingSlider.defaults.imageFlashTransitions, settings.imageFlashTransitions);
+      flashTransitions = $.extend({}, $.fn.ramblingSlider.defaults.flashTransitions, settings.flashTransitions);
+      transitionGroups = getSettingsArrayFor('transitionGroups');
+      return transitionGroupSuffixes = getSettingsArrayFor('transitionGroupSuffixes');
+    };
+    getSettingsArrayFor = function(key) {
+      var array;
+      array = [];
+      $.each($.fn.ramblingSlider.defaults[key], function(index, element) {
+        return array.push(element);
       });
+      $.each(settings[key], function(index, element) {
+        return array.push(element);
+      });
+      return array;
     };
-    $.fn.ramblingSlider.defaults = {
-      slices: 15,
-      boxCols: 8,
-      boxRows: 4,
-      speed: 500,
-      pauseTime: 4500,
-      manualAdvance: false,
-      captionOpacity: 0.8,
-      theme: 'default',
-      alignBottom: false,
-      effect: 'random',
-      startSlide: 0,
-      directionNav: true,
-      directionNavHide: true,
-      controlNav: true,
-      controlNavThumbs: false,
-      controlNavThumbsFromRel: false,
-      controlNavThumbsSearch: '.jpg',
-      controlNavThumbsReplace: '_thumb.jpg',
-      adaptImages: false,
-      useLargerImage: true,
-      keyboardNav: true,
-      pauseOnHover: true,
-      prevText: 'Prev',
-      nextText: 'Next',
-      imageTransitions: null,
-      flashTransitions: null,
-      imageFlashTransitions: null,
-      transitionGroups: [],
-      transitionGroupSuffixes: [],
-      beforeChange: function() {},
-      afterChange: function() {},
-      slideshowEnd: function() {},
-      lastSlide: function() {},
-      afterLoad: function() {}
+    setSliderInitialState = function() {
+      _this.effect(settings.effect);
+      _this.theme(settings.theme);
+      setUpTransitions();
+      slider.css({
+        position: 'relative'
+      });
+      slider.addClass('ramblingSlider');
+      vars.totalSlides = children.length;
+      prepareSliderChildren();
+      prepareAnimationContainer();
+      if (settings.adaptImages) {
+        return prepareAdaptiveSlider();
+      }
     };
-    cannotChange = ['startSlide', 'directionNav', 'directionNavHide', 'controlNav', 'controlNavThumbs', 'controlNavThumbsFromRel', 'controlNavThumbsSearch', 'controlNavThumbsReplace', 'adaptImages', 'useLargerImage', 'keyboardNav', 'pauseOnHover', 'prevText', 'nextText', 'imageTransitions', 'flashTransitions', 'imageFlashTransitions', 'transitionGroups', 'transitionGroupSuffixes', 'afterLoad'];
-    return RamblingSlider = function(element, options) {
-      var addCaption, addControlNavigation, addDirectionNavigation, addKeyboardNavigation, animateBoxes, animateBoxesIn2d, animateFullImage, animateSingleSlice, animateSlices, animationTimeBuffer, children, fadeBoxes, fadeSlices, flashTransitions, foldSlices, getAnimationHelpers, getAnimationsForCurrentSlideElement, getAvailableTransitions, getRandomAnimation, getSettingsArrayFor, growBoxes, imageFlashTransitions, imageTransitions, pauseSlider, prepareAdaptiveSlider, prepareAnimationContainer, prepareSliderChildren, processCaption, rainBoxes, raiseAnimationFinished, ramblingBoxGenerator, ramblingRun, ramblingSliceGenerator, resetTimer, setAnimationFinishedActions, setCurrentSlideElement, setSliderBackground, setSliderInitialState, setUpTransitions, settings, slideDownSlices, slideTo, slideUpDownSlices, slideUpSlices, slider, timer, transitionGroupSuffixes, transitionGroups, unpauseSlider, vars,
-        _this = this;
-      slider = $(element);
-      children = slider.children(':not(#rambling-animation)');
-      settings = $.extend({}, $.fn.ramblingSlider.defaults, options);
-      timer = 0;
-      animationTimeBuffer = 0;
-      imageTransitions = null;
-      imageFlashTransitions = null;
-      flashTransitions = null;
-      transitionGroups = [];
-      transitionGroupSuffixes = [];
-      vars = {
-        currentSlide: 0,
-        currentSlideElement: '',
-        previousSlideElement: '',
-        totalSlides: 0,
-        running: false,
-        paused: false,
-        stopped: false
-      };
-      slider.data('rambling:vars', vars);
-      ramblingSliceGenerator = new RamblingSliceGenerator(slider, settings, vars);
-      ramblingBoxGenerator = new RamblingBoxGenerator(slider, settings, vars);
-      this.stop = function() {
-        vars.stopped = true;
-        return slider;
-      };
-      this.start = function() {
-        vars.stopped = false;
-        return slider;
-      };
-      this.previousSlide = function() {
-        slideTo('prev');
-        return slider;
-      };
-      this.nextSlide = function() {
-        slideTo('next');
-        return slider;
-      };
-      this.slide = function() {
-        var slideNumber, slideNumbers;
-        slideNumbers = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-        if (!slideNumbers.length) {
-          return vars.currentSlide;
-        }
-        slideNumber = slideNumbers[0] % vars.totalSlides;
-        if (!(vars.running || vars.totalSlides === 1)) {
-          vars.currentSlide = slideNumber - 1;
-          ramblingRun(slider, children, settings, 'control');
-        }
-        return slider;
-      };
-      this.destroy = function() {
-        slider.find('#rambling-animation,.rambling-slice,.rambling-box,.rambling-caption,.rambling-directionNav,.rambling-controlNav').remove();
-        slider.removeClass('ramblingSlider adaptingSlider');
-        slider.removeAttr('style');
-        slider.data('rambling:vars', null);
-        slider.data('rambling:slider', null);
-        slider.unbind('rambling:finished');
-        slider.unbind('hover');
-        resetTimer();
-        slider.children().show().children().show();
-        return slider;
-      };
-      this.option = function() {
-        var option, optionIsObject, options, value;
-        options = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-        if (!options.length) {
-          return settings;
-        }
-        option = options[0], value = options[1];
-        optionIsObject = typeof option === 'object';
-        if (['effect', 'theme'].contains(option)) {
-          return _this[option].call(_this, value ? value : void 0);
-        }
-        if (optionIsObject) {
-          return $.extend(settings, option);
-        } else {
-          if (value != null) {
-            if (__indexOf.call(cannotChange, option) >= 0) {
-              throw "Slider already running. Option '" + option + "' cannot be changed.";
-            }
-            return settings[option] = value;
-          } else {
-            return settings[option];
+    prepareAnimationContainer = function() {
+      var ramblingAnimationContainer;
+      ramblingAnimationContainer = $('<div id="rambling-animation"></div>').css({
+        width: slider.width(),
+        height: slider.height(),
+        overflow: 'hidden'
+      });
+      slider.prepend(ramblingAnimationContainer);
+      children.each(function() {
+        var child, clone;
+        child = $(this);
+        clone = child.clone().addClass('slideElement');
+        if (clone.containsFlash()) {
+          if (!clone.find('param[name=wmode]').length) {
+            clone.find('object').prepend('<param name="wmode" value="opaque" />');
           }
+          clone.find('embed').attr({
+            wmode: 'opaque'
+          });
         }
-      };
-      this.effect = function() {
-        var effects;
-        effects = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-        if (!effects.length) {
-          return settings.effect;
+        return ramblingAnimationContainer.append(clone);
+      });
+      return children = ramblingAnimationContainer.children();
+    };
+    prepareAdaptiveSlider = function() {
+      return slider.addClass('adaptingSlider');
+    };
+    prepareSliderChildren = function() {
+      var child;
+      children.each(function() {
+        var child, childHeight, childWidth, link, object;
+        child = $(this);
+        link = null;
+        if (child.is('a') && !child.containsFlash()) {
+          link = child.addClass('rambling-imageLink');
+          child = child.find('img:first');
         }
-        settings.effect = effects[0];
-        return slider;
-      };
-      this.theme = function() {
-        var classes, oldTheme, themes;
-        themes = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-        if (!themes.length) {
-          return settings.theme;
+        childWidth = child.width() || child.attr('width');
+        childHeight = child.height() || child.attr('height');
+        if (childWidth > slider.width() && settings.useLargerImage) {
+          slider.width(childWidth);
         }
-        oldTheme = settings.theme;
-        settings.theme = themes[0];
-        classes = ["theme-" + oldTheme, "theme-" + $.fn.ramblingSlider.defaults.theme];
-        slider.parents(classes.map(function(c) {
-          return "." + c;
-        }).join(',')).removeClass(classes.join(' ')).addClass("theme-" + settings.theme);
-        return slider;
-      };
-      this.initialize = function() {
-        setSliderInitialState();
-        vars.currentSlide = settings.startSlide = settings.startSlide % vars.totalSlides;
-        setCurrentSlideElement(children);
-        setSliderBackground();
-        addCaption();
-        addDirectionNavigation();
-        addControlNavigation(children);
-        addKeyboardNavigation();
-        if (settings.pauseOnHover) {
-          slider.hover(pauseSlider, unpauseSlider);
+        if (childHeight > slider.height() && (settings.useLargerImage || !settings.adaptImages)) {
+          slider.height(childHeight);
         }
-        return setAnimationFinishedActions();
-      };
-      this.run = function() {
-        if (!settings.manualAdvance && vars.totalSlides > 1) {
-          return timer = setInterval((function() {
-            return ramblingRun(slider, children, settings, false);
-          }), settings.pauseTime);
-        }
-      };
-      setUpTransitions = function() {
-        imageTransitions = $.extend({}, $.fn.ramblingSlider.defaults.imageTransitions, settings.imageTransitions);
-        imageFlashTransitions = $.extend({}, $.fn.ramblingSlider.defaults.imageFlashTransitions, settings.imageFlashTransitions);
-        flashTransitions = $.extend({}, $.fn.ramblingSlider.defaults.flashTransitions, settings.flashTransitions);
-        transitionGroups = getSettingsArrayFor('transitionGroups');
-        return transitionGroupSuffixes = getSettingsArrayFor('transitionGroupSuffixes');
-      };
-      getSettingsArrayFor = function(key) {
-        var array;
-        array = [];
-        $.each($.fn.ramblingSlider.defaults[key], function(index, element) {
-          return array.push(element);
-        });
-        $.each(settings[key], function(index, element) {
-          return array.push(element);
-        });
-        return array;
-      };
-      setSliderInitialState = function() {
-        _this.effect(settings.effect);
-        _this.theme(settings.theme);
-        setUpTransitions();
-        slider.css({
-          position: 'relative'
-        });
-        slider.addClass('ramblingSlider');
-        vars.totalSlides = children.length;
-        prepareSliderChildren();
-        prepareAnimationContainer();
-        if (settings.adaptImages) {
-          return prepareAdaptiveSlider();
-        }
-      };
-      prepareAnimationContainer = function() {
-        var ramblingAnimationContainer;
-        ramblingAnimationContainer = $('<div id="rambling-animation"></div>').css({
-          width: slider.width(),
-          height: slider.height(),
-          overflow: 'hidden'
-        });
-        slider.prepend(ramblingAnimationContainer);
-        children.each(function() {
-          var child, clone;
-          child = $(this);
-          clone = child.clone().addClass('slideElement');
-          if (clone.containsFlash()) {
-            if (!clone.find('param[name=wmode]').length) {
-              clone.find('object').prepend('<param name="wmode" value="opaque" />');
-            }
-            clone.find('embed').attr({
-              wmode: 'opaque'
-            });
-          }
-          return ramblingAnimationContainer.append(clone);
-        });
-        return children = ramblingAnimationContainer.children();
-      };
-      prepareAdaptiveSlider = function() {
-        return slider.addClass('adaptingSlider');
-      };
-      prepareSliderChildren = function() {
-        var child;
-        children.each(function() {
-          var child, childHeight, childWidth, link, object;
-          child = $(this);
-          link = null;
-          if (child.is('a') && !child.containsFlash()) {
-            link = child.addClass('rambling-imageLink');
-            child = child.find('img:first');
-          }
-          childWidth = child.width() || child.attr('width');
-          childHeight = child.height() || child.attr('height');
-          if (childWidth > slider.width() && settings.useLargerImage) {
-            slider.width(childWidth);
-          }
-          if (childHeight > slider.height() && (settings.useLargerImage || !settings.adaptImages)) {
-            slider.height(childHeight);
-          }
-          object = child.find('object,embed');
-          object.height(slider.height());
-          object.width(slider.width());
-          if (link) {
-            link.css({
-              display: 'none'
-            });
-          }
-          return child.css({
+        object = child.find('object,embed');
+        object.height(slider.height());
+        object.width(slider.width());
+        if (link) {
+          link.css({
             display: 'none'
           });
+        }
+        return child.css({
+          display: 'none'
         });
-        return child = setCurrentSlideElement(children);
-      };
-      addCaption = function() {
-        slider.append($('<div class="rambling-caption"><p></p></div>').css({
-          display: 'none',
-          opacity: settings.captionOpacity
-        }));
-        return processCaption(settings);
-      };
-      addDirectionNavigation = function() {
-        var directionNav;
-        if (settings.directionNav && vars.totalSlides > 1) {
-          directionNav = $("<div class='rambling-directionNav'><a class='rambling-prevNav'>" + settings.prevText + "</a><a class='rambling-nextNav'>" + settings.nextText + "</a></div>");
-          slider.append(directionNav);
-          if (settings.directionNavHide) {
-            directionNav.hide();
-            slider.hover((function() {
-              return directionNav.show();
-            }), (function() {
-              return directionNav.hide();
-            }));
-          }
-          slider.find('a.rambling-prevNav').on('click', function() {
-            return slideTo('prev');
-          });
-          return slider.find('a.rambling-nextNav').on('click', function() {
-            return slideTo('next');
-          });
+      });
+      return child = setCurrentSlideElement(children);
+    };
+    addCaption = function() {
+      slider.append($('<div class="rambling-caption"><p></p></div>').css({
+        display: 'none',
+        opacity: settings.captionOpacity
+      }));
+      return processCaption(settings);
+    };
+    addDirectionNavigation = function() {
+      var directionNav;
+      if (settings.directionNav && vars.totalSlides > 1) {
+        directionNav = $("<div class='rambling-directionNav'><a class='rambling-prevNav'>" + settings.prevText + "</a><a class='rambling-nextNav'>" + settings.nextText + "</a></div>");
+        slider.append(directionNav);
+        if (settings.directionNavHide) {
+          directionNav.hide();
+          slider.hover((function() {
+            return directionNav.show();
+          }), (function() {
+            return directionNav.hide();
+          }));
         }
-      };
-      addControlNavigation = function() {
-        var controlNavAnchors, i, ramblingControl, self, _fn, _i, _ref;
-        self = _this;
-        if (settings.controlNav) {
-          ramblingControl = $('<div class="rambling-controlNav"></div>');
-          slider.append(ramblingControl);
-          _fn = function(i) {
-            var child;
-            if (settings.controlNavThumbs) {
-              child = children.eq(i);
-              if (!child.is('img')) {
-                child = child.find('img:first');
-              }
-              if (settings.controlNavThumbsFromRel) {
-                return ramblingControl.append("<a class='rambling-control' rel='" + i + "'><img src='" + (child.attr('rel')) + "' alt='' /></a>");
-              } else {
-                return ramblingControl.append("<a class='rambling-control' rel='" + i + "'><img src='" + (child.attr('src').replace(settings.controlNavThumbsSearch, settings.controlNavThumbsReplace)) + "' alt='' /></a>");
-              }
-            } else {
-              return ramblingControl.append("<a class='rambling-control' rel='" + i + "'>" + (i + 1) + "'</a>");
-            }
-          };
-          for (i = _i = 0, _ref = children.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
-            _fn(i);
-          }
-          controlNavAnchors = slider.find('.rambling-controlNav a');
-          controlNavAnchors.filter(":eq(" + vars.currentSlide + ")").addClass('active');
-          return controlNavAnchors.on('click', function() {
-            if (vars.running) {
-              return false;
-            }
-            if ($(this).hasClass('active')) {
-              return false;
-            }
-            resetTimer();
-            setSliderBackground();
-            return self.slide($(this).attr('rel'));
-          });
-        }
-      };
-      addKeyboardNavigation = function() {
-        if (settings.keyboardNav) {
-          return $(window).keypress(function(event) {
-            if (event.keyCode === 37) {
-              slideTo('prev');
-            }
-            if (event.keyCode === 39) {
-              return slideTo('next');
-            }
-          });
-        }
-      };
-      setAnimationFinishedActions = function() {
-        var self;
-        self = _this;
-        return slider.bind('rambling:finished', function() {
+        slider.find('a.rambling-prevNav').on('click', function() {
+          return slideTo('prev');
+        });
+        return slider.find('a.rambling-nextNav').on('click', function() {
+          return slideTo('next');
+        });
+      }
+    };
+    addControlNavigation = function() {
+      var controlNavAnchors, i, ramblingControl, self, _fn, _i, _ref;
+      self = _this;
+      if (settings.controlNav) {
+        ramblingControl = $('<div class="rambling-controlNav"></div>');
+        slider.append(ramblingControl);
+        _fn = function(i) {
           var child;
-          vars.running = false;
-          child = $(children.get(vars.currentSlide));
-          child.siblings().css({
-            display: 'none'
-          });
-          if (child.is('a')) {
-            child.css({
-              display: 'block'
-            });
-          }
-          if (timer === '' && !vars.paused) {
-            self.run();
-          }
-          setSliderBackground();
-          slider.find('.rambling-slice,.rambling-box').remove();
-          return settings.afterChange.call(this);
-        });
-      };
-      processCaption = function(settings) {
-        var ramblingCaption, title;
-        ramblingCaption = slider.find('.rambling-caption');
-        title = vars.currentSlideElement.attr('title');
-        if (title) {
-          if (title.startsWith('#')) {
-            title = $(title).html();
-          }
-          if (ramblingCaption.css('display') === 'block') {
-            ramblingCaption.find('p').fadeOut(settings.speed, function() {
-              var p;
-              p = $(this);
-              p.html(title);
-              return p.fadeIn(settings.speed);
-            });
+          if (settings.controlNavThumbs) {
+            child = children.eq(i);
+            if (!child.is('img')) {
+              child = child.find('img:first');
+            }
+            if (settings.controlNavThumbsFromRel) {
+              return ramblingControl.append("<a class='rambling-control' rel='" + i + "'><img src='" + (child.attr('rel')) + "' alt='' /></a>");
+            } else {
+              return ramblingControl.append("<a class='rambling-control' rel='" + i + "'><img src='" + (child.attr('src').replace(settings.controlNavThumbsSearch, settings.controlNavThumbsReplace)) + "' alt='' /></a>");
+            }
           } else {
-            ramblingCaption.find('p').html(title);
+            return ramblingControl.append("<a class='rambling-control' rel='" + i + "'>" + (i + 1) + "'</a>");
           }
-          return ramblingCaption.fadeIn(settings.speed);
-        } else {
-          return ramblingCaption.fadeOut(settings.speed);
+        };
+        for (i = _i = 0, _ref = children.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+          _fn(i);
         }
-      };
-      setCurrentSlideElement = function(children) {
+        controlNavAnchors = slider.find('.rambling-controlNav a');
+        controlNavAnchors.filter(":eq(" + vars.currentSlide + ")").addClass('active');
+        return controlNavAnchors.on('click', function() {
+          if (vars.running) {
+            return false;
+          }
+          if ($(this).hasClass('active')) {
+            return false;
+          }
+          resetTimer();
+          setSliderBackground();
+          return self.slide($(this).attr('rel'));
+        });
+      }
+    };
+    addKeyboardNavigation = function() {
+      if (settings.keyboardNav) {
+        return $(window).keypress(function(event) {
+          if (event.keyCode === 37) {
+            slideTo('prev');
+          }
+          if (event.keyCode === 39) {
+            return slideTo('next');
+          }
+        });
+      }
+    };
+    setAnimationFinishedActions = function() {
+      var self;
+      self = _this;
+      return slider.bind('rambling:finished', function() {
         var child;
+        vars.running = false;
         child = $(children.get(vars.currentSlide));
-        vars.previousSlideElement = vars.currentSlideElement;
-        vars.currentSlideElement = child;
+        child.siblings().css({
+          display: 'none'
+        });
         if (child.is('a')) {
           child.css({
             display: 'block'
           });
         }
-        if (child.is('a') && !child.containsFlash()) {
-          vars.currentSlideElement = child.find('img:first');
+        if (timer === '' && !vars.paused) {
+          self.run();
         }
-        return child;
-      };
-      resetTimer = function() {
-        clearInterval(timer);
-        return timer = '';
-      };
-      pauseSlider = function() {
-        vars.paused = true;
-        return resetTimer();
-      };
-      unpauseSlider = function() {
-        vars.paused = false;
-        if (timer === '') {
-          return _this.run();
+        setSliderBackground();
+        slider.find('.rambling-slice,.rambling-box').remove();
+        return settings.afterChange.call(this);
+      });
+    };
+    processCaption = function(settings) {
+      var ramblingCaption, title;
+      ramblingCaption = slider.find('.rambling-caption');
+      title = vars.currentSlideElement.attr('title');
+      if (title) {
+        if (title.startsWith('#')) {
+          title = $(title).html();
         }
-      };
-      slideTo = function(direction) {
-        if (vars.running || vars.totalSlides === 1) {
-          return false;
+        if (ramblingCaption.css('display') === 'block') {
+          ramblingCaption.find('p').fadeOut(settings.speed, function() {
+            var p;
+            p = $(this);
+            p.html(title);
+            return p.fadeIn(settings.speed);
+          });
+        } else {
+          ramblingCaption.find('p').html(title);
         }
-        resetTimer();
-        if (direction === 'prev') {
-          vars.currentSlide -= 2;
-        }
-        return ramblingRun(slider, children, settings, direction);
-      };
-      setSliderBackground = function() {
-        var slideElement;
-        slideElement = slider.find('.currentSlideElement');
-        if (slideElement.equals(vars.currentSlideElement)) {
-          return;
-        }
-        slideElement.removeClass('currentSlideElement alignTop alignBottom').css({
-          display: 'none',
-          'z-index': 0
-        });
-        slideElement = vars.currentSlideElement;
-        slideElement.siblings('.slideElement').css({
-          display: 'none'
-        });
-        slideElement.addClass('currentSlideElement').addClass(settings.alignBottom ? 'alignBottom' : 'alignTop');
-        slideElement.css({
-          display: 'block',
-          'z-index': 0
-        });
-        return slideElement.find('img').css({
+        return ramblingCaption.fadeIn(settings.speed);
+      } else {
+        return ramblingCaption.fadeOut(settings.speed);
+      }
+    };
+    setCurrentSlideElement = function(children) {
+      var child;
+      child = $(children.get(vars.currentSlide));
+      vars.previousSlideElement = vars.currentSlideElement;
+      vars.currentSlideElement = child;
+      if (child.is('a')) {
+        child.css({
           display: 'block'
         });
-      };
-      getAvailableTransitions = function() {
-        var effects;
-        effects = settings.effect.split(',');
-        $.each(transitionGroups, function(index, group) {
-          var parameters;
-          if (effects.contains(group)) {
-            parameters = [effects.indexOf(group), 1];
-            $.each(transitionGroupSuffixes, function(index, suffix) {
-              return parameters.push("" + group + suffix);
-            });
-            return effects.splice.apply(effects, parameters);
-          }
-        });
-        return effects;
-      };
-      getAnimationsForCurrentSlideElement = function() {
-        var availableTransitions, defaultTransition, sourceTransitions, transitions;
-        transitions = [];
-        sourceTransitions = [];
-        if (vars.currentSlideElement.containsFlash()) {
-          if (vars.previousSlideElement.containsFlash()) {
-            sourceTransitions = flashTransitions;
-            defaultTransition = flashTransitions.slideInRight;
-          } else {
-            sourceTransitions = imageFlashTransitions;
-            defaultTransition = imageFlashTransitions.fadeOut;
-          }
-        } else {
-          sourceTransitions = imageTransitions;
-          defaultTransition = imageTransitions.fadeIn;
-        }
-        availableTransitions = getAvailableTransitions();
-        transitions = [].fromObject(sourceTransitions, function(key, value) {
-          return key;
-        });
-        if (settings.effect !== 'random') {
-          transitions = transitions.where(function(animationName) {
-            return availableTransitions.contains(animationName);
-          });
-        }
-        transitions = transitions.map(function(animationName) {
-          return sourceTransitions[animationName];
-        });
-        transitions["default"] = defaultTransition;
-        return transitions;
-      };
-      getRandomAnimation = function() {
-        var transitions;
-        transitions = getAnimationsForCurrentSlideElement();
-        return transitions.random() || transitions["default"];
-      };
-      raiseAnimationFinished = function() {
-        return slider.trigger('rambling:finished');
-      };
-      animateFullImage = function(animationSetUp) {
-        var slice;
-        slice = ramblingSliceGenerator.getOneSlice();
-        slice.css({
-          top: (settings.alignBottom ? 'auto' : 0),
-          bottom: (settings.alignBottom ? 0 : 'auto')
-        });
-        return slice.animate(animationSetUp.call(slice, slider, $.extend({}, settings)) || {
-          width: slider.width()
-        }, settings.speed * 2, '', function() {
-          if (settings.afterChange) {
-            settings.afterChange.call(slice);
-          }
-          return raiseAnimationFinished();
-        });
-      };
-      animateSingleSlice = function(index, element, animationSetUp) {
-        return function() {
-          var finishedCallback, slice;
-          slice = $(element);
-          if (index === settings.slices - 1) {
-            finishedCallback = raiseAnimationFinished;
-          }
-          return slice.animate(animationSetUp.call(slice, index, element) || {}, settings.speed, '', finishedCallback);
-        };
-      };
-      animateSlices = function(animationSetUp, sortCallback) {
-        var slices;
-        slices = ramblingSliceGenerator.createSlices();
-        if (sortCallback) {
-          slices = sortCallback.call(slices);
-        }
-        return slices.each(function(index, element) {
-          return setTimeout(animateSingleSlice(index, element, animationSetUp), 100 + index * 50);
-        });
-      };
-      animateBoxes = function(animationCallback, sortCallback) {
-        var boxes;
-        boxes = ramblingBoxGenerator.createBoxes();
-        animationTimeBuffer = 0;
-        if (sortCallback) {
-          boxes = sortCallback.call(boxes);
-        }
-        return animationCallback.call(boxes, raiseAnimationFinished);
-      };
-      animateBoxesIn2d = function(animationSetUp, sortCallback) {
-        return animateBoxes(function(finishedCallback) {
-          var boxes, column, index, totalBoxes, _i, _ref, _results;
-          boxes = this;
-          totalBoxes = settings.boxCols * settings.boxRows;
-          index = 0;
-          _results = [];
-          for (column = _i = 0, _ref = settings.boxCols * 2; 0 <= _ref ? _i < _ref : _i > _ref; column = 0 <= _ref ? ++_i : --_i) {
-            _results.push((function(column) {
-              var row, _j, _ref1, _results1;
-              _results1 = [];
-              for (row = _j = 0, _ref1 = settings.boxRows; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; row = 0 <= _ref1 ? ++_j : --_j) {
-                _results1.push((function(row) {
-                  var box, finished;
-                  if (column >= 0 && column < settings.boxCols) {
-                    box = $(boxes[row][column]);
-                    if (index === totalBoxes - 1) {
-                      finished = finishedCallback;
-                    }
-                    setTimeout((function() {
-                      return box.animate(animationSetUp.call(box), settings.speed / 1.3, '', finished);
-                    }), 100 + animationTimeBuffer);
-                    index++;
-                    animationTimeBuffer += 20;
-                  }
-                  return column--;
-                })(row));
-              }
-              return _results1;
-            })(column));
-          }
-          return _results;
-        }, function() {
-          var boxes;
-          boxes = this;
-          if (sortCallback) {
-            boxes = sortCallback.call(this);
-          }
-          return boxes.as2dArray(settings.boxCols);
-        });
-      };
-      slideDownSlices = function(sortCallback) {
-        return animateSlices((function(index, element) {
-          this.css({
-            top: 0
-          });
-          return {
-            height: slider.height(),
-            opacity: '1'
-          };
-        }), sortCallback);
-      };
-      slideUpSlices = function(sortCallback) {
-        return animateSlices((function(index, element) {
-          this.css({
-            bottom: 0
-          });
-          return {
-            height: slider.height(),
-            opacity: '1'
-          };
-        }), sortCallback);
-      };
-      slideUpDownSlices = function(sortCallback) {
-        return animateSlices((function(index, element) {
-          this.css((index % 2 ? {
-            bottom: 0
-          } : {
-            top: 0
-          }));
-          return {
-            height: slider.height(),
-            opacity: '1'
-          };
-        }), sortCallback);
-      };
-      foldSlices = function(sortCallback) {
-        return animateSlices((function(index, element) {
-          var animateStyle, slice;
-          slice = $(element);
-          animateStyle = {
-            width: slice.width(),
-            opacity: '1'
-          };
-          slice.css({
-            top: 0,
-            height: '100%',
-            width: 0
-          });
-          return animateStyle;
-        }), sortCallback);
-      };
-      fadeSlices = function(sortCallback) {
-        return animateSlices((function(index, element) {
-          this.css({
-            height: slider.height()
-          });
-          return {
-            opacity: '1'
-          };
-        }), sortCallback);
-      };
-      fadeBoxes = function(sortCallback) {
-        return animateBoxes(function(finishedCallback) {
-          var totalBoxes;
-          totalBoxes = this.length;
-          animationTimeBuffer = 0;
-          return this.each(function(index) {
-            var box, finished;
-            box = $(this);
-            if (index === totalBoxes - 1) {
-              finished = finishedCallback;
-            }
-            setTimeout((function() {
-              return box.animate({
-                opacity: '1'
-              }, settings.speed, '', finished);
-            }), 100 + animationTimeBuffer);
-            return animationTimeBuffer += 20;
-          });
-        }, sortCallback);
-      };
-      rainBoxes = function(sortCallback) {
-        return animateBoxesIn2d((function() {
-          return {
-            opacity: '1'
-          };
-        }), sortCallback);
-      };
-      growBoxes = function(sortCallback) {
-        return animateBoxesIn2d((function() {
-          var height, width;
-          width = this.width();
-          height = this.height();
-          this.css({
-            width: 0,
-            height: 0
-          });
-          return {
-            opacity: '1',
-            width: width,
-            height: height
-          };
-        }), sortCallback);
-      };
-      getAnimationHelpers = function() {
-        var animationHelpers;
-        return animationHelpers = {
-          setSliderBackground: setSliderBackground,
-          currentSlideElement: vars.currentSlideElement,
-          previousSlideElement: vars.previousSlideElement,
-          raiseAnimationFinished: raiseAnimationFinished,
-          settings: $.extend({}, settings),
-          createSlices: function(slices, element) {
-            return ramblingSliceGenerator.createSlices(slices, element);
-          },
-          createBoxes: function(rows, columns) {
-            return ramblingBoxGenerator.createBoxes(rows, columns);
-          },
-          getOneSlice: function(element) {
-            return ramblingSliceGenerator.getOneSlice(element);
-          },
-          animateFullImage: animateFullImage,
-          animateSlices: animateSlices,
-          animateBoxes: animateBoxes,
-          animateBoxesIn2d: animateBoxesIn2d,
-          slideUpSlices: slideUpSlices,
-          slideDownSlices: slideDownSlices,
-          slideUpDownSlices: slideUpDownSlices,
-          foldSlices: foldSlices,
-          fadeSlices: fadeSlices,
-          fadeBoxes: fadeBoxes,
-          rainBoxes: rainBoxes,
-          growBoxes: growBoxes
-        };
-      };
-      ramblingRun = function(slider, children, settings, nudge) {
-        if (vars.currentSlide === vars.totalSlides - 1) {
-          settings.lastSlide.call(this);
-        }
-        if (vars.stopped && !nudge) {
-          return false;
-        }
-        settings.beforeChange.call(this);
-        vars.currentSlide = (vars.currentSlide + 1) % vars.totalSlides;
-        if (vars.currentSlide === 0) {
-          settings.slideshowEnd.call(this);
-        }
-        if (vars.currentSlide < 0) {
-          vars.currentSlide = vars.totalSlides + vars.currentSlide;
-        }
-        setCurrentSlideElement(children);
-        if (settings.controlNav) {
-          slider.find('.rambling-controlNav a').removeClass('active').filter(":eq(" + vars.currentSlide + ")").addClass('active');
-        }
-        processCaption(settings);
-        vars.running = true;
-        return getRandomAnimation().call(getAnimationHelpers());
-      };
-      settings.afterLoad.call(this);
-      return this;
+      }
+      if (child.is('a') && !child.containsFlash()) {
+        vars.currentSlideElement = child.find('img:first');
+      }
+      return child;
     };
-  })(jQuery);
+    resetTimer = function() {
+      clearInterval(timer);
+      return timer = '';
+    };
+    pauseSlider = function() {
+      vars.paused = true;
+      return resetTimer();
+    };
+    unpauseSlider = function() {
+      vars.paused = false;
+      if (timer === '') {
+        return _this.run();
+      }
+    };
+    slideTo = function(direction) {
+      if (vars.running || vars.totalSlides === 1) {
+        return false;
+      }
+      resetTimer();
+      if (direction === 'prev') {
+        vars.currentSlide -= 2;
+      }
+      return ramblingRun(slider, children, settings, direction);
+    };
+    setSliderBackground = function() {
+      var slideElement;
+      slideElement = slider.find('.currentSlideElement');
+      if (slideElement.equals(vars.currentSlideElement)) {
+        return;
+      }
+      slideElement.removeClass('currentSlideElement alignTop alignBottom').css({
+        display: 'none',
+        'z-index': 0
+      });
+      slideElement = vars.currentSlideElement;
+      slideElement.siblings('.slideElement').css({
+        display: 'none'
+      });
+      slideElement.addClass('currentSlideElement').addClass(settings.alignBottom ? 'alignBottom' : 'alignTop');
+      slideElement.css({
+        display: 'block',
+        'z-index': 0
+      });
+      return slideElement.find('img').css({
+        display: 'block'
+      });
+    };
+    getAvailableTransitions = function() {
+      var effects;
+      effects = settings.effect.split(',');
+      $.each(transitionGroups, function(index, group) {
+        var parameters;
+        if (effects.contains(group)) {
+          parameters = [effects.indexOf(group), 1];
+          $.each(transitionGroupSuffixes, function(index, suffix) {
+            return parameters.push("" + group + suffix);
+          });
+          return effects.splice.apply(effects, parameters);
+        }
+      });
+      return effects;
+    };
+    getAnimationsForCurrentSlideElement = function() {
+      var availableTransitions, defaultTransition, sourceTransitions, transitions;
+      transitions = [];
+      sourceTransitions = [];
+      if (vars.currentSlideElement.containsFlash()) {
+        if (vars.previousSlideElement.containsFlash()) {
+          sourceTransitions = flashTransitions;
+          defaultTransition = flashTransitions.slideInRight;
+        } else {
+          sourceTransitions = imageFlashTransitions;
+          defaultTransition = imageFlashTransitions.fadeOut;
+        }
+      } else {
+        sourceTransitions = imageTransitions;
+        defaultTransition = imageTransitions.fadeIn;
+      }
+      availableTransitions = getAvailableTransitions();
+      transitions = [].fromObject(sourceTransitions, function(key, value) {
+        return key;
+      });
+      if (settings.effect !== 'random') {
+        transitions = transitions.where(function(animationName) {
+          return availableTransitions.contains(animationName);
+        });
+      }
+      transitions = transitions.map(function(animationName) {
+        return sourceTransitions[animationName];
+      });
+      transitions["default"] = defaultTransition;
+      return transitions;
+    };
+    getRandomAnimation = function() {
+      var transitions;
+      transitions = getAnimationsForCurrentSlideElement();
+      return transitions.random() || transitions["default"];
+    };
+    raiseAnimationFinished = function() {
+      return slider.trigger('rambling:finished');
+    };
+    animateFullImage = function(animationSetUp) {
+      var slice;
+      slice = ramblingSliceGenerator.getOneSlice();
+      slice.css({
+        top: (settings.alignBottom ? 'auto' : 0),
+        bottom: (settings.alignBottom ? 0 : 'auto')
+      });
+      return slice.animate(animationSetUp.call(slice, slider, $.extend({}, settings)) || {
+        width: slider.width()
+      }, settings.speed * 2, '', function() {
+        if (settings.afterChange) {
+          settings.afterChange.call(slice);
+        }
+        return raiseAnimationFinished();
+      });
+    };
+    animateSingleSlice = function(index, element, animationSetUp) {
+      return function() {
+        var finishedCallback, slice;
+        slice = $(element);
+        if (index === settings.slices - 1) {
+          finishedCallback = raiseAnimationFinished;
+        }
+        return slice.animate(animationSetUp.call(slice, index, element) || {}, settings.speed, '', finishedCallback);
+      };
+    };
+    animateSlices = function(animationSetUp, sortCallback) {
+      var slices;
+      slices = ramblingSliceGenerator.createSlices();
+      if (sortCallback) {
+        slices = sortCallback.call(slices);
+      }
+      return slices.each(function(index, element) {
+        return setTimeout(animateSingleSlice(index, element, animationSetUp), 100 + index * 50);
+      });
+    };
+    animateBoxes = function(animationCallback, sortCallback) {
+      var boxes;
+      boxes = ramblingBoxGenerator.createBoxes();
+      animationTimeBuffer = 0;
+      if (sortCallback) {
+        boxes = sortCallback.call(boxes);
+      }
+      return animationCallback.call(boxes, raiseAnimationFinished);
+    };
+    animateBoxesIn2d = function(animationSetUp, sortCallback) {
+      return animateBoxes(function(finishedCallback) {
+        var boxes, column, index, totalBoxes, _i, _ref, _results;
+        boxes = this;
+        totalBoxes = settings.boxCols * settings.boxRows;
+        index = 0;
+        _results = [];
+        for (column = _i = 0, _ref = settings.boxCols * 2; 0 <= _ref ? _i < _ref : _i > _ref; column = 0 <= _ref ? ++_i : --_i) {
+          _results.push((function(column) {
+            var row, _j, _ref1, _results1;
+            _results1 = [];
+            for (row = _j = 0, _ref1 = settings.boxRows; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; row = 0 <= _ref1 ? ++_j : --_j) {
+              _results1.push((function(row) {
+                var box, finished;
+                if (column >= 0 && column < settings.boxCols) {
+                  box = $(boxes[row][column]);
+                  if (index === totalBoxes - 1) {
+                    finished = finishedCallback;
+                  }
+                  setTimeout((function() {
+                    return box.animate(animationSetUp.call(box), settings.speed / 1.3, '', finished);
+                  }), 100 + animationTimeBuffer);
+                  index++;
+                  animationTimeBuffer += 20;
+                }
+                return column--;
+              })(row));
+            }
+            return _results1;
+          })(column));
+        }
+        return _results;
+      }, function() {
+        var boxes;
+        boxes = this;
+        if (sortCallback) {
+          boxes = sortCallback.call(this);
+        }
+        return boxes.as2dArray(settings.boxCols);
+      });
+    };
+    slideDownSlices = function(sortCallback) {
+      return animateSlices((function(index, element) {
+        this.css({
+          top: 0
+        });
+        return {
+          height: slider.height(),
+          opacity: '1'
+        };
+      }), sortCallback);
+    };
+    slideUpSlices = function(sortCallback) {
+      return animateSlices((function(index, element) {
+        this.css({
+          bottom: 0
+        });
+        return {
+          height: slider.height(),
+          opacity: '1'
+        };
+      }), sortCallback);
+    };
+    slideUpDownSlices = function(sortCallback) {
+      return animateSlices((function(index, element) {
+        this.css((index % 2 ? {
+          bottom: 0
+        } : {
+          top: 0
+        }));
+        return {
+          height: slider.height(),
+          opacity: '1'
+        };
+      }), sortCallback);
+    };
+    foldSlices = function(sortCallback) {
+      return animateSlices((function(index, element) {
+        var animateStyle, slice;
+        slice = $(element);
+        animateStyle = {
+          width: slice.width(),
+          opacity: '1'
+        };
+        slice.css({
+          top: 0,
+          height: '100%',
+          width: 0
+        });
+        return animateStyle;
+      }), sortCallback);
+    };
+    fadeSlices = function(sortCallback) {
+      return animateSlices((function(index, element) {
+        this.css({
+          height: slider.height()
+        });
+        return {
+          opacity: '1'
+        };
+      }), sortCallback);
+    };
+    fadeBoxes = function(sortCallback) {
+      return animateBoxes(function(finishedCallback) {
+        var totalBoxes;
+        totalBoxes = this.length;
+        animationTimeBuffer = 0;
+        return this.each(function(index) {
+          var box, finished;
+          box = $(this);
+          if (index === totalBoxes - 1) {
+            finished = finishedCallback;
+          }
+          setTimeout((function() {
+            return box.animate({
+              opacity: '1'
+            }, settings.speed, '', finished);
+          }), 100 + animationTimeBuffer);
+          return animationTimeBuffer += 20;
+        });
+      }, sortCallback);
+    };
+    rainBoxes = function(sortCallback) {
+      return animateBoxesIn2d((function() {
+        return {
+          opacity: '1'
+        };
+      }), sortCallback);
+    };
+    growBoxes = function(sortCallback) {
+      return animateBoxesIn2d((function() {
+        var height, width;
+        width = this.width();
+        height = this.height();
+        this.css({
+          width: 0,
+          height: 0
+        });
+        return {
+          opacity: '1',
+          width: width,
+          height: height
+        };
+      }), sortCallback);
+    };
+    getAnimationHelpers = function() {
+      var animationHelpers;
+      return animationHelpers = {
+        setSliderBackground: setSliderBackground,
+        currentSlideElement: vars.currentSlideElement,
+        previousSlideElement: vars.previousSlideElement,
+        raiseAnimationFinished: raiseAnimationFinished,
+        settings: $.extend({}, settings),
+        createSlices: function(slices, element) {
+          return ramblingSliceGenerator.createSlices(slices, element);
+        },
+        createBoxes: function(rows, columns) {
+          return ramblingBoxGenerator.createBoxes(rows, columns);
+        },
+        getOneSlice: function(element) {
+          return ramblingSliceGenerator.getOneSlice(element);
+        },
+        animateFullImage: animateFullImage,
+        animateSlices: animateSlices,
+        animateBoxes: animateBoxes,
+        animateBoxesIn2d: animateBoxesIn2d,
+        slideUpSlices: slideUpSlices,
+        slideDownSlices: slideDownSlices,
+        slideUpDownSlices: slideUpDownSlices,
+        foldSlices: foldSlices,
+        fadeSlices: fadeSlices,
+        fadeBoxes: fadeBoxes,
+        rainBoxes: rainBoxes,
+        growBoxes: growBoxes
+      };
+    };
+    ramblingRun = function(slider, children, settings, nudge) {
+      if (vars.currentSlide === vars.totalSlides - 1) {
+        settings.lastSlide.call(this);
+      }
+      if (vars.stopped && !nudge) {
+        return false;
+      }
+      settings.beforeChange.call(this);
+      vars.currentSlide = (vars.currentSlide + 1) % vars.totalSlides;
+      if (vars.currentSlide === 0) {
+        settings.slideshowEnd.call(this);
+      }
+      if (vars.currentSlide < 0) {
+        vars.currentSlide = vars.totalSlides + vars.currentSlide;
+      }
+      setCurrentSlideElement(children);
+      if (settings.controlNav) {
+        slider.find('.rambling-controlNav a').removeClass('active').filter(":eq(" + vars.currentSlide + ")").addClass('active');
+      }
+      processCaption(settings);
+      vars.running = true;
+      return getRandomAnimation().call(getAnimationHelpers());
+    };
+    settings.afterLoad.call(this);
+    return this;
+  };
+
+  root = typeof global !== "undefined" && global !== null ? global : window;
+
+  root.RamblingSlider = RamblingSlider;
 
   (function($) {
     var allAroundTransitions, animationFullImageOptions, boxTransitions, flashHorizontalSlideIn, flashSlideIn, name, transitions, value, _fn;
