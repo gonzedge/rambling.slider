@@ -1,11 +1,11 @@
 String::decapitalize = ->
-  first = @[0..0]
+  first = @[0]
   rest = @[1..]
 
   "#{first.toLowerCase()}#{rest}"
 
 String::startsWith = (string) ->
-  @substring(0, string.length) is string
+  @[0...string.length] is string
 
 String::endsWith = (string) ->
-  @substring(@length - string.length, @length) is string
+  @[(@length - string.length)...@length] is string

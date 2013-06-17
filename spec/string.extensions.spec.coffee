@@ -1,10 +1,10 @@
 describe 'String Extensions', ->
-  describe 'when decapitalizing a string', ->
+  describe '#decapitalize', ->
     it 'returns the expected decapitalized string', ->
-      expect('String'.decapitalize()).toEqual('string')
-      expect('MultiString'.decapitalize()).toEqual('multiString')
+      expect('String'.decapitalize()).toEqual 'string'
+      expect('MultiString'.decapitalize()).toEqual 'multiString'
 
-  describe 'when finding out if a string starts with another string', ->
+  describe '#startsWith', ->
     it 'returns true for the start of the string', ->
       expect('string'.startsWith('s')).toBeTruthy()
 
@@ -14,7 +14,7 @@ describe 'String Extensions', ->
     it 'returns false for anything else not in the string', ->
       expect('string'.startsWith('a')).toBeFalsy()
 
-  describe 'when finding out if a string ends with another string', ->
+  describe '#endsWith', ->
     it 'returns true for the end of the string', ->
       expect('string'.endsWith('g')).toBeTruthy()
 
